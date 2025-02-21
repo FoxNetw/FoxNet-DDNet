@@ -6,7 +6,7 @@
 #endif
 
 MACRO_CONFIG_INT(SvSpeed, sv_speed, 0, 0, 4, CFGFLAG_SERVER | CFGFLAG_GAME, "Speed")
-MACRO_CONFIG_STR(SvTypeName, sv_typename, 64, "FoxNetwork", CFGFLAG_SERVER | CFGFLAG_GAME, "game type name")
+MACRO_CONFIG_STR(SvGameTypeName, sv_gametype_name, 64, "FoxNetwork", CFGFLAG_SERVER | CFGFLAG_GAME, "game type name")
 
 MACRO_CONFIG_INT(SvSoloOnSpawn, sv_solo_on_spawn, 1, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "Solo the Player for x amount of seconds on spawn")
 MACRO_CONFIG_INT(SvSoloOnSpawnSec, sv_solo_on_spawn_seconds, 5, 0, 20, CFGFLAG_SERVER | CFGFLAG_GAME, "Solo the Player for x amount of seconds on spawn")
