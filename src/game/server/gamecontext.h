@@ -600,6 +600,10 @@ public:
 	void OnSetAuthed(int ClientId, int Level) override;
 
 	void ResetTuning();
+
+private: // FoxNet
+	static void ConHeadItem(IConsole::IResult *pResult, void *pUserData);
+
 };
 
 #endif

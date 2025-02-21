@@ -1298,3 +1298,17 @@ void CGameContext::LogEvent(const char *Description, int ClientId)
 		str_copy(pNewEntry->m_aClientName, Server()->ClientName(ClientId));
 	}
 }
+
+void CGameContext::ConHeadItem(IConsole::IResult *pResult, void *pUserData)
+{	
+	CGameContext *pSelf = (CGameContext *)pUserData;
+
+	int Victim = pResult->m_ClientId;
+	if(pResult->NumArguments() > 1)
+		Victim = pResult->GetVictim();
+
+	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
+
+	if(pChr)
+		pChr->HeadItem(pResult->GetInteger(0), Victim);
+}

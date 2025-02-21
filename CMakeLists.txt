@@ -2720,7 +2720,9 @@ if(SERVER)
     entities/dragger_beam.cpp
     entities/dragger_beam.h
     entities/gun.cpp
-    entities/gun.h
+    entities/gun.h  
+    entities/head_powerup.cpp
+    entities/head_powerup.h
     entities/laser.cpp
     entities/laser.h
     entities/light.cpp

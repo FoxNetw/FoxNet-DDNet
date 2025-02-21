@@ -33,6 +33,10 @@ class CCharacter : public CEntity
 public:
 	CCharacter(CGameWorld *pWorld, CNetObj_PlayerInput LastInput);
 
+	// FoxNet
+	int m_HeadItem;
+	void HeadItem(int Type = 1, int ClientId = -1);
+
 	void Reset() override;
 	void Destroy() override;
 	void PreTick();

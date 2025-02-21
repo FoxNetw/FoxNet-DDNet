@@ -20,6 +20,9 @@
 #include <game/server/score.h>
 #include <game/server/teams.h>
 
+// FoxNet
+#include <game/server/entities/head_powerup.h>
+
 MACRO_ALLOC_POOL_ID_IMPL(CCharacter, MAX_CLIENTS)
 
 // Character, "physical" player's part
@@ -1174,6 +1177,8 @@ bool CCharacter::CanSnapCharacter(int SnappingClient)
 	CCharacter *pSnapChar = GameServer()->GetPlayerChar(SnappingClient);
 	CPlayer *pSnapPlayer = GameServer()->m_apPlayers[SnappingClient];
 
+
+
 	if(pSnapPlayer->GetTeam() == TEAM_SPECTATORS || pSnapPlayer->IsPaused())
 	{
 		if(pSnapPlayer->m_SpectatorId != SPEC_FREEVIEW && !CanCollide(pSnapPlayer->m_SpectatorId) && (pSnapPlayer->m_ShowOthers == SHOW_OTHERS_OFF || (pSnapPlayer->m_ShowOthers == SHOW_OTHERS_ONLY_TEAM && !SameTeam(pSnapPlayer->m_SpectatorId))))
@@ -1181,6 +1186,8 @@ bool CCharacter::CanSnapCharacter(int SnappingClient)
 		else if(pSnapPlayer->m_SpectatorId == SPEC_FREEVIEW && !CanCollide(SnappingClient) && pSnapPlayer->m_SpecTeam && !SameTeam(SnappingClient))
 			return false;
 	}
+	else if((m_HeadItem || pSnapPlayer->m_SpawnSoloShowOthers) && SameTeam(SnappingClient))
+		return true;
 	else if(pSnapChar && !pSnapChar->m_Core.m_Super && !CanCollide(SnappingClient) && (pSnapPlayer->m_ShowOthers == SHOW_OTHERS_OFF || (pSnapPlayer->m_ShowOthers == SHOW_OTHERS_ONLY_TEAM && !SameTeam(SnappingClient))))
 		return false;
 
@@ -2485,4 +2492,15 @@ void CCharacter::SwapClients(int Client1, int Client2)
 {
 	const int HookedPlayer = m_Core.HookedPlayer();
 	m_Core.SetHookedPlayer(HookedPlayer == Client1 ? Client2 : HookedPlayer == Client2 ? Client1 : HookedPlayer);
+}
+
+// FoxNet
+void CCharacter::HeadItem(int Type, int ClientId)
+{
+	if(ClientId < 0 || (0 > Type && Type > 6))
+		return;
+
+	m_HeadItem = Type;
+	if(m_HeadItem)
+		new CHeadItem(GameWorld(), m_Pos, ClientId, Type);
 }

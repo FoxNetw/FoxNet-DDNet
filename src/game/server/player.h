@@ -240,8 +240,10 @@ public:
 private:
 	void UnsoloAfterSpawn();
 	bool m_ShouldSolo;
-	bool m_SpawnSoloShowOthers;
 	int64_t m_SoloTime;
+
+public:
+	bool m_SpawnSoloShowOthers;
 };
 
 #endif

@@ -276,24 +276,25 @@ void CPlayer::Tick()
 			GameServer()->SendEmoticon(GetCid(), EMOTICON_GHOST, -1);
 		}
 	}
-
+	// FoxNet
 	UnsoloAfterSpawn();
 }
 
 void CPlayer::UnsoloAfterSpawn()
 {
-	int Team = GameServer()->GetPlayerChar(m_ClientId)->Team();
+	auto Character = GameServer()->GetPlayerChar(m_ClientId);
+	int Team = Character->Team();
 	if(g_Config.m_SvSoloOnSpawn && Team != TEAM_SPECTATORS && !m_Spawning)
 	{
-		int TileFIndex = GameServer()->GetPlayerChar(m_ClientId)->m_TileFIndex;
-		int TileIndex = GameServer()->GetPlayerChar(m_ClientId)->m_TileIndex;
+		int TileFIndex = Character->m_TileFIndex;
+		int TileIndex = Character->m_TileIndex;
 
 		if(TileFIndex == 21 || TileIndex == 21)
 		{
 			m_SpawnSoloShowOthers = false;
 			m_ShouldSolo = false;
 			m_SoloTime = -1;
-			//Shield(false, m_pPlayer->GetCid(), true);
+			Character->HeadItem(0, m_ClientId);
 		}
 
 		if(m_ShouldSolo)
@@ -302,11 +303,11 @@ void CPlayer::UnsoloAfterSpawn()
 			{
 				m_SpawnSoloShowOthers = false;
 				m_ShouldSolo = false;
-				//Shield(false, m_pPlayer->GetCid(), true);
-				GameServer()->GetPlayerChar(GetCid())->SetSolo(false);
+				Character->HeadItem(0, m_ClientId);
+				Character->SetSolo(false);
 			}
-			//else if(!m_Shield)
-				//Shield(true, m_pPlayer->GetCid(), true);
+			else if(!Character->m_HeadItem)
+				Character->HeadItem(POWERUP_ARMOR, m_ClientId);
 		}
 	}
 }
@@ -777,6 +778,19 @@ void CPlayer::TryRespawn()
 	m_ViewPos = SpawnPos;
 	m_pCharacter->Spawn(this, SpawnPos);
 	GameServer()->CreatePlayerSpawn(SpawnPos, GameServer()->m_pController->GetMaskForPlayerWorldEvent(m_ClientId));
+
+	if(g_Config.m_SvAutoGrenade)
+	{
+		m_pCharacter->SetActiveWeapon(WEAPON_GRENADE);
+	}
+	else if(g_Config.m_SvAutoLaser)
+	{
+		m_pCharacter->SetActiveWeapon(WEAPON_LASER);
+	}
+	else if(g_Config.m_SvAutoShotgun)
+	{
+		m_pCharacter->SetActiveWeapon(WEAPON_SHOTGUN);
+	}
 
 	if(g_Config.m_SvTeam == SV_TEAM_FORCED_SOLO)
 		m_pCharacter->SetSolo(true);
