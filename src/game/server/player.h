@@ -236,6 +236,12 @@ public:
 	int m_RescueMode;
 
 	CSaveTee m_LastTeleTee;
+
+private:
+	void UnsoloAfterSpawn();
+	bool m_ShouldSolo;
+	bool m_SpawnSoloShowOthers;
+	int64_t m_SoloTime;
 };
 
 #endif

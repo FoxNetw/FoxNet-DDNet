@@ -276,7 +276,41 @@ void CPlayer::Tick()
 			GameServer()->SendEmoticon(GetCid(), EMOTICON_GHOST, -1);
 		}
 	}
+
+	UnsoloAfterSpawn();
 }
+
+void CPlayer::UnsoloAfterSpawn()
+{
+	int Team = GameServer()->GetPlayerChar(m_ClientId)->Team();
+	if(g_Config.m_SvSoloOnSpawn && Team != TEAM_SPECTATORS && !m_Spawning)
+	{
+		int TileFIndex = GameServer()->GetPlayerChar(m_ClientId)->m_TileFIndex;
+		int TileIndex = GameServer()->GetPlayerChar(m_ClientId)->m_TileIndex;
+
+		if(TileFIndex == 21 || TileIndex == 21)
+		{
+			m_SpawnSoloShowOthers = false;
+			m_ShouldSolo = false;
+			m_SoloTime = -1;
+			//Shield(false, m_pPlayer->GetCid(), true);
+		}
+
+		if(m_ShouldSolo)
+		{
+			if(m_SoloTime + Server()->TickSpeed() * g_Config.m_SvSoloOnSpawnSec < Server()->Tick() - Server()->TickSpeed())
+			{
+				m_SpawnSoloShowOthers = false;
+				m_ShouldSolo = false;
+				//Shield(false, m_pPlayer->GetCid(), true);
+				GameServer()->GetPlayerChar(GetCid())->SetSolo(false);
+			}
+			//else if(!m_Shield)
+				//Shield(true, m_pPlayer->GetCid(), true);
+		}
+	}
+}
+
 
 void CPlayer::PostTick()
 {
@@ -746,6 +780,13 @@ void CPlayer::TryRespawn()
 
 	if(g_Config.m_SvTeam == SV_TEAM_FORCED_SOLO)
 		m_pCharacter->SetSolo(true);
+	else if(g_Config.m_SvSoloOnSpawn && m_Team != TEAM_SPECTATORS && !m_Spawning)
+	{
+		m_ShouldSolo = true;
+		m_SoloTime = Server()->Tick() - Server()->TickSpeed();
+		m_SpawnSoloShowOthers = true;
+		GameServer()->GetPlayerChar(m_ClientId)->SetSolo(true);
+	}
 }
 
 void CPlayer::UpdatePlaytime()
