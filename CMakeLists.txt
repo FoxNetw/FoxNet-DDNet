@@ -2078,6 +2078,7 @@ set_src(ENGINE_SHARED GLOB_RECURSE src/engine/shared
   fifo.h
   filecollection.cpp
   filecollection.h
+  foxnet_variables.h
   global_uuid_manager.cpp
   host_lookup.cpp
   host_lookup.h
