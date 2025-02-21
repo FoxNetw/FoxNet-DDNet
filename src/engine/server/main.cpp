@@ -179,8 +179,8 @@ int main(int argc, const char **argv)
 		pConsole->ParseArguments(argc - 1, &argv[1]);
 
 	pConfigManager->SetReadOnly("sv_max_clients", true);
-	pConfigManager->SetReadOnly("sv_test_cmds", true);
-	pConfigManager->SetReadOnly("sv_rescue", true);
+	//pConfigManager->SetReadOnly("sv_test_cmds", true);
+	//pConfigManager->SetReadOnly("sv_rescue", true);
 	pConfigManager->SetReadOnly("sv_port", true);
 	pConfigManager->SetReadOnly("bindaddr", true);
 
