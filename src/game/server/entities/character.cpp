@@ -593,6 +593,8 @@ void CCharacter::FireWeapon()
 	{
 		int Lifetime = (int)(Server()->TickSpeed() * GetTuning(m_TuneZone)->m_GrenadeLifetime);
 
+		bool Explosive = !g_Config.m_SvFakeGrenade;
+
 		new CProjectile(
 			GameWorld(),
 			WEAPON_GRENADE, //Type
@@ -601,7 +603,7 @@ void CCharacter::FireWeapon()
 			Direction, //Dir
 			Lifetime, //Span
 			false, //Freeze
-			true, //Explosive
+			Explosive, // Explosive
 			SOUND_GRENADE_EXPLODE, //SoundImpact
 			MouseTarget // MouseTarget
 		);
