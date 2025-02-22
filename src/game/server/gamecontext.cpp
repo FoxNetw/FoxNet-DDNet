@@ -5221,7 +5221,6 @@ bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Poi
 	if(fancy_count > 3)
 	{
 		count += 2;
-		BanReason = "Refrain from using Fancy Alphabets";
 		BanAmount = 120;
 	}
 
@@ -5233,7 +5232,6 @@ bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Poi
 		{
 			count++;
 			BanAmount = 360;
-			BanReason = "Don't Advertise Cheat Clients on this Server";
 		}
 	}
 
@@ -5242,12 +5240,16 @@ bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Poi
 	{
 		count += 2;
 		BanAmount = 1000;
-		BanReason = "Krx Message";
 	}
 
 	if(count >= 2)
 	{
-		Server()->Ban(ClientId, BanAmount * 60, BanReason, BanReason);
+		if(BanAmount == 120)
+			Server()->Ban(ClientId, BanAmount * 60, "Refrain from using Fancy Alphabets", BanReason);
+		if(BanAmount == 360)
+			Server()->Ban(ClientId, BanAmount * 60, "Don't Advertise Cheat Clients on this Server", BanReason);
+		if(BanAmount == 1000)
+			Server()->Ban(ClientId, BanAmount * 60, "Krx Message", BanReason);
 		return true;
 	}
 	else
