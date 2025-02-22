@@ -635,18 +635,15 @@ void CCharacter::FireWeapon()
 
 	case WEAPON_TELEKINESIS:
 	{
-		bool TelekinesisSound = false;
-
 		if(!m_pTelekinesisEntity)
 		{
-			int Types = (1 << CGameWorld::ENTTYPE_CHARACTER);
 			CEntity *pEntity = GameWorld()->ClosestCharacter(GetCursorPos(m_pPlayer->GetCid()), 60.f, this);
 
 			CCharacter *pChr = 0;
 			if(pEntity)
 				pChr = (CCharacter *)pEntity;
 
-			if((pChr && pChr->GetPlayer()->GetCid() != m_pPlayer->GetCid() && pChr->m_pTelekinesisEntity != this || (pEntity && pEntity != pChr)))
+			if((pChr && pChr->GetPlayer()->GetCid() != m_pPlayer->GetCid() && (pChr->m_pTelekinesisEntity != this || (pEntity && pEntity != pChr))))
 			{
 				bool IsTelekinesed = false;
 				for(int i = 0; i < MAX_CLIENTS; i++)
@@ -656,20 +653,11 @@ void CCharacter::FireWeapon()
 						break;
 					}
 				if(!IsTelekinesed)
-				{
 					m_pTelekinesisEntity = pEntity;
-					TelekinesisSound = true;
-				}
 			}
 		}
 		else
-		{
 			m_pTelekinesisEntity = 0;
-			TelekinesisSound = true;
-		}
-
-		// if(TelekinesisSound)
-		// GameServer()->CreateSound(m_Pos, SOUND_NINJA_HIT, TeamMask());
 	}
 	break;
 	}
@@ -2578,6 +2566,17 @@ vec2 CCharacter::GetCursorPos(int Clientid)
 	return GameServer()->m_apPlayers[Clientid]->m_CameraInfo.ConvertTargetToWorld(GetPos(), Target);
 }
 
+void CCharacter::TryRespawn()
+{
+	if(g_Config.m_SvSoloOnSpawn && Team() != TEAM_SPECTATORS && m_Alive && g_Config.m_SvTeam != SV_TEAM_FORCED_SOLO)
+	{
+		m_pPlayer->m_ShouldSolo = true;
+		m_pPlayer->m_SoloTime = Server()->Tick() - Server()->TickSpeed();
+		m_pPlayer->m_SpawnSoloShowOthers = true;
+		GameServer()->GetPlayerChar(m_pPlayer->GetCid())->SetSolo(true);
+	}
+}
+
 void CCharacter::FoxNetTick()
 { 
 	UnsoloAfterSpawn();
@@ -2613,7 +2612,6 @@ void CCharacter::UnsoloAfterSpawn()
 
 		if(m_pPlayer->m_ShouldSolo)
 		{
-
 			if(m_pPlayer->m_SoloTime + Server()->TickSpeed() * g_Config.m_SvSoloOnSpawnSec < Server()->Tick() - Server()->TickSpeed())
 			{
 				m_pPlayer->m_SpawnSoloShowOthers = false;
@@ -2626,3 +2624,4 @@ void CCharacter::UnsoloAfterSpawn()
 		}
 	}
 }
+

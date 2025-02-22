@@ -36,6 +36,7 @@ public:
 	// FoxNet
 	void FoxNetTick();
 	void UnsoloAfterSpawn();
+	void TryRespawn();
 
 	void SetExplosionGun(bool Active);
 

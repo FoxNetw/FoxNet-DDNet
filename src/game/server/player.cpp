@@ -760,13 +760,8 @@ void CPlayer::TryRespawn()
 
 	if(g_Config.m_SvTeam == SV_TEAM_FORCED_SOLO)
 		m_pCharacter->SetSolo(true);
-	else if(g_Config.m_SvSoloOnSpawn && m_Team != TEAM_SPECTATORS && !m_Spawning)
-	{
-		m_ShouldSolo = true;
-		m_SoloTime = Server()->Tick() - Server()->TickSpeed();
-		m_SpawnSoloShowOthers = true;
-		GameServer()->GetPlayerChar(m_ClientId)->SetSolo(true);
-	}
+
+	m_pCharacter->TryRespawn();
 }
 
 void CPlayer::UpdatePlaytime()
