@@ -135,11 +135,13 @@ void CGameControllerDDRace::OnPlayerConnect(CPlayer *pPlayer)
 		GameServer()->SendChatTarget(ClientId, "This Server serves as a Testing Server");
 		GameServer()->SendChatTarget(ClientId, "Expect Random Restarts or bans");
 		GameServer()->SendChatTarget(ClientId, "Cheaters will still be banned.");
-	}
 
-	char WelcomeText[256];
-	str_format(WelcomeText, sizeof(WelcomeText), "< Welcome to the Server %s >", Server()->ClientName(ClientId));
-	GameServer()->SendBroadcast(WelcomeText, ClientId);
+		char WelcomeText[256];
+		str_format(WelcomeText, sizeof(WelcomeText), "< Welcome to the Server %s >", Server()->ClientName(ClientId));
+		GameServer()->SendBroadcast(WelcomeText, ClientId);
+		if(g_Config.m_SvAutoExplGun)
+			GameServer()->SendBroadcast("\n << You currently have an Exploding Gun! >>", ClientId);
+	}
 }
 
 void CGameControllerDDRace::OnPlayerDisconnect(CPlayer *pPlayer, const char *pReason)
