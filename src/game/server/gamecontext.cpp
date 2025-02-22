@@ -1015,8 +1015,124 @@ void CGameContext::OnPreTickTeehistorian()
 	}
 }
 
+void CGameContext::ChangeSpeedMode()
+{
+	// check tuning;
+	if(g_Config.m_SvSpeed == 1)
+	{
+		Tuning()->m_GroundControlSpeed = 10.0f;
+		Tuning()->m_GroundControlAccel = 2.0f;
+		Tuning()->m_GroundFriction = 0.5f;
+		Tuning()->m_GroundJumpImpulse = 13.2f;
+		Tuning()->m_AirJumpImpulse = 12.0f;
+		Tuning()->m_AirControlSpeed = 5.0f;
+		Tuning()->m_AirControlAccel = 1.5f;
+		Tuning()->m_AirFriction = 0.95f;
+		Tuning()->m_HookDragAccel = 3.0f;
+		Tuning()->m_HookDragSpeed = 15.0f;
+		Tuning()->m_Gravity = 0.5f;
+		Tuning()->m_VelrampStart = 550.0f;
+		Tuning()->m_VelrampRange = 2000.0f;
+		Tuning()->m_GunLifetime = 2.0f;
+		Tuning()->m_GunFireDelay = 125.0f;
+		Tuning()->m_GunCurvature = 0.00f;
+		Tuning()->m_GunSpeed = 1400.0f;
+		Tuning()->m_HammerStrength = 1.0f;
+		Tuning()->m_ShotgunStrength = 10.00f;
+		Tuning()->m_ExplosionStrength = 6.00f;
+		Tuning()->m_HammerStrength = 1.00f;
+	}
+	else if(g_Config.m_SvSpeed == 2)
+	{
+		Tuning()->m_GroundControlSpeed = 5.0f;
+		Tuning()->m_GroundControlAccel = 0.50f;
+		Tuning()->m_GroundFriction = 0.70f;
+		Tuning()->m_GroundJumpImpulse = 6.6f;
+		Tuning()->m_AirJumpImpulse = 6.0f;
+		Tuning()->m_AirControlSpeed = 2.5f;
+		Tuning()->m_AirControlAccel = 0.37f;
+		Tuning()->m_AirFriction = 0.97f;
+		Tuning()->m_HookDragAccel = 0.75f;
+		Tuning()->m_HookDragSpeed = 7.50f;
+		Tuning()->m_Gravity = 0.12f;
+		Tuning()->m_VelrampStart = 275.50f;
+		Tuning()->m_VelrampRange = 1000.0f;
+		Tuning()->m_GunLifetime = 4.0f;
+		Tuning()->m_GunFireDelay = 200.0f;
+		Tuning()->m_GunCurvature = 0.0f;
+		Tuning()->m_GunSpeed = 700.0f;
+		Tuning()->m_ShotgunStrength = 5.00f;
+		Tuning()->m_ExplosionStrength = 3.00f;
+		Tuning()->m_HammerStrength = 0.30f;
+	}
+	else if(g_Config.m_SvSpeed == 3)
+	{
+		Tuning()->m_GroundControlSpeed = 2.50f;
+		Tuning()->m_GroundControlAccel = 0.13f;
+		Tuning()->m_GroundFriction = 0.84f;
+		Tuning()->m_GroundJumpImpulse = 3.30f;
+		Tuning()->m_AirJumpImpulse = 3.00f;
+		Tuning()->m_AirControlSpeed = 1.25f;
+		Tuning()->m_AirControlAccel = 0.09f;
+		Tuning()->m_AirFriction = 0.99f;
+		Tuning()->m_HookDragAccel = 0.19f;
+		Tuning()->m_HookDragSpeed = 3.75f;
+		Tuning()->m_Gravity = 0.03f;
+		Tuning()->m_VelrampStart = 137.50f;
+		Tuning()->m_VelrampRange = 500.00f;
+		Tuning()->m_GunLifetime = 8.0f;
+		Tuning()->m_GunFireDelay = 220.0f;
+		Tuning()->m_GunCurvature = 0.00f;
+		Tuning()->m_GunSpeed = 350.0f;
+		Tuning()->m_ShotgunStrength = 5.00f;
+		Tuning()->m_ExplosionStrength = 1.60f;
+		Tuning()->m_HammerStrength = 0.30f;
+	}
+	else if(g_Config.m_SvSpeed == 4)
+	{
+		Tuning()->m_GroundControlSpeed = 1.30f;
+		Tuning()->m_GroundControlAccel = 0.05f;
+		Tuning()->m_GroundFriction = 0.42f;
+		Tuning()->m_GroundJumpImpulse = 1.75f;
+		Tuning()->m_AirJumpImpulse = 1.50f;
+		Tuning()->m_AirControlSpeed = 0.75f;
+		Tuning()->m_AirControlAccel = 0.03f;
+		Tuning()->m_AirFriction = 0.999f;
+		Tuning()->m_HookDragAccel = 0.09f;
+		Tuning()->m_HookDragSpeed = 1.25f;
+		Tuning()->m_Gravity = 0.01f;
+		Tuning()->m_VelrampStart = 137.50f;
+		Tuning()->m_VelrampRange = 500.00f;
+		Tuning()->m_GunFireDelay = 500.0f;
+		Tuning()->m_GunCurvature = 0.00f;
+		Tuning()->m_GunSpeed = 275.0f;
+		Tuning()->m_ShotgunStrength = 2.50f;
+		Tuning()->m_ExplosionStrength = 0.9f;
+		Tuning()->m_HammerStrength = 0.30f;
+	}
+
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		if(m_apPlayers[i])
+		{
+			SendTuningParams(i);
+		}
+	}
+
+	// Info Message
+	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "Speed Tunings Have Changed");
+}
+
 void CGameContext::OnTick()
 {
+	static int OldSpeed = g_Config.m_SvSpeed;
+	if(g_Config.m_SvSpeed != OldSpeed)
+	{
+		ChangeSpeedMode();
+		OldSpeed = g_Config.m_SvSpeed;
+	}
+
+
 	// check tuning
 	CheckPureTuning();
 
@@ -1746,7 +1862,7 @@ void CGameContext::OnClientConnected(int ClientId, void *pData)
 	m_apPlayers[ClientId]->m_LastWhisperTo = LastWhisperTo;
 	NextUniqueClientId += 1;
 
-	SendMotd(ClientId);
+	//SendMotd(ClientId);
 	SendSettings(ClientId);
 
 	Server()->ExpireServerInfo();

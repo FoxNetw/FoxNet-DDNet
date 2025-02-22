@@ -602,12 +602,14 @@ public:
 	void ResetTuning();
 
 private: // FoxNet
+
+	void ChangeSpeedMode();
+	bool CheckSpam(int ClientId, const char *pLine) const;
+
 	static void ConHeadItem(IConsole::IResult *pResult, void *pUserData);
 
 	static void ConExplosionGun(IConsole::IResult *pResult, void *pUserData);
 	static void ConUnExplosionGun(IConsole::IResult *pResult, void *pUserData);
-
-	bool CheckSpam(int ClientId, const char *pLine) const;
 
 };
 

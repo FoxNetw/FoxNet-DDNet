@@ -2710,6 +2710,7 @@ void CServer::ChangeMap(const char *pMap)
 void CServer::ReloadMap()
 {
 	m_SameMapReload = true;
+	g_Config.m_SvSpeed = 1;
 }
 
 int CServer::LoadMap(const char *pMapName)
