@@ -1554,7 +1554,8 @@ void CCharacter::HandleTiles(int Index)
 	// freeze
 	if(((m_TileIndex == TILE_FREEZE) || (m_TileFIndex == TILE_FREEZE)) && !m_Core.m_Super && !m_Core.m_Invincible && !m_Core.m_DeepFrozen)
 	{
-		Freeze();
+		if(!g_Config.m_SvDisableFreeze)
+			Freeze();
 	}
 	else if(((m_TileIndex == TILE_UNFREEZE) || (m_TileFIndex == TILE_UNFREEZE)) && !m_Core.m_DeepFrozen)
 		UnFreeze();
