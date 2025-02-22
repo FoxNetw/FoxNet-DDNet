@@ -638,6 +638,9 @@ void CCharacterCore::Read(const CNetObj_CharacterCore *pObjCore)
 
 void CCharacterCore::ReadDDNet(const CNetObj_DDNetCharacter *pObjDDNet)
 {
+	// FoxNet
+	m_ExplosionGun = pObjDDNet->m_Flags & CHARACTERFLAG_EXPLOSIONGUN;
+
 	// Collision
 	m_Solo = pObjDDNet->m_Flags & CHARACTERFLAG_SOLO;
 	m_Jetpack = pObjDDNet->m_Flags & CHARACTERFLAG_JETPACK;

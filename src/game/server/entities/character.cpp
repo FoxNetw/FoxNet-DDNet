@@ -440,7 +440,7 @@ void CCharacter::FireWeapon()
 	bool FullAuto = false;
 	if(m_Core.m_ActiveWeapon == WEAPON_GRENADE || m_Core.m_ActiveWeapon == WEAPON_SHOTGUN || m_Core.m_ActiveWeapon == WEAPON_LASER)
 		FullAuto = true;
-	if(m_Core.m_Jetpack && m_Core.m_ActiveWeapon == WEAPON_GUN)
+	if((m_Core.m_Jetpack || m_Core.m_ExplosionGun) && m_Core.m_ActiveWeapon == WEAPON_GUN)
 		FullAuto = true;
 	// allow firing directly after coming out of freeze or being unfrozen
 	// by something
@@ -549,6 +549,15 @@ void CCharacter::FireWeapon()
 		{
 			int Lifetime = (int)(Server()->TickSpeed() * GetTuning(m_TuneZone)->m_GunLifetime);
 
+			bool Explosive = false;
+			int Sound = -1;
+
+			if(m_Core.m_ExplosionGun)
+			{
+				Explosive = true;
+				Sound = SOUND_GRENADE_EXPLODE;
+			}
+
 			new CProjectile(
 				GameWorld(),
 				WEAPON_GUN, //Type
@@ -557,8 +566,8 @@ void CCharacter::FireWeapon()
 				Direction, //Dir
 				Lifetime, //Span
 				false, //Freeze
-				false, //Explosive
-				-1, //SoundImpact
+				Explosive, // Explosive
+				Sound, // SoundImpact
 				MouseTarget //InitDir
 			);
 
@@ -1243,6 +1252,10 @@ void CCharacter::Snap(int SnappingClient)
 	CNetObj_DDNetCharacter *pDDNetCharacter = Server()->SnapNewItem<CNetObj_DDNetCharacter>(Id);
 	if(!pDDNetCharacter)
 		return;
+
+	//FoxNet
+	if(m_Core.m_ExplosionGun)
+		pDDNetCharacter->m_Flags |= CHARACTERFLAG_EXPLOSIONGUN;
 
 	pDDNetCharacter->m_Flags = 0;
 	if(m_Core.m_Solo)
@@ -2503,4 +2516,9 @@ void CCharacter::HeadItem(int Type, int ClientId)
 	m_HeadItem = Type;
 	if(m_HeadItem)
 		new CHeadItem(GameWorld(), m_Pos, ClientId, Type);
+}
+
+void CCharacter::SetExplosionGun(bool Active)
+{
+	m_Core.m_ExplosionGun = Active;
 }

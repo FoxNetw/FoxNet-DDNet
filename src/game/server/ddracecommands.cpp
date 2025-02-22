@@ -1312,3 +1312,38 @@ void CGameContext::ConHeadItem(IConsole::IResult *pResult, void *pUserData)
 	if(pChr)
 		pChr->HeadItem(pResult->GetInteger(0), Victim);
 }
+void CGameContext::ConExplosionGun(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->NumArguments() > 1 ? pResult->m_ClientId : pResult->GetVictim();
+
+	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+
+	pChr->SetExplosionGun(!pChr->Core()->m_ExplosionGun);
+	if(g_Config.m_SvCommandOutput)
+	{
+		if(pChr->Core()->m_ExplosionGun)
+			pSelf->SendBroadcast("<< You Have Explosion Gun! >>", Victim);
+		else
+			pSelf->SendBroadcast("<< You lost Explosion Gun! >>", Victim);
+
+	}
+}
+
+void CGameContext::ConUnExplosionGun(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->NumArguments() > 1 ? pResult->m_ClientId : pResult->GetVictim();
+
+	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+
+	pChr->SetExplosionGun(false);
+	if(g_Config.m_SvCommandOutput)
+		pSelf->SendBroadcast("<< You lost Explosion Gun! >>", Victim);
+}

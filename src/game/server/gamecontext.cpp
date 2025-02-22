@@ -3759,6 +3759,7 @@ void CGameContext::RegisterDDRaceCommands()
 	Console()->Register("unfreezehammer", "?v[id]", CFGFLAG_SERVER, ConUnFreezeHammer, this, "Removes Freeze Hammer from a player");
 
 	// FoxNet
+	Console()->Register("explosiongun", "?v[id]", CFGFLAG_SERVER, ConExplosionGun, this, "Gives you explosion gun");
 	Console()->Register("headitem", "i[type] ?v[id]", CFGFLAG_SERVER, ConHeadItem, this, "Toggles an entity ontop of a player (id)");
 }
 

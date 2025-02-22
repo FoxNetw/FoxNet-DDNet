@@ -128,6 +128,9 @@ void CSaveTee::Save(CCharacter *pChr, bool AddPenalty)
 
 	m_ReloadTimer = pChr->m_ReloadTimer;
 
+	// FoxNet
+	m_ExplosionGun = pChr->m_Core.m_ExplosionGun;
+
 	FormatUuid(pChr->GameServer()->GameUuid(), m_aGameUuid, sizeof(m_aGameUuid));
 }
 
@@ -256,6 +259,9 @@ bool CSaveTee::Load(CCharacter *pChr, int Team, bool IsSwap)
 	{
 		Valid = false;
 	}
+
+	// FoxNet
+	pChr->m_Core.m_ExplosionGun = m_ExplosionGun;
 
 	return Valid;
 }

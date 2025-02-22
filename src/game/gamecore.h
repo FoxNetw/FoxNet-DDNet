@@ -243,6 +243,9 @@ public:
 	int m_Colliding;
 	bool m_LeftWall;
 
+	// FoxNet
+	bool m_ExplosionGun;
+
 	// DDNet Character
 	void SetTeamsCore(CTeamsCore *pTeams);
 	void ReadDDNet(const CNetObj_DDNetCharacter *pObjDDNet);

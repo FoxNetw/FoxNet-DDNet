@@ -146,6 +146,9 @@ private:
 	int m_ReloadTimer;
 
 	char m_aGameUuid[UUID_MAXSTRSIZE];
+
+	// FoxNet
+	int m_ExplosionGun;
 };
 
 class CSaveHotReloadTee

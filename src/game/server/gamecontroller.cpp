@@ -501,8 +501,28 @@ void IGameController::OnCharacterSpawn(class CCharacter *pChr)
 	pChr->IncreaseHealth(10);
 
 	// give default weapons
-	pChr->GiveWeapon(WEAPON_HAMMER);
-	pChr->GiveWeapon(WEAPON_GUN);
+	if(g_Config.m_SvAutoHammer == 1)
+	{
+		pChr->GiveWeapon(WEAPON_HAMMER);
+	}
+	if(g_Config.m_SvAutoGun == 1)
+	{
+		pChr->GiveWeapon(WEAPON_GUN);
+	}
+	if(g_Config.m_SvAutoGrenade == 1)
+	{
+		pChr->GiveWeapon(WEAPON_GRENADE);
+	}
+	if(g_Config.m_SvAutoLaser == 1)
+	{
+		pChr->GiveWeapon(WEAPON_LASER);
+	}
+	if(g_Config.m_SvAutoShotgun == 1)
+	{
+		pChr->GiveWeapon(WEAPON_SHOTGUN);
+	}
+	if(g_Config.m_SvAutoExplGun)
+		pChr->SetExplosionGun(true);
 }
 
 void IGameController::HandleCharacterTiles(CCharacter *pChr, int MapIndex)

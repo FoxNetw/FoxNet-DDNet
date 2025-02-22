@@ -604,6 +604,9 @@ public:
 private: // FoxNet
 	static void ConHeadItem(IConsole::IResult *pResult, void *pUserData);
 
+	static void ConExplosionGun(IConsole::IResult *pResult, void *pUserData);
+	static void ConUnExplosionGun(IConsole::IResult *pResult, void *pUserData);
+
 };
 
 #endif

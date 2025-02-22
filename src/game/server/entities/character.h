@@ -34,6 +34,8 @@ public:
 	CCharacter(CGameWorld *pWorld, CNetObj_PlayerInput LastInput);
 
 	// FoxNet
+	void SetExplosionGun(bool Active);
+
 	int m_HeadItem;
 	void HeadItem(int Type = 1, int ClientId = -1);
 
