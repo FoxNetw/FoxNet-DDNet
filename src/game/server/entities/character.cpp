@@ -2497,7 +2497,7 @@ void CCharacter::SwapClients(int Client1, int Client2)
 // FoxNet
 void CCharacter::HeadItem(int Type, int ClientId)
 {
-	if(ClientId < 0 || (0 > Type && Type > 6))
+	if(ClientId < 0 || (0 > Type && Type < 6))
 		return;
 
 	m_HeadItem = Type;
