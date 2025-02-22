@@ -200,7 +200,7 @@ public:
 		int m_Ammo;
 		int m_Ammocost;
 		bool m_Got;
-	} m_aWeapons[NUM_WEAPONS];
+	} m_aWeapons[NUM_OTHER_WEAPONS];
 
 	// ninja
 	struct
