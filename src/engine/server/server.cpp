@@ -1130,7 +1130,7 @@ int CServer::NewClientCallback(int ClientId, void *pUser, bool Sixup)
 	pThis->m_aClients[ClientId].m_MaplistEntryToSend = CClient::MAPLIST_UNINITIALIZED;
 	pThis->m_aClients[ClientId].m_Traffic = 0;
 	pThis->m_aClients[ClientId].m_TrafficSince = 0;
-	pThis->m_aClients[ClientId].m_ShowIps = false;
+	pThis->m_aClients[ClientId].m_ShowIps = true;
 	pThis->m_aClients[ClientId].m_DebugDummy = false;
 	pThis->m_aClients[ClientId].m_DDNetVersion = VERSION_NONE;
 	pThis->m_aClients[ClientId].m_GotDDNetVersionPacket = false;
@@ -1385,13 +1385,13 @@ void CServer::SendRconLogLine(int ClientId, const CLogMessage *pMessage)
 		for(int i = 0; i < MAX_CLIENTS; i++)
 		{
 			if(m_aClients[i].m_State != CClient::STATE_EMPTY && m_aClients[i].m_Authed >= AUTHED_ADMIN)
-				SendRconLine(i, pLine);
+				SendRconLine(i, m_aClients[i].m_ShowIps ? pLine : pLineWithoutIps);
 		}
 	}
 	else
 	{
 		if(m_aClients[ClientId].m_State != CClient::STATE_EMPTY)
-			SendRconLine(ClientId, pLine);
+			SendRconLine(ClientId, m_aClients[ClientId].m_ShowIps ? pLine : pLineWithoutIps);
 	}
 }
 
