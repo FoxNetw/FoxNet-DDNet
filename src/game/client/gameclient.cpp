@@ -2665,9 +2665,6 @@ void CGameClient::CClientData::Reset()
 	m_EmoticonStartFraction = 0;
 	m_EmoticonStartTick = -1;
 
-	// FoxNet
-	m_ExplosionGun = false;
-
 	m_Solo = false;
 	m_Jetpack = false;
 	m_CollisionDisabled = false;
