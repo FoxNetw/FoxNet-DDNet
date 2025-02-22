@@ -109,7 +109,7 @@ void CGameContext::ConNinja(IConsole::IResult *pResult, void *pUserData)
 
 	pChr->GiveWeapon(WEAPON_NINJA, false);
 	if(g_Config.m_SvCommandOutput)
-		pSelf->SendBroadcast("<< You have The Weapon: Ninja! >>", Victim);
+		pSelf->SendBroadcast("<< You have The Weapon: Ninja >>", Victim);
 }
 
 void CGameContext::ConUnNinja(IConsole::IResult *pResult, void *pUserData)
@@ -124,7 +124,7 @@ void CGameContext::ConUnNinja(IConsole::IResult *pResult, void *pUserData)
 
 	pChr->GiveWeapon(WEAPON_NINJA, true);
 	if(g_Config.m_SvCommandOutput)
-		pSelf->SendBroadcast("<< You lost The Weapon: Ninja! >>", Victim);
+		pSelf->SendBroadcast("<< You lost The Weapon: Ninja >>", Victim);
 }
 
 void CGameContext::ConEndlessHook(IConsole::IResult *pResult, void *pUserData)
@@ -141,7 +141,7 @@ void CGameContext::ConEndlessHook(IConsole::IResult *pResult, void *pUserData)
 		return;
 	pChr->SetEndlessHook(true);
 	if(g_Config.m_SvCommandOutput)
-		pSelf->SendBroadcast("<< You have Endless Hook! >>", Victim);
+		pSelf->SendBroadcast("<< You have Endless Hook >>", Victim);
 }
 
 void CGameContext::ConUnEndlessHook(IConsole::IResult *pResult, void *pUserData)
@@ -158,7 +158,7 @@ void CGameContext::ConUnEndlessHook(IConsole::IResult *pResult, void *pUserData)
 		return;
 	pChr->SetEndlessHook(false);
 	if(g_Config.m_SvCommandOutput)
-		pSelf->SendBroadcast("<< You lost Endless Hook! >>", Victim);
+		pSelf->SendBroadcast("<< You lost Endless Hook >>", Victim);
 }
 
 void CGameContext::ConSuper(IConsole::IResult *pResult, void *pUserData)
@@ -178,7 +178,7 @@ void CGameContext::ConSuper(IConsole::IResult *pResult, void *pUserData)
 		pChr->SetSuper(true);
 		pChr->UnFreeze();
 		if(g_Config.m_SvCommandOutput)
-			pSelf->SendBroadcast("<< You are now in Super! >>", Victim);
+			pSelf->SendBroadcast("<< You are now in Super >>", Victim);
 	}
 }
 
@@ -198,7 +198,7 @@ void CGameContext::ConUnSuper(IConsole::IResult *pResult, void *pUserData)
 	{
 		pChr->SetSuper(false);
 		if(g_Config.m_SvCommandOutput)
-			pSelf->SendBroadcast("<< You aren't in Super anymore! >>", Victim);
+			pSelf->SendBroadcast("<< You aren't in Super anymore >>", Victim);
 	}
 }
 
@@ -312,7 +312,7 @@ void CGameContext::ConDeep(IConsole::IResult *pResult, void *pUserData)
 
 	pChr->SetDeepFrozen(true);
 	if(g_Config.m_SvCommandOutput)
-		pSelf->SendChatTarget(Victim, "<< You have been bowling-balled! >>");
+		pSelf->SendBroadcast("<< You have been bowling-balled! >>", Victim);
 }
 
 void CGameContext::ConUnDeep(IConsole::IResult *pResult, void *pUserData)
@@ -331,7 +331,7 @@ void CGameContext::ConUnDeep(IConsole::IResult *pResult, void *pUserData)
 	pChr->SetDeepFrozen(false);
 	pChr->UnFreeze();
 	if(g_Config.m_SvCommandOutput)
-		pSelf->SendChatTarget(Victim, "<< You have been un-deep frozen! >>");
+		pSelf->SendBroadcast("<< You have been un-deep frozen! >>", Victim);
 }
 
 void CGameContext::ConLiveFreeze(IConsole::IResult *pResult, void *pUserData)
@@ -349,7 +349,7 @@ void CGameContext::ConLiveFreeze(IConsole::IResult *pResult, void *pUserData)
 
 	pChr->SetLiveFrozen(true);
 	if(g_Config.m_SvCommandOutput)
-		pSelf->SendChatTarget(Victim, "<< You have been live frozen! >>");
+		pSelf->SendBroadcast("<< You have been live frozen! >>", Victim);
 }
 
 void CGameContext::ConUnLiveFreeze(IConsole::IResult *pResult, void *pUserData)
@@ -367,7 +367,7 @@ void CGameContext::ConUnLiveFreeze(IConsole::IResult *pResult, void *pUserData)
 
 	pChr->SetLiveFrozen(false);
 	if(g_Config.m_SvCommandOutput)
-		pSelf->SendChatTarget(Victim, "<< You have been un-live frozen! >>");
+		pSelf->SendBroadcast("<< You have been un-live frozen! >>", Victim);
 }
 
 void CGameContext::ConShotgun(IConsole::IResult *pResult, void *pUserData)
@@ -382,7 +382,7 @@ void CGameContext::ConShotgun(IConsole::IResult *pResult, void *pUserData)
 
 	pChr->GiveWeapon(WEAPON_SHOTGUN, false);
 	if(g_Config.m_SvCommandOutput)
-		pSelf->SendChatTarget(Victim, "<< You have The Weapon: Shotgun! >>");
+		pSelf->SendBroadcast("<< You have The Weapon: Shotgun! >>", Victim);
 }
 
 void CGameContext::ConGrenade(IConsole::IResult *pResult, void *pUserData)
@@ -397,7 +397,7 @@ void CGameContext::ConGrenade(IConsole::IResult *pResult, void *pUserData)
 
 	pChr->GiveWeapon(WEAPON_GRENADE, false);
 	if(g_Config.m_SvCommandOutput)
-		pSelf->SendChatTarget(Victim, "<< You have The Weapon: Grenade! >>");
+		pSelf->SendBroadcast("<< You have The Weapon: Grenade! >>", Victim);
 }
 
 void CGameContext::ConLaser(IConsole::IResult *pResult, void *pUserData)
@@ -412,7 +412,7 @@ void CGameContext::ConLaser(IConsole::IResult *pResult, void *pUserData)
 
 	pChr->GiveWeapon(WEAPON_LASER, false);
 	if(g_Config.m_SvCommandOutput)
-		pSelf->SendChatTarget(Victim, "<< You have The Weapon: Laser! >>");
+		pSelf->SendBroadcast("<< You have The Weapon: Laser! >>", Victim);
 }
 
 void CGameContext::ConJetpack(IConsole::IResult *pResult, void *pUserData)
@@ -427,7 +427,7 @@ void CGameContext::ConJetpack(IConsole::IResult *pResult, void *pUserData)
 
 	pChr->SetJetpack(true);
 	if(g_Config.m_SvCommandOutput)
-		pSelf->SendChatTarget(Victim, "<< You have a Jetpack! >>");
+		pSelf->SendBroadcast("<< You have a Jetpack! >>", Victim);
 }
 
 void CGameContext::ConEndlessJump(IConsole::IResult *pResult, void *pUserData)
@@ -442,7 +442,7 @@ void CGameContext::ConEndlessJump(IConsole::IResult *pResult, void *pUserData)
 
 	pChr->SetEndlessJump(true);
 	if(g_Config.m_SvCommandOutput)
-		pSelf->SendChatTarget(Victim, "<< You have Infinite Jumps >>");
+		pSelf->SendBroadcast("<< You have Infinite Jumps >>", Victim);
 }
 
 void CGameContext::ConSetJumps(IConsole::IResult *pResult, void *pUserData)
@@ -465,7 +465,7 @@ void CGameContext::ConSetJumps(IConsole::IResult *pResult, void *pUserData)
 		return;
 
 	pChr->SetJumps(pResult->GetInteger(0));
-	pSelf->SendChatTarget(Victim, aBuf);
+	pSelf->SendBroadcast(aBuf, Victim);
 }
 
 void CGameContext::ConWeapons(IConsole::IResult *pResult, void *pUserData)
@@ -484,7 +484,7 @@ void CGameContext::ConWeapons(IConsole::IResult *pResult, void *pUserData)
 	pChr->GiveWeapon(WEAPON_LASER, false);
 	pChr->GiveWeapon(WEAPON_SHOTGUN, false);
 	if(g_Config.m_SvCommandOutput)
-		pSelf->SendChatTarget(Victim, "<< You have All Weapons! >>");
+		pSelf->SendBroadcast("<< You have All Weapons! >>", Victim);
 }
 
 void CGameContext::ConUnShotgun(IConsole::IResult *pResult, void *pUserData)
@@ -499,7 +499,7 @@ void CGameContext::ConUnShotgun(IConsole::IResult *pResult, void *pUserData)
 
 	pChr->GiveWeapon(WEAPON_SHOTGUN, true);
 	if(g_Config.m_SvCommandOutput)
-		pSelf->SendChatTarget(Victim, "<< You lost The Weapon: Shotgun! >>");
+		pSelf->SendBroadcast("<< You lost The Weapon: Shotgun! >>", Victim);
 }
 
 void CGameContext::ConUnGrenade(IConsole::IResult *pResult, void *pUserData)
@@ -514,7 +514,7 @@ void CGameContext::ConUnGrenade(IConsole::IResult *pResult, void *pUserData)
 
 	pChr->GiveWeapon(WEAPON_GRENADE, true);
 	if(g_Config.m_SvCommandOutput)
-		pSelf->SendChatTarget(Victim, "<< You lost The Weapon: Grenade! >>");
+		pSelf->SendBroadcast("<< You lost The Weapon: Grenade! >>", Victim);
 }
 
 void CGameContext::ConUnLaser(IConsole::IResult *pResult, void *pUserData)
@@ -529,7 +529,7 @@ void CGameContext::ConUnLaser(IConsole::IResult *pResult, void *pUserData)
 
 	pChr->GiveWeapon(WEAPON_LASER, true);
 	if(g_Config.m_SvCommandOutput)
-		pSelf->SendChatTarget(Victim, "<< You lost The Weapon: Laser! >>");
+		pSelf->SendBroadcast("<< You lost The Weapon: Laser! >>", Victim);
 }
 
 void CGameContext::ConUnJetpack(IConsole::IResult *pResult, void *pUserData)
@@ -544,7 +544,7 @@ void CGameContext::ConUnJetpack(IConsole::IResult *pResult, void *pUserData)
 
 	pChr->SetJetpack(false);
 	if(g_Config.m_SvCommandOutput)
-		pSelf->SendChatTarget(Victim, "<< You lost Jetpack! >>");
+		pSelf->SendBroadcast("<< You lost Jetpack! >>", Victim);
 }
 
 void CGameContext::ConUnEndlessJump(IConsole::IResult *pResult, void *pUserData)
@@ -559,7 +559,7 @@ void CGameContext::ConUnEndlessJump(IConsole::IResult *pResult, void *pUserData)
 
 	pChr->SetEndlessJump(false);
 	if(g_Config.m_SvCommandOutput)
-		pSelf->SendChatTarget(Victim, "<< You lost Endless Jumps! >>");
+		pSelf->SendBroadcast("<< You lost Endless Jumps! >>", Victim);
 }
 
 void CGameContext::ConUnWeapons(IConsole::IResult *pResult, void *pUserData)
@@ -576,7 +576,7 @@ void CGameContext::ConUnWeapons(IConsole::IResult *pResult, void *pUserData)
 	pChr->GiveWeapon(WEAPON_LASER, true);
 	pChr->GiveWeapon(WEAPON_SHOTGUN, true);
 	if(g_Config.m_SvCommandOutput)
-		pSelf->SendChatTarget(Victim, "<< You have lost all Weapons! >>");
+		pSelf->SendBroadcast("<< You have lost all Weapons! >>", Victim);
 }
 
 void CGameContext::ConRemoveWeapon(IConsole::IResult *pResult, void *pUserData)
@@ -623,7 +623,7 @@ void CGameContext::ConRemoveWeapon(IConsole::IResult *pResult, void *pUserData)
 	else
 		pChr->GiveWeapon(pResult->GetInteger(0), true);
 	if(g_Config.m_SvCommandOutput)
-		pSelf->SendChatTarget(Victim, aBuf);
+		pSelf->SendBroadcast(aBuf, Victim);
 }
 
 void CGameContext::ConAddWeapon(IConsole::IResult *pResult, void *pUserData)
@@ -671,7 +671,7 @@ void CGameContext::ConAddWeapon(IConsole::IResult *pResult, void *pUserData)
 		pChr->GiveWeapon(pResult->GetInteger(0), false);
 
 	if(g_Config.m_SvCommandOutput)
-		pSelf->SendChatTarget(Victim, aBuf);
+		pSelf->SendBroadcast(aBuf, Victim);
 }
 
 void CGameContext::ModifyWeapons(IConsole::IResult *pResult, void *pUserData,
@@ -682,7 +682,7 @@ void CGameContext::ModifyWeapons(IConsole::IResult *pResult, void *pUserData,
 	if(!pChr)
 		return;
 
-	if(clamp(Weapon, -1, NUM_WEAPONS - 1) != Weapon)
+	if(clamp(Weapon, -1, NUM_OTHER_WEAPONS - 1) != Weapon)
 	{
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info",
 			"invalid weapon id");
@@ -1346,4 +1346,34 @@ void CGameContext::ConUnExplosionGun(IConsole::IResult *pResult, void *pUserData
 	pChr->SetExplosionGun(false);
 	if(g_Config.m_SvCommandOutput)
 		pSelf->SendBroadcast("<< You lost Explosion Gun! >>", Victim);
+}
+
+void CGameContext::ConTelekinesis(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->NumArguments() > 1 ? pResult->m_ClientId : pResult->GetVictim();
+
+	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+
+	pChr->GiveWeapon(WEAPON_TELEKINESIS);
+	if(g_Config.m_SvCommandOutput)
+		pSelf->SendBroadcast("<< You have Telekinesis! \n Use your scrollwheel to select it >>", Victim);
+}
+
+void CGameContext::ConUnTelekinesis(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->NumArguments() > 1 ? pResult->m_ClientId : pResult->GetVictim();
+
+	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+
+	pChr->GiveWeapon(WEAPON_TELEKINESIS, true);
+	if(g_Config.m_SvCommandOutput)
+		pSelf->SendBroadcast("<< You lost Telekinesis >>", Victim);
 }

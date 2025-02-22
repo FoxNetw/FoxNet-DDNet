@@ -34,7 +34,14 @@ public:
 	CCharacter(CGameWorld *pWorld, CNetObj_PlayerInput LastInput);
 
 	// FoxNet
+	void FoxNetTick();
+	void UnsoloAfterSpawn();
+
 	void SetExplosionGun(bool Active);
+
+	// Telekinesis
+	CEntity *m_pTelekinesisEntity;
+	vec2 GetCursorPos(int ClientId);
 
 	int m_HeadItem;
 	void HeadItem(int Type = 1, int ClientId = -1);

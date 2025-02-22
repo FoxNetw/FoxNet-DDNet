@@ -14,6 +14,7 @@
 
 #include <game/gamecore.h>
 #include <game/teamscore.h>
+#include <game/mapitems.h>
 
 MACRO_ALLOC_POOL_ID_IMPL(CPlayer, MAX_CLIENTS)
 
@@ -276,42 +277,7 @@ void CPlayer::Tick()
 			GameServer()->SendEmoticon(GetCid(), EMOTICON_GHOST, -1);
 		}
 	}
-	// FoxNet
-	UnsoloAfterSpawn();
 }
-
-void CPlayer::UnsoloAfterSpawn()
-{
-	auto Character = GameServer()->GetPlayerChar(m_ClientId);
-	int Team = Character->Team();
-	if(g_Config.m_SvSoloOnSpawn && Team != TEAM_SPECTATORS && !m_Spawning)
-	{
-		int TileFIndex = Character->m_TileFIndex;
-		int TileIndex = Character->m_TileIndex;
-
-		if(TileFIndex == 21 || TileIndex == 21)
-		{
-			m_SpawnSoloShowOthers = false;
-			m_ShouldSolo = false;
-			m_SoloTime = -1;
-			Character->HeadItem(0, m_ClientId);
-		}
-
-		if(m_ShouldSolo)
-		{
-			if(m_SoloTime + Server()->TickSpeed() * g_Config.m_SvSoloOnSpawnSec < Server()->Tick() - Server()->TickSpeed())
-			{
-				m_SpawnSoloShowOthers = false;
-				m_ShouldSolo = false;
-				Character->HeadItem(0, m_ClientId);
-				Character->SetSolo(false);
-			}
-			else if(!Character->m_HeadItem)
-				Character->HeadItem(POWERUP_ARMOR, m_ClientId);
-		}
-	}
-}
-
 
 void CPlayer::PostTick()
 {

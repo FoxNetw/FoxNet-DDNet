@@ -61,6 +61,7 @@ float CTuningParams::GetWeaponFireDelay(int Weapon) const
 	case WEAPON_GRENADE: return (float)m_GrenadeFireDelay / 1000.0f;
 	case WEAPON_LASER: return (float)m_LaserFireDelay / 1000.0f;
 	case WEAPON_NINJA: return (float)m_NinjaFireDelay / 1000.0f;
+	case WEAPON_TELEKINESIS: return (float)m_TelekinesisFireDelay / 1000.0f;
 	default: dbg_assert(false, "invalid weapon"); return 0.0f; // this value should not be reached
 	}
 }
@@ -638,9 +639,6 @@ void CCharacterCore::Read(const CNetObj_CharacterCore *pObjCore)
 
 void CCharacterCore::ReadDDNet(const CNetObj_DDNetCharacter *pObjDDNet)
 {
-	// FoxNet
-	m_ExplosionGun = pObjDDNet->m_Flags & CHARACTERFLAG_EXPLOSIONGUN;
-
 	// Collision
 	m_Solo = pObjDDNet->m_Flags & CHARACTERFLAG_SOLO;
 	m_Jetpack = pObjDDNet->m_Flags & CHARACTERFLAG_JETPACK;
@@ -693,6 +691,9 @@ void CCharacterCore::ReadDDNet(const CNetObj_DDNetCharacter *pObjDDNet)
 		m_FreezeStart = pObjDDNet->m_FreezeStart;
 		m_IsInFreeze = pObjDDNet->m_Flags & CHARACTERFLAG_IN_FREEZE;
 	}
+	// FoxNet
+	if(!(pObjDDNet->m_Flags & CHARACTERFLAG_TELEKINESIS))
+		m_ExplosionGun = pObjDDNet->m_Flags & CHARACTERFLAG_EXPLOSIONGUN;
 }
 
 void CCharacterCore::Quantize()

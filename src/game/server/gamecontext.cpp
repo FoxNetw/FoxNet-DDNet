@@ -265,7 +265,7 @@ void CGameContext::FillAntibot(CAntibotRoundData *pData)
 void CGameContext::CreateDamageInd(vec2 Pos, float Angle, int Amount, CClientMask Mask)
 {
 	float a = 3 * pi / 2 + Angle;
-	//float a = get_angle(dir);
+	// float a = get_angle(dir);
 	float s = a - pi / 3;
 	float e = a + pi / 3;
 	for(int i = 0; i < Amount; i++)
@@ -1017,7 +1017,6 @@ void CGameContext::OnPreTickTeehistorian()
 
 void CGameContext::ChangeSpeedMode()
 {
-	// check tuning;
 	if(g_Config.m_SvSpeed == 1)
 	{
 		Tuning()->m_GroundControlSpeed = 10.0f;
@@ -1125,6 +1124,9 @@ void CGameContext::ChangeSpeedMode()
 
 void CGameContext::OnTick()
 {
+	// check tuning
+	CheckPureTuning();
+
 	static int OldSpeed = g_Config.m_SvSpeed;
 	if(g_Config.m_SvSpeed != OldSpeed)
 	{
@@ -1132,16 +1134,12 @@ void CGameContext::OnTick()
 		OldSpeed = g_Config.m_SvSpeed;
 	}
 
-
-	// check tuning
-	CheckPureTuning();
-
 	static int64_t BanSaveDelay = Server()->Tick() * Server()->TickSpeed() * 30;
 	if(BanSaveDelay < Server()->Tick())
 	{
 		static bool ExecBans = false;
 		static int64_t ExecSaveDelay = Server()->Tick() * Server()->TickSpeed(); // Might be needed if the File Gets big
-		
+
 		if(Storage()->FileExists("Bans.cfg", IStorage::TYPE_ALL) && !ExecBans)
 		{
 			Console()->ExecuteLine("exec  \"Bans.cfg\"", -1);
@@ -1183,7 +1181,7 @@ void CGameContext::OnTick()
 
 	UpdatePlayerMaps();
 
-	//if(world.paused) // make sure that the game object always updates
+	// if(world.paused) // make sure that the game object always updates
 	m_pController->Tick();
 
 	for(int i = 0; i < MAX_CLIENTS; i++)
@@ -1862,7 +1860,8 @@ void CGameContext::OnClientConnected(int ClientId, void *pData)
 	m_apPlayers[ClientId]->m_LastWhisperTo = LastWhisperTo;
 	NextUniqueClientId += 1;
 
-	//SendMotd(ClientId);
+	if(g_Config.m_SvSendMotd)
+		SendMotd(ClientId);
 	SendSettings(ClientId);
 
 	Server()->ExpireServerInfo();
@@ -2147,7 +2146,8 @@ void *CGameContext::PreProcessMsg(int *pMsgId, CUnpacker *pUnpacker, int ClientI
 			if(pMsg7->m_Force)
 			{
 				str_format(s_aRawMsg, sizeof(s_aRawMsg), "force_vote \"%s\" \"%s\" \"%s\"", pMsg7->m_pType, pMsg7->m_pValue, pMsg7->m_pReason);
-				Console()->SetAccessLevel(Authed == AUTHED_ADMIN ? IConsole::ACCESS_LEVEL_ADMIN : Authed == AUTHED_MOD ? IConsole::ACCESS_LEVEL_MOD : IConsole::ACCESS_LEVEL_HELPER);
+				Console()->SetAccessLevel(Authed == AUTHED_ADMIN ? IConsole::ACCESS_LEVEL_ADMIN : Authed == AUTHED_MOD ? IConsole::ACCESS_LEVEL_MOD :
+																	 IConsole::ACCESS_LEVEL_HELPER);
 				Console()->ExecuteLine(s_aRawMsg, ClientId, false);
 				Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_ADMIN);
 				return nullptr;
@@ -2357,7 +2357,8 @@ void CGameContext::OnSayNetMessage(const CNetMsg_Cl_Say *pMsg, int ClientId, con
 			Console()->SetFlagMask(CFGFLAG_CHAT);
 			int Authed = Server()->GetAuthedState(ClientId);
 			if(Authed)
-				Console()->SetAccessLevel(Authed == AUTHED_ADMIN ? IConsole::ACCESS_LEVEL_ADMIN : Authed == AUTHED_MOD ? IConsole::ACCESS_LEVEL_MOD : IConsole::ACCESS_LEVEL_HELPER);
+				Console()->SetAccessLevel(Authed == AUTHED_ADMIN ? IConsole::ACCESS_LEVEL_ADMIN : Authed == AUTHED_MOD ? IConsole::ACCESS_LEVEL_MOD :
+																	 IConsole::ACCESS_LEVEL_HELPER);
 			else
 				Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_USER);
 
@@ -3450,9 +3451,8 @@ void CGameContext::AddVote(const char *pDescription, const char *pCommand)
 		if(str_comp_nocase(pDescription, pOption->m_aDescription) == 0)
 		{
 			char aBuf[256];
-			str_format(aBuf, sizeof(aBuf), "option '%s' already exists", pDescription);
+			str_format(aBuf, sizeof(aBuf), "adding duplicate Option '%s' ", pDescription);
 			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
-			return;
 		}
 		pOption = pOption->m_pNext;
 	}
@@ -3903,6 +3903,9 @@ void CGameContext::RegisterDDRaceCommands()
 	// FoxNet
 	Console()->Register("explosiongun", "?v[id]", CFGFLAG_SERVER, ConExplosionGun, this, "Gives you explosion gun");
 	Console()->Register("headitem", "i[type] ?v[id]", CFGFLAG_SERVER, ConHeadItem, this, "Toggles an entity ontop of a player (id)");
+
+	Console()->Register("telekinesis", "?v[id]", CFGFLAG_SERVER, ConTelekinesis, this, "Gives telekinses to player (id)");
+	Console()->Register("untelekinesis", "?v[id]", CFGFLAG_SERVER, ConUnTelekinesis, this, "Removes telekinses to player (id)");
 }
 
 void CGameContext::RegisterChatCommands()
@@ -4655,7 +4658,7 @@ void CGameContext::SendRecord(int ClientId)
 	CNetMsg_Sv_Record Msg;
 	CNetMsg_Sv_RecordLegacy MsgLegacy;
 	MsgLegacy.m_PlayerTimeBest = Msg.m_PlayerTimeBest = Score()->PlayerData(ClientId)->m_BestTime * 100.0f;
-	MsgLegacy.m_ServerTimeBest = Msg.m_ServerTimeBest = m_pController->m_CurrentRecord * 100.0f; //TODO: finish this
+	MsgLegacy.m_ServerTimeBest = Msg.m_ServerTimeBest = m_pController->m_CurrentRecord * 100.0f; // TODO: finish this
 	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, ClientId);
 	if(!Server()->IsSixup(ClientId) && GetClientVersion(ClientId) < VERSION_DDNET_MSG_LEGACY)
 	{
@@ -4847,8 +4850,6 @@ void CGameContext::WhisperId(int ClientId, int VictimId, const char *pMessage)
 	dbg_assert(CheckClientId2(VictimId) && m_apPlayers[VictimId] != nullptr, "VictimId invalid");
 
 	m_apPlayers[ClientId]->m_LastWhisperTo = VictimId;
-
-	const char Name = *Server()->ClientName(ClientId);
 
 	char aCensoredMessage[256];
 	CensorMessage(aCensoredMessage, pMessage, sizeof(aCensoredMessage));
@@ -5165,7 +5166,8 @@ void CGameContext::OnUpdatePlayerServerInfo(CJsonStringWriter *pJSonWriter, int 
 	pJSonWriter->WriteAttribute("afk");
 	pJSonWriter->WriteBoolValue(m_apPlayers[Id]->IsAfk());
 
-	const int Team = m_pController->IsTeamPlay() ? m_apPlayers[Id]->GetTeam() : m_apPlayers[Id]->GetTeam() == TEAM_SPECTATORS ? -1 : GetDDRaceTeam(Id);
+	const int Team = m_pController->IsTeamPlay() ? m_apPlayers[Id]->GetTeam() : m_apPlayers[Id]->GetTeam() == TEAM_SPECTATORS ? -1 :
+																    GetDDRaceTeam(Id);
 
 	pJSonWriter->WriteAttribute("team");
 	pJSonWriter->WriteIntValue(Team);
@@ -5194,24 +5196,24 @@ bool CGameContext::PracticeByDefault() const
 	return g_Config.m_SvPracticeByDefault && g_Config.m_SvTestingCommands;
 }
 
-bool CGameContext::CheckSpam(int ClientId,const char *pMsg) const // Thx to Pointer31 for making this - MODIFIED
+bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Pointer31 for making this - MODIFIED
 {
 	int count = 0; // amount of flagged strings (some strings may count more than others)
 
 	int BanAmount = 0;
-	char BanReason[512] = "Refrain from using Fancy Alphabets.";
+	char BanReason[512];
 
 	// fancy alphabet detection
 	int fancy_count = 0;
-	const char* alphabet_fancy[] = 
-	{
+	const char *alphabet_fancy[] =
+		{
 		"𝕢", "𝕨", "𝕖", "𝕣", "𝕥", "𝕪", "𝕦", "𝕚", "𝕠", "𝕡", "𝕒", "𝕤", "𝕕", "𝕗", "𝕘", "𝕙", "𝕛", "𝕜", "𝕝", "𝕫", "𝕩", "	", "𝕧", "𝕓", "𝕟", "𝕞",
 		"ｑ", "ｗ", "ｅ", "ｒ", "ｔ", "ｙ", "ｕ", "ｉ", "ｏ", "ｐ", "ａ", "ｓ", "ｄ", "ｆ", "ｇ", "ｈ", "ｊ", "ｋ", "ｌ", "ｚ", "ｘ", "ｃ", "ｖ", "ｂ", "ｎ", "ｍ",
 		"🆀", "🆆", "🅴", "🆁", "🆃", "🆈", "🆄", "🅸", "🅾", "🅿", "🅰", "🆂", "🅳", "🅵", "🅶", "🅷", "🅹", "🅺", "🅻", "🆉", "🆇", "🅲", "🆅", "🅱", "🅽", "🅼",
 		"🅀", "🅆", "🄴", "🅁", "🅃", "🅈", "🅄", "🄸", "🄾", "🄿", "🄰", "🅂", "🄳", "🄵", "🄶", "🄷", "🄹", "🄺", "🄻", "🅉", "🅇", "🄲", "🅅", "🄱", "🄽", "🄼",
 		"ⓠ", "ⓦ", "ⓔ", "ⓡ", "ⓣ", "ⓨ", "ⓤ", "ⓘ", "ⓞ", "ⓟ", "ⓐ", "ⓢ", "ⓓ", "ⓕ", "ⓖ", "ⓗ", "ⓙ", "ⓚ", "ⓛ", "ⓩ", "ⓧ", "ⓒ", "ⓥ", "ⓑ", "ⓝ", "ⓜ",
-	};
-	for(int i = 0; i < 130; i++) 
+		};
+	for(int i = 0; i < 130; i++)
 	{
 		if(str_find_nocase(pMsg, alphabet_fancy[i]))
 			fancy_count++;
@@ -5219,12 +5221,13 @@ bool CGameContext::CheckSpam(int ClientId,const char *pMsg) const // Thx to Poin
 	if(fancy_count > 3)
 	{
 		count += 2;
+		str_copy(BanReason, "Refrain from using Fancy Alphabets");
 		BanAmount = 120;
 	}
 
 	// general needles to disallow
 	const char *disallowedStrings[] = {"krx", "discord.gg", "http", "free", "bot client", "cheat client"};
-	for(int i = 0; i < 2; i++) 
+	for(int i = 0; i < 2; i++)
 	{
 		if(str_find_nocase(pMsg, disallowedStrings[i]))
 		{
@@ -5233,7 +5236,7 @@ bool CGameContext::CheckSpam(int ClientId,const char *pMsg) const // Thx to Poin
 			str_copy(BanReason, "Don't Advertise Cheat Clients on this Server");
 		}
 	}
-	
+
 	// anti whisper ad bot
 	if((str_find_nocase(pMsg, "/whisper") || str_find_nocase(pMsg, "/w")) && str_find_nocase(pMsg, "bro, check out this client"))
 	{
@@ -5242,11 +5245,46 @@ bool CGameContext::CheckSpam(int ClientId,const char *pMsg) const // Thx to Poin
 		str_copy(BanReason, "KRX");
 	}
 
-	if(count >= 2) 
+	if(count >= 2)
 	{
-		Server()->Ban(ClientId, 60, BanReason, BanReason);
+		Server()->Ban(ClientId, BanAmount * 60, BanReason, BanReason);
 		return true;
 	}
 	else
 		return false;
+}
+
+void CGameContext::UnsetTelekinesis(CEntity *pEntity)
+{
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		CCharacter *pChr = GetPlayerChar(i);
+		if(pChr && pChr->m_pTelekinesisEntity == pEntity)
+		{
+			pChr->m_pTelekinesisEntity = 0;
+			break; // can break here, every entity can only be picked by one player using telekinesis at the time
+		}
+	}
+}
+
+int CGameContext::GetWeaponType(int Weapon)
+{
+	switch(Weapon)
+	{
+	case WEAPON_HAMMER:
+		return WEAPON_HAMMER;
+	case WEAPON_GUN:
+		return WEAPON_GUN;
+	case WEAPON_SHOTGUN:
+		return WEAPON_SHOTGUN;
+	case WEAPON_GRENADE:
+		return WEAPON_GRENADE;
+	case WEAPON_LASER:
+		return WEAPON_LASER;
+	case WEAPON_NINJA:
+		return WEAPON_NINJA;
+	case WEAPON_TELEKINESIS:
+		return WEAPON_GUN;
+	}
+	return Weapon;
 }

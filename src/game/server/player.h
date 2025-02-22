@@ -237,12 +237,10 @@ public:
 
 	CSaveTee m_LastTeleTee;
 
-private:
-	void UnsoloAfterSpawn();
+	// FoxNet
+public:
 	bool m_ShouldSolo;
 	int64_t m_SoloTime;
-
-public:
 	bool m_SpawnSoloShowOthers;
 };
 

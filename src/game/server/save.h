@@ -76,7 +76,7 @@ private:
 		int m_Ammo;
 		int m_Ammocost;
 		int m_Got;
-	} m_aWeapons[NUM_WEAPONS];
+	} m_aWeapons[NUM_OTHER_WEAPONS];
 
 	// ninja
 	struct

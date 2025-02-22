@@ -48,6 +48,7 @@ def gen_network_header():
 	print("#define GAME_GENERATED_PROTOCOL_H")
 	print("class CUnpacker;")
 	print("#include <engine/message.h>")
+	print("#include <engine/shared/extra_weapons.h>")
 	print(network.RawHeader)
 
 	for e in network.Enums:

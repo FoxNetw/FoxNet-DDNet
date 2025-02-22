@@ -2074,6 +2074,7 @@ set_src(ENGINE_SHARED GLOB_RECURSE src/engine/shared
   econ.cpp
   econ.h
   engine.cpp
+  extra_weapons.h
   fifo.cpp
   fifo.h
   filecollection.cpp

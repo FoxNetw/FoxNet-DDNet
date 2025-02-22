@@ -602,14 +602,21 @@ public:
 	void ResetTuning();
 
 private: // FoxNet
-
-	void ChangeSpeedMode();
-	bool CheckSpam(int ClientId, const char *pLine) const;
-
 	static void ConHeadItem(IConsole::IResult *pResult, void *pUserData);
 
 	static void ConExplosionGun(IConsole::IResult *pResult, void *pUserData);
 	static void ConUnExplosionGun(IConsole::IResult *pResult, void *pUserData);
+
+	static void ConTelekinesis(IConsole::IResult *pResult, void *pUserData);
+	static void ConUnTelekinesis(IConsole::IResult *pResult, void *pUserData);
+
+	void ChangeSpeedMode();
+	bool CheckSpam(int ClientId, const char *pLine) const;
+
+	void UnsetTelekinesis(CEntity *pEntity);
+
+public:
+	int GetWeaponType(int Weapon);
 
 };
 
