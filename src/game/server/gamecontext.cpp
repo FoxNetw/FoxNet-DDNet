@@ -5201,7 +5201,6 @@ bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Poi
 	int count = 0; // amount of flagged strings (some strings may count more than others)
 
 	int BanAmount = 0;
-	const char *BanReason;
 
 	// fancy alphabet detection
 	int fancy_count = 0;
