@@ -484,6 +484,7 @@ void CServer::Kick(int ClientId, const char *pReason)
 void CServer::Ban(int ClientId, int Seconds, const char *pReason, bool VerbatimReason)
 {
 	m_NetServer.NetBan()->BanAddr(ClientAddr(ClientId), Seconds, pReason, VerbatimReason);
+	Console()->ExecuteLine("bans_save \"Bans.cfg\"", -1);
 }
 
 void CServer::ReconnectClient(int ClientId)
@@ -567,7 +568,6 @@ int CServer::Init()
 
 	m_AnnouncementLastLine = -1;
 	mem_zero(m_aPrevStates, sizeof(m_aPrevStates));
-
 	return 0;
 }
 

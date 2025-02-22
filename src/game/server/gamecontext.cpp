@@ -1020,6 +1020,29 @@ void CGameContext::OnTick()
 	// check tuning
 	CheckPureTuning();
 
+	static int64_t BanSaveDelay = Server()->Tick() * Server()->TickSpeed() * 30;
+	if(BanSaveDelay < Server()->Tick())
+	{
+		static bool ExecBans = false;
+		static int64_t ExecSaveDelay = Server()->Tick() * Server()->TickSpeed(); // Might be needed if the File Gets big
+		
+		if(Storage()->FileExists("Bans.cfg", IStorage::TYPE_ALL) && !ExecBans)
+		{
+			Console()->ExecuteLine("exec  \"Bans.cfg\"", -1);
+			ExecBans = true;
+		}
+
+		if(ExecSaveDelay < Server()->Tick())
+		{
+			Console()->ExecuteLine("bans_save \"Bans.cfg\"", -1);
+			BanSaveDelay = Server()->Tick() * Server()->TickSpeed() * 1800; // 30 minutes
+			ExecBans = false;
+
+			// Info Message
+			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "Saved Bans");
+		}
+	}
+
 	if(m_TeeHistorianActive)
 	{
 		int Error = aio_error(m_pTeeHistorianFile);
@@ -2133,6 +2156,9 @@ void CGameContext::OnMessage(int MsgId, CUnpacker *pUnpacker, int ClientId)
 
 void CGameContext::OnSayNetMessage(const CNetMsg_Cl_Say *pMsg, int ClientId, const CUnpacker *pUnpacker)
 {
+	if(CheckSpam(ClientId, pMsg->m_pMessage))
+		return;
+
 	CPlayer *pPlayer = m_apPlayers[ClientId];
 	bool Check = !pPlayer->m_NotEligibleForFinish && pPlayer->m_EligibleForFinishCheck + 10 * time_freq() >= time_get();
 	if(Check && str_comp(pMsg->m_pMessage, "xd sure chillerbot.png is lyfe") == 0 && pMsg->m_Team == 0)
@@ -4706,6 +4732,8 @@ void CGameContext::WhisperId(int ClientId, int VictimId, const char *pMessage)
 
 	m_apPlayers[ClientId]->m_LastWhisperTo = VictimId;
 
+	const char Name = *Server()->ClientName(ClientId);
+
 	char aCensoredMessage[256];
 	CensorMessage(aCensoredMessage, pMessage, sizeof(aCensoredMessage));
 
@@ -4769,6 +4797,12 @@ void CGameContext::WhisperId(int ClientId, int VictimId, const char *pMessage)
 	{
 		str_format(aBuf, sizeof(aBuf), "[← %s] %s", Server()->ClientName(ClientId), aCensoredMessage);
 		SendChatTarget(VictimId, aBuf);
+	}
+	if(g_Config.m_SvWhisperLog)
+	{
+		char WhisperLog[256];
+		str_format(WhisperLog, sizeof(WhisperLog), "[%s → %s] %s", Server()->ClientName(ClientId), Server()->ClientName(VictimId), aCensoredMessage);
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "[Whisper]", WhisperLog);
 	}
 }
 
@@ -5042,4 +5076,61 @@ void CGameContext::ReadCensorList()
 bool CGameContext::PracticeByDefault() const
 {
 	return g_Config.m_SvPracticeByDefault && g_Config.m_SvTestingCommands;
+}
+
+bool CGameContext::CheckSpam(int ClientId,const char *pMsg) const // Thx to Pointer31 for making this - MODIFIED
+{
+	int count = 0; // amount of flagged strings (some strings may count more than others)
+
+	int BanAmount = 0;
+	char BanReason[512] = "Refrain from using Fancy Alphabets.";
+
+	// fancy alphabet detection
+	int fancy_count = 0;
+	const char* alphabet_fancy[] = 
+	{
+		"𝕢", "𝕨", "𝕖", "𝕣", "𝕥", "𝕪", "𝕦", "𝕚", "𝕠", "𝕡", "𝕒", "𝕤", "𝕕", "𝕗", "𝕘", "𝕙", "𝕛", "𝕜", "𝕝", "𝕫", "𝕩", "	", "𝕧", "𝕓", "𝕟", "𝕞",
+		"ｑ", "ｗ", "ｅ", "ｒ", "ｔ", "ｙ", "ｕ", "ｉ", "ｏ", "ｐ", "ａ", "ｓ", "ｄ", "ｆ", "ｇ", "ｈ", "ｊ", "ｋ", "ｌ", "ｚ", "ｘ", "ｃ", "ｖ", "ｂ", "ｎ", "ｍ",
+		"🆀", "🆆", "🅴", "🆁", "🆃", "🆈", "🆄", "🅸", "🅾", "🅿", "🅰", "🆂", "🅳", "🅵", "🅶", "🅷", "🅹", "🅺", "🅻", "🆉", "🆇", "🅲", "🆅", "🅱", "🅽", "🅼",
+		"🅀", "🅆", "🄴", "🅁", "🅃", "🅈", "🅄", "🄸", "🄾", "🄿", "🄰", "🅂", "🄳", "🄵", "🄶", "🄷", "🄹", "🄺", "🄻", "🅉", "🅇", "🄲", "🅅", "🄱", "🄽", "🄼",
+		"ⓠ", "ⓦ", "ⓔ", "ⓡ", "ⓣ", "ⓨ", "ⓤ", "ⓘ", "ⓞ", "ⓟ", "ⓐ", "ⓢ", "ⓓ", "ⓕ", "ⓖ", "ⓗ", "ⓙ", "ⓚ", "ⓛ", "ⓩ", "ⓧ", "ⓒ", "ⓥ", "ⓑ", "ⓝ", "ⓜ",
+	};
+	for(int i = 0; i < 130; i++) 
+	{
+		if(str_find_nocase(pMsg, alphabet_fancy[i]))
+			fancy_count++;
+	}
+	if(fancy_count > 3)
+	{
+		count += 2;
+		BanAmount = 120;
+	}
+
+	// general needles to disallow
+	const char *disallowedStrings[] = {"krx", "discord.gg", "http", "free", "bot client", "cheat client"};
+	for(int i = 0; i < 2; i++) 
+	{
+		if(str_find_nocase(pMsg, disallowedStrings[i]))
+		{
+			count++;
+			BanAmount = 360;
+			str_copy(BanReason, "Don't Advertise Cheat Clients on this Server");
+		}
+	}
+	
+	// anti whisper ad bot
+	if((str_find_nocase(pMsg, "/whisper") || str_find_nocase(pMsg, "/w")) && str_find_nocase(pMsg, "bro, check out this client"))
+	{
+		count += 2;
+		BanAmount = 1000;
+		str_copy(BanReason, "KRX");
+	}
+
+	if(count >= 2) 
+	{
+		Server()->Ban(ClientId, 60, BanReason, BanReason);
+		return true;
+	}
+	else
+		return false;
 }

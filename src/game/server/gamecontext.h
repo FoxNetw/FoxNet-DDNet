@@ -607,6 +607,8 @@ private: // FoxNet
 	static void ConExplosionGun(IConsole::IResult *pResult, void *pUserData);
 	static void ConUnExplosionGun(IConsole::IResult *pResult, void *pUserData);
 
+	bool CheckSpam(int ClientId, const char *pLine) const;
+
 };
 
 #endif
