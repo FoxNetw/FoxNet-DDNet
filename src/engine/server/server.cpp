@@ -4130,6 +4130,11 @@ void CServer::RegisterCommands()
 #if defined(CONF_FAMILY_UNIX)
 	Console()->Chain("sv_conn_logging_server", ConchainConnLoggingServerChange, this);
 #endif
+	// FoxNet
+
+#if !defined(CONF_PLATFORM_ANDROID)
+	Console()->Register("restart_server", "", CFGFLAG_SERVER, ConRestartServer, this, "Restarts the Server (testing purposes)");
+#endif
 
 	// register console commands in sub parts
 	m_ServerBan.InitServerBan(Console(), Storage(), this);
@@ -4318,3 +4323,22 @@ void CServer::SetLoggers(std::shared_ptr<ILogger> &&pFileLogger, std::shared_ptr
 	m_pFileLogger = pFileLogger;
 	m_pStdoutLogger = pStdoutLogger;
 }
+
+// FoxNet
+#if !defined(CONF_PLATFORM_ANDROID) // Too lazy to add this to android
+void CServer::ConRestartServer(IConsole::IResult *pResult, void *pUserData)
+{
+	CServer *pSelf = (CServer *)pUserData;
+
+	char aRestartBinaryPath[IO_MAX_PATH_LENGTH];
+#if defined(CONF_FAMILY_WINDOWS)
+	pSelf->Storage()->GetBinaryPath("DDNet-Server.exe", aRestartBinaryPath, sizeof(aRestartBinaryPath));
+#else
+	pSelf->Storage()->GetBinaryPath("DDNet-Server", aRestartBinaryPath, sizeof(aRestartBinaryPath));
+#endif
+
+	pSelf->m_RunServer = STOPPING;
+	str_copy(pSelf->m_aShutdownReason, "Restarting Server");
+	shell_execute(aRestartBinaryPath, EShellExecuteWindowState::FOREGROUND);
+}
+#endif
