@@ -1134,22 +1134,23 @@ void CGameContext::OnTick()
 		OldSpeed = g_Config.m_SvSpeed;
 	}
 
-	static int64_t BanSaveDelay = Server()->Tick() * Server()->TickSpeed() * 30;
+	static int64_t BanSaveDelay = Server()->Tick() * Server()->TickSpeed() * 5;
 	if(BanSaveDelay < Server()->Tick())
 	{
 		static bool ExecBans = false;
-		static int64_t ExecSaveDelay = Server()->Tick() * Server()->TickSpeed(); // Might be needed if the File Gets big
+		static int64_t ExecSaveDelay = Server()->Tick() + Server()->TickSpeed(); // Might be needed if the File Gets big
 
 		if(Storage()->FileExists("Bans.cfg", IStorage::TYPE_ALL) && !ExecBans)
 		{
 			Console()->ExecuteLine("exec  \"Bans.cfg\"", -1);
+			ExecSaveDelay = Server()->Tick() + Server()->TickSpeed();
 			ExecBans = true;
 		}
 
-		if(ExecSaveDelay < Server()->Tick())
+		if(ExecSaveDelay < Server()->Tick() && ExecBans)
 		{
 			Console()->ExecuteLine("bans_save \"Bans.cfg\"", -1);
-			BanSaveDelay = Server()->Tick() * Server()->TickSpeed() * 1800; // 30 minutes
+			BanSaveDelay = Server()->Tick() + Server()->TickSpeed() * 1800; // 30 minutes
 			ExecBans = false;
 
 			// Info Message
