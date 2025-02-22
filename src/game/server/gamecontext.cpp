@@ -5201,7 +5201,7 @@ bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Poi
 	int count = 0; // amount of flagged strings (some strings may count more than others)
 
 	int BanAmount = 0;
-	char BanReason[512];
+	char *BanReason;
 
 	// fancy alphabet detection
 	int fancy_count = 0;
@@ -5221,7 +5221,7 @@ bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Poi
 	if(fancy_count > 3)
 	{
 		count += 2;
-		str_copy(BanReason, "Refrain from using Fancy Alphabets");
+		BanReason = "Refrain from using Fancy Alphabets";
 		BanAmount = 120;
 	}
 
@@ -5233,7 +5233,7 @@ bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Poi
 		{
 			count++;
 			BanAmount = 360;
-			str_copy(BanReason, "Don't Advertise Cheat Clients on this Server");
+			BanReason = "Don't Advertise Cheat Clients on this Server";
 		}
 	}
 
@@ -5242,7 +5242,7 @@ bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Poi
 	{
 		count += 2;
 		BanAmount = 1000;
-		str_copy(BanReason, "KRX");
+		BanReason = "Krx Message";
 	}
 
 	if(count >= 2)
