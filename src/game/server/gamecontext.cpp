@@ -5244,11 +5244,11 @@ bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Poi
 	if(count >= 2)
 	{
 		if(BanAmount == 120)
-			Server()->Ban(ClientId, BanAmount * 60, "Refrain from using Fancy Alphabets", BanReason);
+			Server()->Ban(ClientId, BanAmount * 60, "Refrain from using Fancy Alphabets", "");
 		if(BanAmount == 360)
-			Server()->Ban(ClientId, BanAmount * 60, "Don't Advertise Cheat Clients on this Server", BanReason);
+			Server()->Ban(ClientId, BanAmount * 60, "Don't Advertise Cheat Clients on this Server", "");
 		if(BanAmount == 1000)
-			Server()->Ban(ClientId, BanAmount * 60, "Krx Message", BanReason);
+			Server()->Ban(ClientId, BanAmount * 60, "Krx Message", "");
 		return true;
 	}
 	else
