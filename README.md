@@ -5,7 +5,7 @@ From the Same Creator as [Aiodob Client](https://github.com/qxdFox/Aiodob-Client
 To Download this extension you can head to the [Actions Tab](https://github.com/qxdFoxs/FoxNet-DDNet/actions/workflows/build.yml), go to the newest build if it succeded and download the artifact for your system. You need to be logged in for this
 
 #
-### Currently Features
+### Current Features
 
 - Allowing Ports past 8310 -> now up to 8360, meaning you can start around ~50 servers without needing to change any configurations
 - Solo on Spawn -> As the name suggests when you respawn you will be put into solo and have a shield floating above you.
