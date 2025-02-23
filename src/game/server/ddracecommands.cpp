@@ -1312,6 +1312,7 @@ void CGameContext::ConHeadItem(IConsole::IResult *pResult, void *pUserData)
 	if(pChr)
 		pChr->HeadItem(pResult->GetInteger(0), Victim);
 }
+
 void CGameContext::ConExplosionGun(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
@@ -1360,7 +1361,7 @@ void CGameContext::ConTelekinesis(IConsole::IResult *pResult, void *pUserData)
 
 	pChr->GiveWeapon(WEAPON_TELEKINESIS);
 	if(g_Config.m_SvCommandOutput)
-		pSelf->SendBroadcast("<< You have Telekinesis! \n Use your scrollwheel to select it >>", Victim);
+		pSelf->SendBroadcast("         << You have Telekinesis! >> \n << Use your scrollwheel to select it >>", Victim);
 }
 
 void CGameContext::ConUnTelekinesis(IConsole::IResult *pResult, void *pUserData)
