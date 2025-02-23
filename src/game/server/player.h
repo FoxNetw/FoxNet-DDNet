@@ -239,6 +239,9 @@ public:
 
 	// FoxNet
 public:
+	bool m_IsAfkSpec;
+
+
 	bool m_ShouldSolo;
 	int64_t m_SoloTime;
 	bool m_SpawnSoloShowOthers;

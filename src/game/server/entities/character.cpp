@@ -2544,42 +2544,10 @@ void CCharacter::SwapClients(int Client1, int Client2)
 }
 
 // FoxNet
-void CCharacter::HeadItem(int Type, int ClientId)
-{
-	if(ClientId < 0 || (0 > Type && Type < 6))
-		return;
-
-	m_HeadItem = Type;
-	if(m_HeadItem)
-		new CHeadItem(GameWorld(), m_Pos, ClientId, Type);
-}
-
-void CCharacter::SetExplosionGun(bool Active)
-{
-	m_Core.m_ExplosionGun = Active;
-}
-
-vec2 CCharacter::GetCursorPos(int Clientid)
-{
-	vec2 Target = vec2(Core()->m_Input.m_TargetX, Core()->m_Input.m_TargetY);
-
-	return GameServer()->m_apPlayers[Clientid]->m_CameraInfo.ConvertTargetToWorld(GetPos(), Target);
-}
-
-void CCharacter::TryRespawn()
-{
-	if(g_Config.m_SvSoloOnSpawn && Team() != TEAM_SPECTATORS && m_Alive && g_Config.m_SvTeam != SV_TEAM_FORCED_SOLO)
-	{
-		m_pPlayer->m_ShouldSolo = true;
-		m_pPlayer->m_SoloTime = Server()->Tick() - Server()->TickSpeed();
-		m_pPlayer->m_SpawnSoloShowOthers = true;
-		GameServer()->GetPlayerChar(m_pPlayer->GetCid())->SetSolo(true);
-	}
-}
-
 void CCharacter::FoxNetTick()
-{ 
+{
 	UnsoloAfterSpawn();
+	AfkSpectate();
 
 	// update telekinesis entitiy position
 	if(m_pTelekinesisEntity)
@@ -2598,6 +2566,22 @@ void CCharacter::FoxNetTick()
 	}
 }
 
+void CCharacter::AfkSpectate()
+{
+	if(g_Config.m_SvForcePauseAfk)
+	{
+		if(m_pPlayer->m_IsAfkSpec)
+			GameServer()->SendBroadcast(" << Anti-AFK block spectator mode >>", m_pPlayer->GetCid());
+
+		if(m_pPlayer->IsAfk() && m_pPlayer->m_JoinTick + Server()->TickSpeed() * 10 < Server()->Tick())
+		{
+			m_pPlayer->Pause(m_pPlayer->PAUSE_SPEC, true);
+			m_pPlayer->m_IsAfkSpec = true;
+		}
+		else if(!m_pPlayer->IsAfk())
+			m_pPlayer->m_IsAfkSpec = false;
+	}
+}
 void CCharacter::UnsoloAfterSpawn()
 {
 	if(g_Config.m_SvSoloOnSpawn && Team() != TEAM_SPECTATORS && m_Alive)
@@ -2623,5 +2607,38 @@ void CCharacter::UnsoloAfterSpawn()
 				HeadItem(1, m_pPlayer->GetCid());
 		}
 	}
+}
+
+void CCharacter::TryRespawn()
+{
+	if(g_Config.m_SvSoloOnSpawn && Team() != TEAM_SPECTATORS && m_Alive && g_Config.m_SvTeam != SV_TEAM_FORCED_SOLO)
+	{
+		m_pPlayer->m_ShouldSolo = true;
+		m_pPlayer->m_SoloTime = Server()->Tick() - Server()->TickSpeed();
+		m_pPlayer->m_SpawnSoloShowOthers = true;
+		GameServer()->GetPlayerChar(m_pPlayer->GetCid())->SetSolo(true);
+	}
+}
+
+void CCharacter::HeadItem(int Type, int ClientId)
+{
+	if(ClientId < 0 || (-1 > Type && Type < 6))
+		return;
+
+	m_HeadItem = Type;
+	if(m_HeadItem)
+		new CHeadItem(GameWorld(), m_Pos, ClientId, Type);
+}
+
+void CCharacter::SetExplosionGun(bool Active)
+{
+	m_Core.m_ExplosionGun = Active;
+}
+
+vec2 CCharacter::GetCursorPos(int Clientid)
+{
+	vec2 Target = vec2(Core()->m_Input.m_TargetX, Core()->m_Input.m_TargetY);
+
+	return GameServer()->m_apPlayers[Clientid]->m_CameraInfo.ConvertTargetToWorld(GetPos(), Target);
 }
 

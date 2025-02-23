@@ -13,6 +13,8 @@ MACRO_CONFIG_INT(SvSendMotd, fs_send_motd, 0, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAM
 MACRO_CONFIG_INT(SvSoloOnSpawn, fs_solo_on_spawn, 1, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "Solo the Player for x amount of seconds on spawn")
 MACRO_CONFIG_INT(SvSoloOnSpawnSec, fs_solo_on_spawn_seconds, 5, 0, 20, CFGFLAG_SERVER | CFGFLAG_GAME, "Solo the Player for x amount of seconds on spawn")
 
+MACRO_CONFIG_INT(SvForcePauseAfk, fs_force_pause_afk, 1, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "To Prevent AFK blocking, put players into spectator mode if afk")
+
 MACRO_CONFIG_INT(SvCommandOutput, fs_command_output, 0, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "when using a command on someone, it will show them what happened")
 
 MACRO_CONFIG_INT(SvAutoHammer, fs_auto_hammer, 1, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "auto enables hammer on kill")
