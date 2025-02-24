@@ -8,7 +8,7 @@ class IMap;
 class CMapItemGroup;
 class CMapItemLayer;
 class CMapItemLayerTilemap;
-struct CMapItemLayerQuads;
+class CMapItemLayerQuads;
 
 class CLayers
 {
