@@ -120,11 +120,9 @@ void CLayers::Init(IMap *pMap, bool GameOnly)
 
 				CMapItemLayerQuads *pTilemap = reinterpret_cast<CMapItemLayerQuads *>(pLayer);
 				IntsToStr(pTilemap->m_aName, std::size(pTilemap->m_aName), aBuf, std::size(aBuf));
-				bool IsEntities = false;
 				if(!str_comp_nocase("GameQuads", aBuf))
 				{
 					m_pQuadLayer = pTilemap;
-					IsEntities = true;
 				}
 			}
 		}
