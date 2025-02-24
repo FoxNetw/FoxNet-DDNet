@@ -2045,6 +2045,43 @@ void CCharacter::HandleTiles(int Index)
 	}
 }
 
+void CCharacter::HandleQuads()
+{
+	CQuad *pQuad = nullptr;
+	int StartNum = 0;
+	int Number = 0;
+	while(true)
+	{
+		StartNum = Collision()->GetQuadAt(m_Pos, &pQuad, StartNum);
+		StartNum++;
+		if(!pQuad)
+			break;
+
+		Number = pQuad->m_aColors[0].r;
+		if(Number == 0)
+			Number++;
+
+		// printf("QuadenvOffset: %d\n",pQuad->m_ColorEnvOffset);
+
+		if(pQuad->m_ColorEnvOffset == TILE_FREEZE)
+		{
+			Freeze();
+		}
+		if(pQuad->m_ColorEnvOffset == TILE_DFREEZE)
+		{
+			m_Core.m_DeepFrozen = true;
+		}
+		if(pQuad->m_ColorEnvOffset == TILE_DUNFREEZE)
+		{
+			m_Core.m_DeepFrozen = false;
+		}
+		if(pQuad->m_ColorEnvOffset == TILE_UNFREEZE)
+		{
+			UnFreeze();
+		}
+	}
+}
+
 void CCharacter::HandleTuneLayer()
 {
 	m_TuneZoneOld = m_TuneZone;
@@ -2273,6 +2310,8 @@ void CCharacter::DDRacePostCoreTick()
 		if(!m_Alive)
 			return;
 	}
+
+	HandleQuads();
 
 	// teleport gun
 	if(m_TeleGunTeleport)
