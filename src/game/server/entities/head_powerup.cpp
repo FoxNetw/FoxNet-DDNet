@@ -32,7 +32,7 @@ void CHeadItem::Tick()
 {
 	CCharacter *pOwner = GameServer()->GetPlayerChar(m_Owner);
 
-	if(!pOwner || pOwner->m_HeadItem < -1)
+	if(!pOwner || !pOwner->m_HeadItem)
 	{
 		Reset();
 		return;
