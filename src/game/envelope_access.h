@@ -5,9 +5,9 @@
 
 #include <base/vmath.h>
 
-struct CEnvPoint;
-struct CEnvPointBezier;
-struct CEnvPointBezier_upstream;
+class CEnvPoint;
+class CEnvPointBezier;
+class CEnvPointBezier_upstream;
 
 class IEnvelopePointAccess
 {
