@@ -2645,9 +2645,9 @@ void CCharacter::AfkSpectate()
 }
 void CCharacter::UnsoloAfterSpawn()
 {
-	if(g_Config.m_SvSoloOnSpawn && Team() != TEAM_SPECTATORS && m_Alive)
+	if(g_Config.m_SvSoloOnSpawn && Team() != TEAM_SPECTATORS && m_Alive && m_pPlayer->m_ShouldSolo)
 	{
-		if(m_TileFIndex == 21 || m_TileIndex == 21)
+		if(m_TileFIndex == TILE_SOLO_ENABLE || m_TileIndex == TILE_SOLO_ENABLE || m_TileFIndex == TILE_SOLO_DISABLE || m_TileIndex == TILE_SOLO_DISABLE)
 		{
 			m_pPlayer->m_SpawnSoloShowOthers = false;
 			m_pPlayer->m_ShouldSolo = false;
@@ -2655,18 +2655,16 @@ void CCharacter::UnsoloAfterSpawn()
 			HeadItem(0, m_pPlayer->GetCid());
 		}
 
-		if(m_pPlayer->m_ShouldSolo)
+
+		if(m_pPlayer->m_SoloTime + Server()->TickSpeed() * g_Config.m_SvSoloOnSpawnSec < Server()->Tick() - Server()->TickSpeed())
 		{
-			if(m_pPlayer->m_SoloTime + Server()->TickSpeed() * g_Config.m_SvSoloOnSpawnSec < Server()->Tick() - Server()->TickSpeed())
-			{
-				m_pPlayer->m_SpawnSoloShowOthers = false;
-				m_pPlayer->m_ShouldSolo = false;
-				HeadItem(0, m_pPlayer->GetCid());
-				GameServer()->GetPlayerChar(m_pPlayer->GetCid())->SetSolo(false);
-			}
-			else if(!m_HeadItem)
-				HeadItem(1, m_pPlayer->GetCid());
+			m_pPlayer->m_SpawnSoloShowOthers = false;
+			m_pPlayer->m_ShouldSolo = false;
+			HeadItem(0, m_pPlayer->GetCid());
+			GameServer()->GetPlayerChar(m_pPlayer->GetCid())->SetSolo(false);
 		}
+		else if(!m_HeadItem)
+			HeadItem(1, m_pPlayer->GetCid());
 	}
 }
 

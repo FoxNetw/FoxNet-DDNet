@@ -2383,10 +2383,7 @@ void CGameContext::OnSayNetMessage(const CNetMsg_Cl_Say *pMsg, int ClientId, con
 	else
 	{
 		if(g_Config.m_SvPingEveryone && str_find_nocase(pMsg->m_pMessage, "@everyone") && Server()->GetAuthedState(ClientId) >= AUTHED_MOD)
-		{
 			CreateSoundGlobal(SOUND_CHAT_HIGHLIGHT);
-		}
-
 		pPlayer->UpdatePlaytime();
 		char aCensoredMessage[256];
 		CensorMessage(aCensoredMessage, pMsg->m_pMessage, sizeof(aCensoredMessage));
