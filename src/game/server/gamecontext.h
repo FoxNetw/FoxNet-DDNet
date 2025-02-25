@@ -617,6 +617,8 @@ private: // FoxNet
 
 	void UnsetTelekinesis(CEntity *pEntity);
 
+	void SendEveryonePing(int ChatterClientId, const char *pText, int ReceivingIds) const;
+
 public:
 	int GetWeaponType(int Weapon);
 

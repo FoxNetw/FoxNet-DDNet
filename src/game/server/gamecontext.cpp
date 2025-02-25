@@ -34,6 +34,7 @@
 #include "gamemodes/mod.h"
 #include "player.h"
 #include "score.h"
+#include <string.h>
 
 // Not thread-safe!
 class CClientChatLogger : public ILogger
@@ -1119,7 +1120,7 @@ void CGameContext::ChangeSpeedMode()
 	}
 
 	// Info Message
-	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "Speed Tunings Have Changed");
+	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", "Speed Tunings Have Changed");
 }
 
 void CGameContext::OnTick()
@@ -1154,7 +1155,7 @@ void CGameContext::OnTick()
 			ExecBans = false;
 
 			// Info Message
-			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "Saved Bans");
+			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", "Executed and Saved Bans -> next sync is in 30 minutes");
 		}
 	}
 
@@ -2329,6 +2330,44 @@ void CGameContext::OnSayNetMessage(const CNetMsg_Cl_Say *pMsg, int ClientId, con
 	else
 		Team = TEAM_ALL;
 
+	bool SendOriginalMessage = true;
+	
+	if(g_Config.m_SvPingEveryone && str_find_nocase(pMsg->m_pMessage, "@everyone") && Server()->GetAuthedState(ClientId) >= AUTHED_MOD)
+	{
+		using namespace std;
+
+		for(int ReceivingIds = 0; ReceivingIds < VANILLA_MAX_CLIENTS; ReceivingIds++)
+		{
+			if(m_apPlayers[ReceivingIds])
+			{
+				char BeforePing[256];
+				const char *AfterPing = str_find_nocase(pMsg->m_pMessage, "@everyone");
+
+				string everyone(AfterPing);
+
+				if(str_startswith(pMsg->m_pMessage, "@"))
+					str_copy(BeforePing, "");
+				else 
+					str_format(BeforePing, str_length(pMsg->m_pMessage) - str_length(AfterPing) + 1, "%s ", pMsg->m_pMessage);
+
+				for(int repeat = 0; repeat < 9; repeat++)
+					everyone.erase(everyone.begin());
+
+				char FullMsg[256];
+				
+				str_format(FullMsg, sizeof(FullMsg), "[ALL] %s%s%s", BeforePing, Server()->ClientName(ReceivingIds), everyone.c_str());
+
+				SendEveryonePing(ClientId, FullMsg, ReceivingIds);
+
+				char aBuf[256];
+				str_format(aBuf, sizeof(aBuf), "%s Sent @Everyone Message:", Server()->ClientName(ClientId));
+				Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
+				Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", pMsg->m_pMessage);
+
+			}
+		}
+		SendOriginalMessage = false;
+	}
 	if(pMsg->m_pMessage[0] == '/')
 	{
 		const char *pWhisper;
@@ -2382,12 +2421,11 @@ void CGameContext::OnSayNetMessage(const CNetMsg_Cl_Say *pMsg, int ClientId, con
 	}
 	else
 	{
-		if(g_Config.m_SvPingEveryone && str_find_nocase(pMsg->m_pMessage, "@everyone") && Server()->GetAuthedState(ClientId) >= AUTHED_MOD)
-			CreateSoundGlobal(SOUND_CHAT_HIGHLIGHT);
 		pPlayer->UpdatePlaytime();
 		char aCensoredMessage[256];
 		CensorMessage(aCensoredMessage, pMsg->m_pMessage, sizeof(aCensoredMessage));
-		SendChat(ClientId, Team, aCensoredMessage, ClientId);
+		if(SendOriginalMessage)
+			SendChat(ClientId, Team, aCensoredMessage, ClientId);
 	}
 }
 
@@ -5272,6 +5310,33 @@ void CGameContext::UnsetTelekinesis(CEntity *pEntity)
 		{
 			pChr->m_pTelekinesisEntity = 0;
 			break; // can break here, every entity can only be picked by one player using telekinesis at the time
+		}
+	}
+}
+
+void CGameContext::SendEveryonePing(int ChatterClientId, const char *pText, int ReceivingIds) const
+{
+	char aText[256];
+	str_copy(aText, pText, sizeof(aText));
+
+	if(ChatterClientId >= 0 && ChatterClientId < MAX_CLIENTS)
+	{
+		CNetMsg_Sv_Chat Msg;
+		Msg.m_Team = 0;
+		Msg.m_ClientId = ChatterClientId;
+		Msg.m_pMessage = aText;
+
+		// pack one for the recording only
+		if(g_Config.m_SvDemoChat)
+			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL | MSGFLAG_NOSEND, SERVER_DEMO_CLIENT);
+
+		// send to the clients
+		if(m_apPlayers[ReceivingIds] != nullptr)
+		{
+			if(m_apPlayers[ReceivingIds]->GetTeam() != TEAM_SPECTATORS)
+			{
+				Server()->SendPackMsg(&Msg, MSGFLAG_VITAL | MSGFLAG_NORECORD, ReceivingIds);
+			}
 		}
 	}
 }
