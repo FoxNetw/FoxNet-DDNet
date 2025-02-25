@@ -26,7 +26,7 @@ class CTuneTile;
 namespace client_data7 {
 struct CDataSprite;
 }
-class CDataSprite;
+struct CDataSprite;
 class CEnvPoint;
 class CEnvPointBezier;
 class CEnvPointBezier_upstream;
