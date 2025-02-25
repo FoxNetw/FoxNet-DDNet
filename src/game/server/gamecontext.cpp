@@ -2382,6 +2382,11 @@ void CGameContext::OnSayNetMessage(const CNetMsg_Cl_Say *pMsg, int ClientId, con
 	}
 	else
 	{
+		if(g_Config.m_SvPingEveryone && str_find_nocase(pMsg->m_pMessage, "@everyone") && Server()->GetAuthedState(ClientId) >= AUTHED_MOD)
+		{
+			CreateSoundGlobal(SOUND_CHAT_HIGHLIGHT);
+		}
+
 		pPlayer->UpdatePlaytime();
 		char aCensoredMessage[256];
 		CensorMessage(aCensoredMessage, pMsg->m_pMessage, sizeof(aCensoredMessage));
@@ -3909,6 +3914,9 @@ void CGameContext::RegisterDDRaceCommands()
 
 	Console()->Register("telekinesis", "?v[id]", CFGFLAG_SERVER, ConTelekinesis, this, "Gives telekinses to player (id)");
 	Console()->Register("untelekinesis", "?v[id]", CFGFLAG_SERVER, ConUnTelekinesis, this, "Removes telekinses to player (id)");
+
+	Console()->Register("playsound", "?v[id]", CFGFLAG_SERVER, ConPlaySoundGlobal, this, "Plays a Sound Globally (use \"sounds\" to see a list)");
+	Console()->Register("sounds", "", CFGFLAG_SERVER, ConListSounds, this, "List Available Sounds");
 }
 
 void CGameContext::RegisterChatCommands()

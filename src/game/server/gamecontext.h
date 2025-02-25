@@ -609,6 +609,8 @@ private: // FoxNet
 
 	static void ConTelekinesis(IConsole::IResult *pResult, void *pUserData);
 	static void ConUnTelekinesis(IConsole::IResult *pResult, void *pUserData);
+	static void ConPlaySoundGlobal(IConsole::IResult *pResult, void *pUserData);
+	static void ConListSounds(IConsole::IResult *pResult, void *pUserData);
 
 	void ChangeSpeedMode();
 	bool CheckSpam(int ClientId, const char *pLine) const;

@@ -1378,3 +1378,57 @@ void CGameContext::ConUnTelekinesis(IConsole::IResult *pResult, void *pUserData)
 	if(g_Config.m_SvCommandOutput)
 		pSelf->SendBroadcast("<< You lost Telekinesis >>", Victim);
 }
+
+void CGameContext::ConPlaySoundGlobal(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	pSelf->CreateSoundGlobal(pResult->GetInteger(0));
+}
+
+void CGameContext::ConListSounds(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "List of Available Sounds:");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "0  = Gun Fire");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "1  = Shot Gun Fire");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "2  = Grenade Fire");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "3  = Hammer Fir");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "4  = Hammer Hit");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "5  = Ninja Fire");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "6  = Grenade Explosion");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "7  = Ninja Hit");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "8  = Laser Fire");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "9  = Laser Bounce");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "10 = Weapon Switch");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "11 = Player Pain Short");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "12 = Player Pain Long");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "13 = Body Land");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "14 = Player Airjump");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "15 = Player Jump");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "16 = Player Die");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "17 = Player Spawn");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "18 = Player Skid");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "19 = Tee Cry");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "20 = Hook Loop");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "21 = Hook Attach Ground");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "22 = Hook Attach Player");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "23 = Hook Sound No-Attach");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "24 = Pickup Health");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "25 = Pickup Armor");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "26 = Pickup Grenade");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "27 = Pickup Shotgun");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "28 = Pickup Ninja");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "29 = Weapon Spawn");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "30 = Weapon No-Ammo");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "31 = Hit");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "32 = Chat Server");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "33 = Chat Client");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "34 = Chat Highlight");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "35 = CTF Drop");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "36 = CTF Return");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "37 = CTF grab PL");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "37 = CTF grab PL");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "38 = CTF Grab EN");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "39 = CTF Flag Capture");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNetwork", "40 = Menu");
+}

@@ -2634,7 +2634,7 @@ void CCharacter::AfkSpectate()
 		if(m_pPlayer->m_IsAfkSpec)
 			GameServer()->SendBroadcast(" << Anti-AFK block spectator mode >>", m_pPlayer->GetCid());
 
-		if(m_pPlayer->IsAfk() && m_pPlayer->m_JoinTick + Server()->TickSpeed() * 10 < Server()->Tick())
+		if(m_pPlayer->IsAfk() && m_pPlayer->m_JoinTick + Server()->TickSpeed() * 40 < Server()->Tick())
 		{
 			m_pPlayer->Pause(m_pPlayer->PAUSE_SPEC, true);
 			m_pPlayer->m_IsAfkSpec = true;
