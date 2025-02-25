@@ -3335,7 +3335,7 @@ void CGameContext::ConChangeMap(IConsole::IResult *pResult, void *pUserData)
 	pSelf->m_pController->ChangeMap(pResult->GetString(0));
 }
 
-void CGameContext::ConRandomMap(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConRandomMapOld(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 
@@ -3847,7 +3847,7 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("switch_open", "i[switch]", CFGFLAG_SERVER | CFGFLAG_GAME, ConSwitchOpen, this, "Whether a switch is deactivated by default (otherwise activated)");
 	Console()->Register("pause_game", "", CFGFLAG_SERVER, ConPause, this, "Pause/unpause game");
 	Console()->Register("change_map", "r[map]", CFGFLAG_SERVER | CFGFLAG_STORE, ConChangeMap, this, "Change map");
-	Console()->Register("random_map", "?i[stars]", CFGFLAG_SERVER | CFGFLAG_STORE, ConRandomMap, this, "Random map");
+	Console()->Register("random_map_old", "?i[stars]", CFGFLAG_SERVER | CFGFLAG_STORE, ConRandomMap, this, "Random map");
 	Console()->Register("random_unfinished_map", "?i[stars]", CFGFLAG_SERVER | CFGFLAG_STORE, ConRandomUnfinishedMap, this, "Random unfinished map");
 	Console()->Register("restart", "?i[seconds]", CFGFLAG_SERVER | CFGFLAG_STORE, ConRestart, this, "Restart in x seconds (0 = abort)");
 	Console()->Register("broadcast", "r[message]", CFGFLAG_SERVER, ConBroadcast, this, "Broadcast message");
@@ -3873,6 +3873,11 @@ void CGameContext::OnConsoleInit()
 	Console()->Chain("sv_vote_kick_min", ConchainSettingUpdate, this);
 	Console()->Chain("sv_vote_spectate", ConchainSettingUpdate, this);
 	Console()->Chain("sv_spectator_slots", ConchainSettingUpdate, this);
+
+	// FoxNet
+
+	// Changed to Work
+	Console()->Register("random_map", "", CFGFLAG_SERVER | CFGFLAG_STORE, ConRandomMap, this, "Random map");
 
 	RegisterDDRaceCommands();
 	RegisterChatCommands();
@@ -5364,4 +5369,59 @@ int CGameContext::GetWeaponType(int Weapon)
 		return WEAPON_GUN;
 	}
 	return Weapon;
+}
+
+void CGameContext::ConRandomMap(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+
+	std::vector<CMapNameItem> vMapList;
+	const char *pDirectory = pResult->GetString(0);
+
+	// Don't allow moving to parent directories
+	if(str_find_nocase(pDirectory, ".."))
+		return;
+
+	char aPath[IO_MAX_PATH_LENGTH] = "maps/";
+	str_append(aPath, pDirectory, sizeof(aPath));
+	pSelf->Storage()->ListDirectory(IStorage::TYPE_ALL, aPath, MapScan, &vMapList);
+	std::sort(vMapList.begin(), vMapList.end(), CMapNameItem::CompareFilenameAscending);
+
+	int RandomInt = round_to_int(random_float(1, vMapList.size()));
+	
+	int ChosenMap = 0;
+
+	for(auto &Item : vMapList)
+	{
+		ChosenMap++;
+		if(!str_comp(Item.m_aName, "..") && (!str_comp(aPath, "maps/")))
+			continue;
+
+		char aDescription[VOTE_DESC_LENGTH];
+		str_format(aDescription, sizeof(aDescription), "%s: %s%s", Item.m_IsDirectory ? "Directory" : "Map", Item.m_aName, Item.m_IsDirectory ? "/" : "");
+
+		char MapName[VOTE_CMD_LENGTH];
+		char aOptionEscaped[IO_MAX_PATH_LENGTH * 2];
+		char *pDst = aOptionEscaped;
+		str_escape(&pDst, Item.m_aName, aOptionEscaped + sizeof(aOptionEscaped));
+
+		char aDirectory[IO_MAX_PATH_LENGTH] = "";
+
+		if(Item.m_IsDirectory)
+		{
+			str_append(aDirectory, "/", sizeof(aDirectory));
+			str_append(aDirectory, aOptionEscaped, sizeof(aDirectory));
+		}
+		str_format(MapName, sizeof(MapName), "%s%s%s", pDirectory, pDirectory[0] == '\0' ? "" : "/", aOptionEscaped);
+	
+		if(RandomInt == ChosenMap)
+		{
+			pSelf->Server()->ChangeMap(MapName);
+			break;
+		}
+	}
+	char Info[512];
+	str_format(Info, sizeof(Info), "%s used Command : \"random_map\"", pSelf->Server()->ClientName(pResult->m_ClientId));
+
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", Info);
 }

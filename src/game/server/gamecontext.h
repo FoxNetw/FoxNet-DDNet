@@ -112,7 +112,7 @@ class CGameContext : public IGameServer
 	static void ConSwitchOpen(IConsole::IResult *pResult, void *pUserData);
 	static void ConPause(IConsole::IResult *pResult, void *pUserData);
 	static void ConChangeMap(IConsole::IResult *pResult, void *pUserData);
-	static void ConRandomMap(IConsole::IResult *pResult, void *pUserData);
+	static void ConRandomMapOld(IConsole::IResult *pResult, void *pUserData);
 	static void ConRandomUnfinishedMap(IConsole::IResult *pResult, void *pUserData);
 	static void ConRestart(IConsole::IResult *pResult, void *pUserData);
 	static void ConBroadcast(IConsole::IResult *pResult, void *pUserData);
@@ -611,6 +611,7 @@ private: // FoxNet
 	static void ConUnTelekinesis(IConsole::IResult *pResult, void *pUserData);
 	static void ConPlaySoundGlobal(IConsole::IResult *pResult, void *pUserData);
 	static void ConListSounds(IConsole::IResult *pResult, void *pUserData);
+	static void ConRandomMap(IConsole::IResult *pResult, void *pUserData);
 
 	void ChangeSpeedMode();
 	bool CheckSpam(int ClientId, const char *pLine) const;

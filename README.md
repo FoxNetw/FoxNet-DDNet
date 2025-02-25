@@ -21,3 +21,4 @@ To Download this extension you can head to the [Actions Tab](https://github.com/
 - telekinesis weapon -> using the command telekinesis you can give yourself (or the id) the telekinesis weapon, using the scrollwheel you can swtich to it (its just a second gun) -> pressing on a player will move them to where your cursor is located
 - Moving Freeze and polygon Freeze (basically any shape) from [this ddnet pull](https://github.com/ddnet/ddnet/pull/9469)
 - @everyone Ping (fs_allow_ping_everyone, defaul is on) -> if a mod or admin sends a message containing "@everyone" it'll replace it sends a message to every player and replaces "@everyone" with their Username
+- random_map (kind of) works now, if you have sub directories for your maps it might try to choose the subdirectory as a map, so i recommend recoding it if you do
