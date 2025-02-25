@@ -2681,7 +2681,7 @@ void CCharacter::TryRespawn()
 
 void CCharacter::HeadItem(int Type, int ClientId)
 {
-	if(ClientId < 0 || (-1 > Type && Type < 6))
+	if(ClientId < 0 || Type < -1 || Type > 12)
 		return;
 
 	m_HeadItem = Type;

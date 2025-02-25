@@ -61,10 +61,53 @@ void CHeadItem::Snap(int SnappingClient)
 	pPickup->m_Y = round_to_int(m_aPos.y);
 	if(Server()->IsSixup(SnappingClient))
 	{
-		pPickup->m_Type = m_Type;
+		if(m_Type == 8)
+		{
+			pPickup->m_Type = POWERUP_WEAPON;
+			pPickup->m_Subtype = WEAPON_GUN;
+		}
+		else if(m_Type == 9)
+		{
+			pPickup->m_Type = POWERUP_WEAPON;
+			pPickup->m_Subtype = WEAPON_SHOTGUN;
+		}
+		else if(m_Type == 10)
+		{
+			pPickup->m_Type = POWERUP_WEAPON;
+			pPickup->m_Subtype = WEAPON_GRENADE;
+		}
+		else if(m_Type == 11)
+		{
+			pPickup->m_Type = POWERUP_WEAPON;
+			pPickup->m_Subtype = WEAPON_LASER;
+		}
+		else
+			pPickup->m_Type = m_Type;
 		((int *)pPickup)[3] = 0;
 	}
 	else
-		pPickup->m_Type = m_Type;
-
+	{
+		if(m_Type == 8)
+		{
+			pPickup->m_Type = 2;
+			pPickup->m_Subtype = WEAPON_GUN;
+		}
+		else if(m_Type == 9)
+		{
+			pPickup->m_Type = 2;
+			pPickup->m_Subtype = WEAPON_SHOTGUN;
+		}
+		else if(m_Type == 10)
+		{
+			pPickup->m_Type = 2;
+			pPickup->m_Subtype = WEAPON_GRENADE;
+		}
+		else if(m_Type == 11)
+		{
+			pPickup->m_Type = 2;
+			pPickup->m_Subtype = WEAPON_LASER;
+		}
+		else
+			pPickup->m_Type = m_Type;
+	}
 }
