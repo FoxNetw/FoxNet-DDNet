@@ -19,3 +19,5 @@ To Download this extension you can head to the [Actions Tab](https://github.com/
 - disabling freeze and Rocket launcher grenade (fs_disable_freeze 1, fs_fake_grenade 1)
 - Slow Gores -> you can use the fs_speed to change the "speed" at which the game runs (fs_speed 1 - normal speed | fs_speed 2 - 2x slow | fs_speed 3 - 4x slow | fs_speed 4 - 8x slow)
 - telekinesis weapon -> using the command telekinesis you can give yourself (or the id) the telekinesis weapon, using the scrollwheel you can swtich to it (its just a second gun) -> pressing on a player will move them to where your cursor is located
+- Moving Freeze and polygon Freeze (basically any shape) from [this ddnet pull](https://github.com/ddnet/ddnet/pull/9469)
+- @everyone Ping (fs_allow_ping_everyone, defaul is on) -> if a mod or admin sends a message containing "@everyone" it'll replace it sends a message to every player and replaces "@everyone" with their Username

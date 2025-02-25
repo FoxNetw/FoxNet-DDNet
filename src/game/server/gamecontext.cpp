@@ -2332,9 +2332,13 @@ void CGameContext::OnSayNetMessage(const CNetMsg_Cl_Say *pMsg, int ClientId, con
 
 	bool SendOriginalMessage = true;
 	
-	if(g_Config.m_SvPingEveryone && str_find_nocase(pMsg->m_pMessage, "@everyone") && Server()->GetAuthedState(ClientId) >= AUTHED_MOD)
+	if(((g_Config.m_SvPingEveryone == 1 && Server()->GetAuthedState(ClientId) >= AUTHED_MOD) || g_Config.m_SvPingEveryone == 2) && str_find_nocase(pMsg->m_pMessage, "@everyone"))
 	{
 		using namespace std;
+
+		char Info[256];
+		str_format(Info, sizeof(Info), "%s sent an @everyone Message", Server()->ClientName(ClientId));
+		SendChat(-1, TEAM_ALL, Info);
 
 		for(int ReceivingIds = 0; ReceivingIds < VANILLA_MAX_CLIENTS; ReceivingIds++)
 		{
@@ -2363,7 +2367,6 @@ void CGameContext::OnSayNetMessage(const CNetMsg_Cl_Say *pMsg, int ClientId, con
 				str_format(aBuf, sizeof(aBuf), "%s Sent @Everyone Message:", Server()->ClientName(ClientId));
 				Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
 				Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", pMsg->m_pMessage);
-
 			}
 		}
 		SendOriginalMessage = false;
@@ -3737,7 +3740,7 @@ void CGameContext::ConAddMapVotes(IConsole::IResult *pResult, void *pUserData)
 		}
 		else
 			str_format(aCommand, sizeof(aCommand), "change_map \"%s%s%s\"", pDirectory, pDirectory[0] == '\0' ? "" : "/", aOptionEscaped);
-
+		
 		pSelf->AddVote(aDescription, aCommand);
 	}
 
