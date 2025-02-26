@@ -291,6 +291,9 @@ public:
 	virtual const char *GetMapName() const = 0;
 
 	virtual bool IsSixup(int ClientId) const = 0;
+	
+	// FoxNet
+	virtual void UpdateServerInfo(bool Resend = false) = 0;
 };
 
 class IGameServer : public IInterface

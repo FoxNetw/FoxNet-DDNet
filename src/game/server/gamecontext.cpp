@@ -1135,6 +1135,13 @@ void CGameContext::OnTick()
 		OldSpeed = g_Config.m_SvSpeed;
 	}
 
+	static char OldName[32];
+	if(str_comp(g_Config.m_SvGameTypeName, OldName)) // Reload if config is changed
+	{
+		Server()->UpdateServerInfo(true);
+		str_copy(OldName, g_Config.m_SvGameTypeName);
+	}
+
 	static int64_t BanSaveDelay = Server()->Tick() * Server()->TickSpeed() * 5;
 	if(BanSaveDelay < Server()->Tick())
 	{
