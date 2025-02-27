@@ -1123,6 +1123,37 @@ void CGameContext::ChangeSpeedMode()
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", "Speed Tunings Have Changed");
 }
 
+void CGameContext::BanSync()
+{
+	static int64_t BanSaveDelay = Server()->Tick() * Server()->TickSpeed() * 1800;
+	static int64_t ExecSaveDelay = Server()->Tick() + Server()->TickSpeed(); // Might be needed if the File Gets big
+	if(BanSaveDelay < Server()->Tick())
+	{
+		static bool ExecBans = false;
+
+		if(Storage()->FileExists("Bans.cfg", IStorage::TYPE_ALL) && !ExecBans)
+		{
+			ExecBans = true;
+			Console()->ExecuteLine("exec \"Bans.cfg\"", -1);
+
+			ExecSaveDelay = Server()->Tick() + Server()->TickSpeed();
+
+			// Info Message
+			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", "Executed Bans");
+		}
+
+		if(ExecSaveDelay < Server()->Tick() && ExecBans)
+		{
+			ExecBans = false;
+			BanSaveDelay = Server()->Tick() + Server()->TickSpeed() * 1800; // 30 minutes
+			Console()->ExecuteLine("bans_save \"Bans.cfg\"", -1);
+
+			// Info Message
+			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", "Saved Bans");
+		}
+	}
+}
+
 void CGameContext::OnTick()
 {
 	// check tuning
@@ -1142,29 +1173,7 @@ void CGameContext::OnTick()
 		str_copy(OldName, g_Config.m_SvGameTypeName);
 	}
 
-	static int64_t BanSaveDelay = Server()->Tick() * Server()->TickSpeed() * 5;
-	if(BanSaveDelay < Server()->Tick())
-	{
-		static bool ExecBans = false;
-		static int64_t ExecSaveDelay = Server()->Tick() + Server()->TickSpeed(); // Might be needed if the File Gets big
-
-		if(Storage()->FileExists("Bans.cfg", IStorage::TYPE_ALL) && !ExecBans)
-		{
-			Console()->ExecuteLine("exec  \"Bans.cfg\"", -1);
-			ExecSaveDelay = Server()->Tick() + Server()->TickSpeed();
-			ExecBans = true;
-		}
-
-		if(ExecSaveDelay < Server()->Tick() && ExecBans)
-		{
-			Console()->ExecuteLine("bans_save \"Bans.cfg\"", -1);
-			BanSaveDelay = Server()->Tick() + Server()->TickSpeed() * 1800; // 30 minutes
-			ExecBans = false;
-
-			// Info Message
-			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", "Executed and Saved Bans -> next sync is in 30 minutes");
-		}
-	}
+	BanSync();
 
 	if(m_TeeHistorianActive)
 	{
