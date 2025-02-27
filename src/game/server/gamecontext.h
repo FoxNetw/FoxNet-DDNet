@@ -613,6 +613,7 @@ private: // FoxNet
 	static void ConListSounds(IConsole::IResult *pResult, void *pUserData);
 	static void ConRandomMap(IConsole::IResult *pResult, void *pUserData);
 
+	void FoxNetTick();
 	void BanSync();
 	void ChangeSpeedMode();
 	bool CheckSpam(int ClientId, const char *pLine) const;
