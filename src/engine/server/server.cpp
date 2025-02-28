@@ -2833,7 +2833,7 @@ void CServer::UpdateDebugDummies(bool ForceDisconnect)
 
 			GameServer()->OnClientConnected(ClientId, nullptr);
 			Client.m_State = CClient::STATE_INGAME;
-			str_format(Client.m_aName, sizeof(Client.m_aName), "Real Player", DummyIndex + 1);
+			str_format(Client.m_aName, sizeof(Client.m_aName), "Real Player %d", DummyIndex + 1);
 			GameServer()->OnClientEnter(ClientId);
 		}
 		else if(!AddDummy && Client.m_DebugDummy)
@@ -2843,12 +2843,7 @@ void CServer::UpdateDebugDummies(bool ForceDisconnect)
 
 		if(AddDummy && Client.m_DebugDummy)
 		{
-			CNetObj_PlayerInput Input = {0};
-			Input.m_Direction = (ClientId & 1) ? -1 : 1;
-			Client.m_aInputs[0].m_GameTick = Tick() + 1;
-			mem_copy(Client.m_aInputs[0].m_aData, &Input, minimum(sizeof(Input), sizeof(Client.m_aInputs[0].m_aData)));
-			Client.m_LatestInput = Client.m_aInputs[0];
-			Client.m_CurrentInput = 0;
+			Client.m_Latency = round_to_int(random_float(999));
 		}
 	}
 

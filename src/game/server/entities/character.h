@@ -40,6 +40,7 @@ public:
 	void TryRespawn();
 
 	void SetExplosionGun(bool Active);
+	void SetTelekinesisImmunity(bool Active);
 
 	// Telekinesis
 	CEntity *m_pTelekinesisEntity;
@@ -48,6 +49,7 @@ public:
 	int m_HeadItem;
 	void HeadItem(int Type = 1, int ClientId = -1);
 
+	// DDNet
 	void Reset() override;
 	void Destroy() override;
 	void PreTick();

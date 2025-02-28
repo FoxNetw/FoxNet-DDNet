@@ -643,6 +643,9 @@ void CCharacter::FireWeapon()
 			if(pEntity)
 				pChr = (CCharacter *)pEntity;
 
+			if(pChr->Core()->m_TelekinesisImmunity)
+				break;
+
 			if((pChr && pChr->GetPlayer()->GetCid() != m_pPlayer->GetCid() && (pChr->m_pTelekinesisEntity != this || (pEntity && pEntity != pChr))))
 			{
 				bool IsTelekinesed = false;
@@ -1034,6 +1037,10 @@ void CCharacter::Die(int Killer, int Weapon, bool SendKillMsg)
 
 	// a nice sound
 	GameServer()->CreateSound(m_Pos, SOUND_PLAYER_DIE, TeamMask());
+
+	// unset anyones telekinesis on us
+	if(Server()->GetAuthedState(m_pPlayer->GetCid()) > AUTHED_NO)
+		GameServer()->UnsetTelekinesis(this);
 
 	// this is to rate limit respawning to 3 secs
 	m_pPlayer->m_PreviousDieTick = m_pPlayer->m_DieTick;
@@ -2687,6 +2694,11 @@ void CCharacter::HeadItem(int Type, int ClientId)
 	m_HeadItem = Type;
 	if(m_HeadItem)
 		new CHeadItem(GameWorld(), m_Pos, ClientId, Type);
+}
+
+void CCharacter::SetTelekinesisImmunity(bool Active)
+{
+	m_Core.m_TelekinesisImmunity = Active;
 }
 
 void CCharacter::SetExplosionGun(bool Active)

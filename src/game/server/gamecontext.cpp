@@ -3819,6 +3819,9 @@ void CGameContext::RegisterDDRaceCommands()
 	Console()->Register("explosiongun", "?v[id]", CFGFLAG_SERVER, ConExplosionGun, this, "Gives you explosion gun");
 	Console()->Register("headitem", "i[type] ?v[id]", CFGFLAG_SERVER, ConHeadItem, this, "Toggles an entity ontop of a player (id)");
 
+	
+	Console()->Register("telekinesis_immunity", "?v[id]", CFGFLAG_SERVER, ConTelekinesisImmunity, this, "Makes player (id) immunte to telekinesis");
+
 	Console()->Register("telekinesis", "?v[id]", CFGFLAG_SERVER, ConTelekinesis, this, "Gives telekinses to player (id)");
 	Console()->Register("untelekinesis", "?v[id]", CFGFLAG_SERVER, ConUnTelekinesis, this, "Removes telekinses to player (id)");
 

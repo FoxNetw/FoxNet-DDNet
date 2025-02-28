@@ -1349,6 +1349,34 @@ void CGameContext::ConUnExplosionGun(IConsole::IResult *pResult, void *pUserData
 		pSelf->SendBroadcast("<< You lost Explosion Gun! >>", Victim);
 }
 
+void CGameContext::ConTelekinesisImmunity(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->NumArguments() > 1 ? pResult->m_ClientId : pResult->GetVictim();
+
+	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+
+	pChr->SetTelekinesisImmunity(!pChr->Core()->m_TelekinesisImmunity);
+
+	if(pChr->Core()->m_TelekinesisImmunity)
+	{
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", "Immune to Telekinesis");
+		if(g_Config.m_SvCommandOutput)
+
+			pSelf->SendBroadcast("<< You are Immunte to Telekinesis! >>", Victim);
+	}
+	else
+	{
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", "Not Immune to Telekinesis Anymore");
+
+		if(g_Config.m_SvCommandOutput)
+			pSelf->SendBroadcast("<< You aren't Immunte to Telekinesis anymore! >>", Victim);
+	}
+}
+
 void CGameContext::ConTelekinesis(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;

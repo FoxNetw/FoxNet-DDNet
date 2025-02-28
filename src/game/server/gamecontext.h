@@ -607,10 +607,13 @@ private: // FoxNet
 	static void ConExplosionGun(IConsole::IResult *pResult, void *pUserData);
 	static void ConUnExplosionGun(IConsole::IResult *pResult, void *pUserData);
 
+	static void ConTelekinesisImmunity(IConsole::IResult *pResult, void *pUserData);
 	static void ConTelekinesis(IConsole::IResult *pResult, void *pUserData);
 	static void ConUnTelekinesis(IConsole::IResult *pResult, void *pUserData);
+
 	static void ConPlaySoundGlobal(IConsole::IResult *pResult, void *pUserData);
 	static void ConListSounds(IConsole::IResult *pResult, void *pUserData);
+
 	static void ConRandomMap(IConsole::IResult *pResult, void *pUserData);
 
 	void FoxNetTick();
@@ -618,11 +621,10 @@ private: // FoxNet
 	void ChangeSpeedMode();
 	bool CheckSpam(int ClientId, const char *pLine) const;
 
-	void UnsetTelekinesis(CEntity *pEntity);
-
 	void SendEveryonePing(int ChatterClientId, const char *pText, int ReceivingIds) const;
 
 public:
+	void UnsetTelekinesis(CEntity *pEntity);
 	int GetWeaponType(int Weapon);
 
 };
