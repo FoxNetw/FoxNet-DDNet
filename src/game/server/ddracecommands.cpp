@@ -1460,3 +1460,101 @@ void CGameContext::ConListSounds(IConsole::IResult *pResult, void *pUserData)
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", "39 = CTF Flag Capture");
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", "40 = Menu");
 }
+
+void CGameContext::ConSetPlayerClan(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->m_ClientId;
+	if(pResult->NumArguments() > 1)
+		Victim = pResult->GetVictim();
+
+	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+
+	pChr->Server()->SetClientClan(Victim, pResult->GetString(1));
+}
+
+void CGameContext::ConSetPlayerName(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->m_ClientId;
+	if(pResult->NumArguments() > 1)
+		Victim = pResult->GetVictim();
+
+	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+
+	pChr->Server()->SetClientName(Victim, pResult->GetString(1));
+}
+
+void CGameContext::ConSetPlayerSkin(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->m_ClientId;
+	if(pResult->NumArguments() > 1)
+		Victim = pResult->GetVictim();
+
+	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+
+	CTeeInfo &TeeInfo = pSelf->m_apPlayers[Victim]->m_TeeInfos;
+
+	str_copy(pSelf->m_apPlayers[Victim]->m_TeeInfos.m_aSkinName, pResult->GetString(1));
+}
+
+void CGameContext::ConSetPlayerCustomColor(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->m_ClientId;
+	if(pResult->NumArguments() > 1)
+		Victim = pResult->GetVictim();
+
+	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+
+	CTeeInfo &TeeInfo = pSelf->m_apPlayers[Victim]->m_TeeInfos;
+
+	pSelf->m_apPlayers[Victim]->m_TeeInfos.m_UseCustomColor = pResult->GetInteger(1);
+}
+
+void CGameContext::ConSetPlayerColorBody(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->m_ClientId;
+	if(pResult->NumArguments() > 1)
+		Victim = pResult->GetVictim();
+
+	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+
+	CTeeInfo &TeeInfo = pSelf->m_apPlayers[Victim]->m_TeeInfos;
+
+	pSelf->m_apPlayers[Victim]->m_TeeInfos.m_ColorBody = pResult->GetInteger(1);
+}
+
+void CGameContext::ConSetPlayerColorFeet(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->m_ClientId;
+	if(pResult->NumArguments() > 1)
+		Victim = pResult->GetVictim();
+
+	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+
+	CTeeInfo &TeeInfo = pSelf->m_apPlayers[Victim]->m_TeeInfos;
+
+	pSelf->m_apPlayers[Victim]->m_TeeInfos.m_ColorFeet = pResult->GetInteger(1);
+}

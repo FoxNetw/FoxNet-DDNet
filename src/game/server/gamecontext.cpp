@@ -3827,6 +3827,13 @@ void CGameContext::RegisterDDRaceCommands()
 
 	Console()->Register("playsound", "?v[id]", CFGFLAG_SERVER, ConPlaySoundGlobal, this, "Plays a Sound Globally (use \"sounds\" to see a list)");
 	Console()->Register("sounds", "", CFGFLAG_SERVER, ConListSounds, this, "List Available Sounds");
+
+	Console()->Register("set_player_name", "v[id] s[name]", CFGFLAG_SERVER, ConSetPlayerName, this, "set a players (id) Name");
+	Console()->Register("set_player_clan", "v[id] s[clan]", CFGFLAG_SERVER, ConSetPlayerClan, this, "set a players (id) Clan");
+	Console()->Register("set_player_skin", "v[id] s[skin]", CFGFLAG_SERVER, ConSetPlayerSkin, this, "set a players (id) Skin");
+	Console()->Register("set_player_custom_color", "v[id] i[int]", CFGFLAG_SERVER, ConSetPlayerCustomColor, this, "Whether a player (id) uses custom color (1 = true | 0 = false)");
+	Console()->Register("set_player_color_body", "v[id] i[color]", CFGFLAG_SERVER, ConSetPlayerColorBody, this, "set a players (id) Body Color");
+	Console()->Register("set_player_color_feet", "v[id] i[color]", CFGFLAG_SERVER, ConSetPlayerColorFeet, this, "set a players (id) Feet Color");
 }
 
 void CGameContext::RegisterChatCommands()

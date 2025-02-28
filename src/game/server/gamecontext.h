@@ -616,6 +616,14 @@ private: // FoxNet
 
 	static void ConRandomMap(IConsole::IResult *pResult, void *pUserData);
 
+	
+	static void ConSetPlayerCustomColor(IConsole::IResult *pResult, void *pUserData);
+	static void ConSetPlayerColorFeet(IConsole::IResult *pResult, void *pUserData);
+	static void ConSetPlayerColorBody(IConsole::IResult *pResult, void *pUserData);
+	static void ConSetPlayerClan(IConsole::IResult *pResult, void *pUserData);
+	static void ConSetPlayerName(IConsole::IResult *pResult, void *pUserData);
+	static void ConSetPlayerSkin(IConsole::IResult *pResult, void *pUserData);
+
 	void FoxNetTick();
 	void BanSync();
 	void ChangeSpeedMode();
