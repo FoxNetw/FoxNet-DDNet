@@ -2659,6 +2659,7 @@ void CCharacter::TryRespawn()
 		m_pPlayer->m_SoloTime = Server()->Tick() - Server()->TickSpeed();
 		m_pPlayer->m_SpawnSoloShowOthers = true;
 		GameServer()->GetPlayerChar(m_pPlayer->GetCid())->SetSolo(true);
+		HeadItem(1, m_pPlayer->GetCid());
 	}
 }
 
@@ -2720,8 +2721,6 @@ void CCharacter::UnsoloAfterSpawn()
 			HeadItem(0, m_pPlayer->GetCid());
 			GameServer()->GetPlayerChar(m_pPlayer->GetCid())->SetSolo(false);
 		}
-		else if(!m_HeadItem)
-			HeadItem(1, m_pPlayer->GetCid());
 	}
 }
 

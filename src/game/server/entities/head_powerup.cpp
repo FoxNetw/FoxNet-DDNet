@@ -51,9 +51,9 @@ void CHeadItem::Snap(int SnappingClient)
 	CCharacter *pOwner = GameServer()->GetPlayerChar(m_Owner);
 	if(pOwner && pOwner->IsPaused())
 		return;
-
-	if(!GameServer()->GetPlayerChar(m_Owner)->CanSnapCharacter(SnappingClient))
-		return;
+	if(GameServer()->GetPlayerChar(SnappingClient) && pOwner)
+		if(!GameServer()->GetPlayerChar(m_Owner)->CanSnapCharacter(SnappingClient))
+			return;
 
 	int Size = Server()->IsSixup(SnappingClient) ? 4 * 4 : sizeof(CNetObj_Pickup);
 	CNetObj_Pickup *pPickup = static_cast<CNetObj_Pickup *>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, m_aID, Size));
