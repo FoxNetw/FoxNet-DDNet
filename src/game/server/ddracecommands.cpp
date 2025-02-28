@@ -1503,8 +1503,6 @@ void CGameContext::ConSetPlayerSkin(IConsole::IResult *pResult, void *pUserData)
 	if(!pChr)
 		return;
 
-	CTeeInfo &TeeInfo = pSelf->m_apPlayers[Victim]->m_TeeInfos;
-
 	str_copy(pSelf->m_apPlayers[Victim]->m_TeeInfos.m_aSkinName, pResult->GetString(1));
 }
 
@@ -1519,8 +1517,6 @@ void CGameContext::ConSetPlayerCustomColor(IConsole::IResult *pResult, void *pUs
 
 	if(!pChr)
 		return;
-
-	CTeeInfo &TeeInfo = pSelf->m_apPlayers[Victim]->m_TeeInfos;
 
 	pSelf->m_apPlayers[Victim]->m_TeeInfos.m_UseCustomColor = pResult->GetInteger(1);
 }
@@ -1537,8 +1533,6 @@ void CGameContext::ConSetPlayerColorBody(IConsole::IResult *pResult, void *pUser
 	if(!pChr)
 		return;
 
-	CTeeInfo &TeeInfo = pSelf->m_apPlayers[Victim]->m_TeeInfos;
-
 	pSelf->m_apPlayers[Victim]->m_TeeInfos.m_ColorBody = pResult->GetInteger(1);
 }
 
@@ -1553,8 +1547,6 @@ void CGameContext::ConSetPlayerColorFeet(IConsole::IResult *pResult, void *pUser
 
 	if(!pChr)
 		return;
-
-	CTeeInfo &TeeInfo = pSelf->m_apPlayers[Victim]->m_TeeInfos;
 
 	pSelf->m_apPlayers[Victim]->m_TeeInfos.m_ColorFeet = pResult->GetInteger(1);
 }
