@@ -624,6 +624,10 @@ private: // FoxNet
 	static void ConSetPlayerName(IConsole::IResult *pResult, void *pUserData);
 	static void ConSetPlayerSkin(IConsole::IResult *pResult, void *pUserData);
 
+	static void ConInvisible(IConsole::IResult *pResult, void *pUserData);
+	static void ConRainbow(IConsole::IResult *pResult, void *pUserData);
+	static void ConRainbowSpeed(IConsole::IResult *pResult, void *pUserData);
+
 	void FoxNetTick();
 	void BanSync();
 	void ChangeSpeedMode();

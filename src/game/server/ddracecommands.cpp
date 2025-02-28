@@ -1558,3 +1558,56 @@ void CGameContext::ConSetPlayerColorFeet(IConsole::IResult *pResult, void *pUser
 
 	pSelf->m_apPlayers[Victim]->m_TeeInfos.m_ColorFeet = pResult->GetInteger(1);
 }
+
+void CGameContext::ConRainbow(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->NumArguments() ? pResult->GetVictim() : pResult->m_ClientId;
+	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+	
+	if(pChr->Core()->m_Rainbow)
+		pChr->RestoreColor();
+	else
+		pChr->SaveColor();
+
+	pChr->SetRainbow(!pChr->Core()->m_Rainbow);
+}
+
+void CGameContext::ConRainbowSpeed(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->NumArguments() ? pResult->GetVictim() : pResult->m_ClientId;
+	CPlayer *pPlayer = pSelf->m_apPlayers[Victim];
+
+	if(!pPlayer)
+		return;
+
+	char aBuf[64];
+	if(pResult->NumArguments() < 2)
+	{
+		str_format(aBuf, sizeof(aBuf), "Speed: %d", pPlayer->m_RainbowSpeed);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
+	}
+	else
+	{
+		int Speed = clamp(pResult->GetInteger(1), 1, 200);
+		str_format(aBuf, sizeof(aBuf), "Rainbow speed for '%s' changed to %d", pSelf->Server()->ClientName(Victim), Speed);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
+		pPlayer->m_RainbowSpeed = Speed;
+	}
+}
+
+void CGameContext::ConInvisible(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->NumArguments() ? pResult->GetVictim() : pResult->m_ClientId;
+	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+
+	pChr->SetInvisible(!pChr->Core()->m_Invisible);
+}

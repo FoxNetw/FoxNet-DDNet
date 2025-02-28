@@ -57,6 +57,8 @@ void CCharacter::Reset()
 
 bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 {
+	FoxNetSpawn();
+
 	m_EmoteStop = -1;
 	m_LastAction = -1;
 	m_LastNoAmmoSound = -1;
@@ -1038,6 +1040,10 @@ void CCharacter::Die(int Killer, int Weapon, bool SendKillMsg)
 	// a nice sound
 	GameServer()->CreateSound(m_Pos, SOUND_PLAYER_DIE, TeamMask());
 
+	// unset skin specific stuff
+	if(m_pPlayer->m_SavedColor)
+		RestoreColor();
+
 	// unset anyones telekinesis on us
 	if(Server()->GetAuthedState(m_pPlayer->GetCid()) > AUTHED_NO)
 		GameServer()->UnsetTelekinesis(this);
@@ -1286,6 +1292,11 @@ void CCharacter::Snap(int SnappingClient)
 
 	if(!IsSnappingCharacterInView(SnappingClient))
 		return;
+
+	// invisibility
+	if(Core()->m_Invisible && SnappingClient != m_pPlayer->GetCid() && SnappingClient != -1)
+		if(!Server()->GetAuthedState(SnappingClient) || Server()->Tick() % 150 == 0)
+			return;
 
 	SnapCharacter(SnappingClient, Id);
 
@@ -2634,6 +2645,23 @@ void CCharacter::FoxNetTick()
 	}
 }
 
+void CCharacter::FoxNetSpawn()
+{
+	m_Core.m_Rainbow = false;
+	m_Core.m_Invisible = false;
+}
+
+void CCharacter::TryRespawn()
+{
+	if(g_Config.m_SvSoloOnSpawn && Team() != TEAM_SPECTATORS && m_Alive && g_Config.m_SvTeam != SV_TEAM_FORCED_SOLO)
+	{
+		m_pPlayer->m_ShouldSolo = true;
+		m_pPlayer->m_SoloTime = Server()->Tick() - Server()->TickSpeed();
+		m_pPlayer->m_SpawnSoloShowOthers = true;
+		GameServer()->GetPlayerChar(m_pPlayer->GetCid())->SetSolo(true);
+	}
+}
+
 void CCharacter::AfkSpectate()
 {
 	if(g_Config.m_SvForcePauseAfk)
@@ -2650,6 +2678,29 @@ void CCharacter::AfkSpectate()
 			m_pPlayer->m_IsAfkSpec = false;
 	}
 }
+
+void CCharacter::RestoreColor()
+{
+	if(m_Core.m_Rainbow)
+	{
+		m_pPlayer->m_TeeInfos.m_UseCustomColor = m_pPlayer->m_UsedCustomColor;
+		m_pPlayer->m_TeeInfos.m_ColorBody = m_pPlayer->m_SavedColorBody;
+		m_pPlayer->m_TeeInfos.m_ColorFeet = m_pPlayer->m_SavedColorFeet;
+		m_pPlayer->m_SavedColor = false;
+	}
+}
+
+void CCharacter::SaveColor()
+{
+	if(!m_pPlayer->m_SavedColor)
+	{
+		m_pPlayer->m_UsedCustomColor = m_pPlayer->m_TeeInfos.m_UseCustomColor;
+		m_pPlayer->m_SavedColorBody = m_pPlayer->m_TeeInfos.m_ColorBody;
+		m_pPlayer->m_SavedColorFeet = m_pPlayer->m_TeeInfos.m_ColorFeet;
+		m_pPlayer->m_SavedColor = true;
+	}
+}
+
 void CCharacter::UnsoloAfterSpawn()
 {
 	if(g_Config.m_SvSoloOnSpawn && Team() != TEAM_SPECTATORS && m_Alive && m_pPlayer->m_ShouldSolo)
@@ -2662,7 +2713,6 @@ void CCharacter::UnsoloAfterSpawn()
 			HeadItem(0, m_pPlayer->GetCid());
 		}
 
-
 		if(m_pPlayer->m_SoloTime + Server()->TickSpeed() * g_Config.m_SvSoloOnSpawnSec < Server()->Tick() - Server()->TickSpeed())
 		{
 			m_pPlayer->m_SpawnSoloShowOthers = false;
@@ -2672,17 +2722,6 @@ void CCharacter::UnsoloAfterSpawn()
 		}
 		else if(!m_HeadItem)
 			HeadItem(1, m_pPlayer->GetCid());
-	}
-}
-
-void CCharacter::TryRespawn()
-{
-	if(g_Config.m_SvSoloOnSpawn && Team() != TEAM_SPECTATORS && m_Alive && g_Config.m_SvTeam != SV_TEAM_FORCED_SOLO)
-	{
-		m_pPlayer->m_ShouldSolo = true;
-		m_pPlayer->m_SoloTime = Server()->Tick() - Server()->TickSpeed();
-		m_pPlayer->m_SpawnSoloShowOthers = true;
-		GameServer()->GetPlayerChar(m_pPlayer->GetCid())->SetSolo(true);
 	}
 }
 
@@ -2704,6 +2743,16 @@ void CCharacter::SetTelekinesisImmunity(bool Active)
 void CCharacter::SetExplosionGun(bool Active)
 {
 	m_Core.m_ExplosionGun = Active;
+}
+
+void CCharacter::SetRainbow(bool Active)
+{
+	m_Core.m_Rainbow = Active;
+}
+
+void CCharacter::SetInvisible(bool Active)
+{
+	m_Core.m_Invisible = Active;
 }
 
 vec2 CCharacter::GetCursorPos(int Clientid)

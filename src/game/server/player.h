@@ -239,8 +239,18 @@ public:
 
 	// FoxNet
 public:
+	void FoxNetTick();
+
+	int m_RainbowSpeed = 6; // <- is the default
+	int m_RainbowColor;
+	void RainbowTick();
+
 	bool m_IsAfkSpec;
 
+	bool m_SavedColor;
+	int m_UsedCustomColor;
+	int m_SavedColorBody;
+	int m_SavedColorFeet;
 
 	bool m_ShouldSolo;
 	int64_t m_SoloTime;

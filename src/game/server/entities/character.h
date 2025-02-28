@@ -35,10 +35,17 @@ public:
 
 	// FoxNet
 	void FoxNetTick();
+	void FoxNetSpawn();
 	void AfkSpectate();
 	void UnsoloAfterSpawn();
 	void TryRespawn();
 
+	// Restoring Color
+	void SaveColor();
+	void RestoreColor();
+
+	void SetRainbow(bool Active);
+	void SetInvisible(bool Active);
 	void SetExplosionGun(bool Active);
 	void SetTelekinesisImmunity(bool Active);
 

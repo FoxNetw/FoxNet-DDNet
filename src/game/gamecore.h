@@ -245,6 +245,8 @@ public:
 
 	// FoxNet
 	bool m_TelekinesisImmunity;
+	bool m_Invisible;
+	bool m_Rainbow;
 	bool m_ExplosionGun;
 
 	// DDNet Character

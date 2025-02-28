@@ -178,6 +178,8 @@ void CPlayer::Tick()
 	if(!Server()->ClientIngame(m_ClientId))
 		return;
 
+	FoxNetTick();
+
 	if(m_ChatScore > 0)
 		m_ChatScore--;
 
@@ -1049,4 +1051,40 @@ void CPlayer::CCameraInfo::Reset()
 	m_Zoom = 1.0f;
 	m_Deadzone = 0.0f;
 	m_FollowFactor = 0.0f;
+}
+
+// FoxNet
+void CPlayer::FoxNetTick()
+{
+	RainbowTick();
+}
+
+void CPlayer::RainbowTick()
+{
+	// snapping happens every 2 ticks
+	if(Server()->Tick() % 2 != 0)
+		return;
+
+	if(!m_pCharacter || !m_pCharacter->Core()->m_Rainbow || m_Spawning)
+		return;
+
+	if(!m_SavedColor)
+	{
+		m_pCharacter->SaveColor();
+		return;
+	}
+
+	m_RainbowColor = (m_RainbowColor + m_RainbowSpeed) % 256;
+
+	
+	int BaseColor = m_RainbowColor * 0x010000;
+	int Color = 0xff32;
+
+	// only send rainbow updates to people close to you, to reduce network traffic
+	for(int i = 0; i < MAX_CLIENTS; i++)
+		if(GameServer()->m_apPlayers[i] && !m_pCharacter->NetworkClipped(i))
+		{
+			m_TeeInfos.m_UseCustomColor = 1;
+			m_TeeInfos.m_ColorBody = BaseColor + Color;
+		}
 }
