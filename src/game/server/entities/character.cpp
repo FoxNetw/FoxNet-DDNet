@@ -549,7 +549,21 @@ void CCharacter::FireWeapon()
 
 	case WEAPON_GUN:
 	{
-		if(!m_Core.m_Jetpack || !m_pPlayer->m_NinjaJetpack || m_Core.m_HasTelegunGun)
+		if (m_Core.m_HeartGun)
+		{
+			new CCustomProjectile(
+				GameWorld(),
+				m_pPlayer->GetCid(), // owner
+				ProjStartPos, // pos
+				Direction, // dir
+				false, // explosive
+				false, // freeze
+				false, // unfreeze
+				WEAPON_HEART_GUN // type
+			);
+			GameServer()->CreateSound(m_Pos, SOUND_PICKUP_HEALTH, TeamMask());
+		}
+		else if(!m_Core.m_Jetpack || !m_pPlayer->m_NinjaJetpack || m_Core.m_HasTelegunGun)
 		{
 			int Lifetime = (int)(Server()->TickSpeed() * GetTuning(m_TuneZone)->m_GunLifetime);
 
@@ -681,7 +695,6 @@ void CCharacter::FireWeapon()
 			false, // unfreeze
 			WEAPON_HEART_GUN // type
 		);
-		// if(Sound)
 		GameServer()->CreateSound(m_Pos, SOUND_PICKUP_HEALTH, TeamMask());
 	}
 	break;
@@ -2647,6 +2660,13 @@ void CCharacter::FoxNetTick()
 {
 	UnsoloAfterSpawn();
 	AfkSpectate();
+
+	// Update Gun Type
+
+	if(g_Config.m_SvGunType == 1 && !m_Core.m_ExplosionGun)
+		m_Core.m_ExplosionGun = true;
+	else if(g_Config.m_SvGunType == 2 && !m_Core.m_HeartGun)
+		m_Core.m_HeartGun = true;
 
 	// update telekinesis entitiy position
 	if(m_pTelekinesisEntity)

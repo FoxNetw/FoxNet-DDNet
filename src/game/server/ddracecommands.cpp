@@ -1387,12 +1387,23 @@ void CGameContext::ConTelekinesis(IConsole::IResult *pResult, void *pUserData)
 	if(!pChr)
 		return;
 
-	pChr->GiveWeapon(WEAPON_TELEKINESIS);
+	bool GotWeapon = pChr->GetWeaponGot(WEAPON_TELEKINESIS);
+
+	if(GotWeapon)
+		pChr->GiveWeapon(WEAPON_TELEKINESIS, true);
+	else
+		pChr->GiveWeapon(WEAPON_TELEKINESIS);
+
 	if(g_Config.m_SvCommandOutput)
-		pSelf->SendBroadcast("         << You have Telekinesis! >> \n << Use your scrollwheel to select it >>", Victim);
+	{
+		if(GotWeapon)
+			pSelf->SendBroadcast("<< You have Telekinesis >>", Victim);
+		else
+			pSelf->SendBroadcast("<< You lost Telekinesis >>", Victim);
+	}
 }
 
-void CGameContext::ConUnTelekinesis(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConHeartGun(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	int Victim = pResult->NumArguments() > 1 ? pResult->m_ClientId : pResult->GetVictim();
@@ -1402,9 +1413,20 @@ void CGameContext::ConUnTelekinesis(IConsole::IResult *pResult, void *pUserData)
 	if(!pChr)
 		return;
 
-	pChr->GiveWeapon(WEAPON_TELEKINESIS, true);
+	bool GotWeapon = pChr->GetWeaponGot(WEAPON_HEART_GUN);
+
+	if(GotWeapon)
+		pChr->GiveWeapon(WEAPON_HEART_GUN, true);
+	else
+		pChr->GiveWeapon(WEAPON_HEART_GUN);
+
 	if(g_Config.m_SvCommandOutput)
-		pSelf->SendBroadcast("<< You lost Telekinesis >>", Victim);
+	{
+		if(GotWeapon)
+			pSelf->SendBroadcast("<< You have a Heart Gun >>", Victim);
+		else
+			pSelf->SendBroadcast("<< You lost the Heart Gun >>", Victim);
+	}
 }
 
 void CGameContext::ConPlaySoundGlobal(IConsole::IResult *pResult, void *pUserData)

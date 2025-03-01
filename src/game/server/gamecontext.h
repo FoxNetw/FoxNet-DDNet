@@ -609,14 +609,14 @@ private: // FoxNet
 
 	static void ConTelekinesisImmunity(IConsole::IResult *pResult, void *pUserData);
 	static void ConTelekinesis(IConsole::IResult *pResult, void *pUserData);
-	static void ConUnTelekinesis(IConsole::IResult *pResult, void *pUserData);
+
+	static void ConHeartGun(IConsole::IResult *pResult, void *pUserData);
 
 	static void ConPlaySoundGlobal(IConsole::IResult *pResult, void *pUserData);
 	static void ConListSounds(IConsole::IResult *pResult, void *pUserData);
 
 	static void ConRandomMap(IConsole::IResult *pResult, void *pUserData);
 
-	
 	static void ConSetPlayerCustomColor(IConsole::IResult *pResult, void *pUserData);
 	static void ConSetPlayerColorFeet(IConsole::IResult *pResult, void *pUserData);
 	static void ConSetPlayerColorBody(IConsole::IResult *pResult, void *pUserData);

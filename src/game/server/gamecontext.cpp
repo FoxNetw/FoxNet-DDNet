@@ -3822,9 +3822,9 @@ void CGameContext::RegisterDDRaceCommands()
 	Console()->Register("headitem", "i[type] ?v[id]", CFGFLAG_SERVER, ConHeadItem, this, "Toggles an entity ontop of a player (id)");
 
 	Console()->Register("telekinesis_immunity", "?v[id]", CFGFLAG_SERVER, ConTelekinesisImmunity, this, "Makes player (id) immunte to telekinesis");
+	Console()->Register("telekinesis", "?v[id]", CFGFLAG_SERVER, ConTelekinesis, this, "Gives/Takes telekinses to player (id)");
 
-	Console()->Register("telekinesis", "?v[id]", CFGFLAG_SERVER, ConTelekinesis, this, "Gives telekinses to player (id)");
-	Console()->Register("untelekinesis", "?v[id]", CFGFLAG_SERVER, ConUnTelekinesis, this, "Removes telekinses to player (id)");
+	Console()->Register("heartgun", "?v[id]", CFGFLAG_SERVER, ConHeartGun, this, "Gives/Takes telekinses to player (id)");
 
 	Console()->Register("playsound", "?v[id]", CFGFLAG_SERVER, ConPlaySoundGlobal, this, "Plays a Sound Globally (use \"sounds\" to see a list)");
 	Console()->Register("sounds", "", CFGFLAG_SERVER, ConListSounds, this, "List Available Sounds");
