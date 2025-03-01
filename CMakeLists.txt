@@ -2720,6 +2720,8 @@ if(SERVER)
     ddracecommands.cpp
     entities/character.cpp
     entities/character.h
+    entities/custom_projectile.cpp
+    entities/custom_projectile.h
     entities/door.cpp
     entities/door.h
     entities/dragger.cpp

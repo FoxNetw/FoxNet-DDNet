@@ -36,9 +36,17 @@ public:
 	// FoxNet
 	void FoxNetTick();
 	void FoxNetSpawn();
+
 	void AfkSpectate();
 	void UnsoloAfterSpawn();
 	void TryRespawn();
+
+	// weapon indicator
+	void UpdateWeaponIndicator();
+	bool IsWeaponIndicator();
+	int64_t m_LastWeaponIndTick;
+	void SendBroadcastHud(const char *pMessage);
+	int NumDDraceHudRows();
 
 	// Restoring Color
 	void SaveColor();

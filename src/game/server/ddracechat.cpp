@@ -2465,3 +2465,19 @@ void CGameContext::ConTimeCP(IConsole::IResult *pResult, void *pUserData)
 	const char *pName = pResult->GetString(0);
 	pSelf->Score()->LoadPlayerTimeCp(pResult->m_ClientId, pName);
 }
+
+void CGameContext::ConWeaponIndicator(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientId];
+	if(pPlayer)
+		pPlayer->SetWeaponIndicator(pResult->NumArguments() ? pResult->GetInteger(0) : !pPlayer->m_WeaponIndicator);
+}
+
+void CGameContext::ConSpecAfk(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientId];
+	if(pPlayer)
+		pPlayer->SetSpecAfk(pResult->NumArguments() ? pResult->GetInteger(0) : !pPlayer->m_SpecAfk);
+}

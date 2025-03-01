@@ -1088,3 +1088,25 @@ void CPlayer::RainbowTick()
 			m_TeeInfos.m_ColorBody = BaseColor + Color;
 		}
 }
+
+void CPlayer::SetWeaponIndicator(bool Set)
+{
+	if(m_WeaponIndicator == Set)
+		return;
+	m_WeaponIndicator = Set;
+	if(Set)
+		GameServer()->SendChatTarget(m_ClientId, "Weapon indicator enabled");
+	else
+		GameServer()->SendChatTarget(m_ClientId, "Weapon indicator disabled");
+}
+
+void CPlayer::SetSpecAfk(bool Set)
+{
+	if(m_SpecAfk == Set)
+		return;
+	m_SpecAfk = Set;
+	if(Set)
+		GameServer()->SendChatTarget(m_ClientId, "Auto Spectator on Afk Enabled");
+	else
+		GameServer()->SendChatTarget(m_ClientId, "Auto Spectator on Afk Disabled");
+}

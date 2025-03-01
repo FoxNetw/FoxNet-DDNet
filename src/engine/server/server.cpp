@@ -2833,7 +2833,7 @@ void CServer::UpdateDebugDummies(bool ForceDisconnect)
 
 			GameServer()->OnClientConnected(ClientId, nullptr);
 			Client.m_State = CClient::STATE_INGAME;
-			str_format(Client.m_aName, sizeof(Client.m_aName), "Real Player %d", DummyIndex + 1);
+			str_copy(Client.m_aName, "Real Player");
 			GameServer()->OnClientEnter(ClientId);
 		}
 		else if(!AddDummy && Client.m_DebugDummy)

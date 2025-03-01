@@ -51,6 +51,7 @@ void CHeadItem::Snap(int SnappingClient)
 	CCharacter *pOwner = GameServer()->GetPlayerChar(m_Owner);
 	if(pOwner && pOwner->IsPaused())
 		return;
+
 	if(GameServer()->GetPlayerChar(SnappingClient) && pOwner)
 		if(!GameServer()->GetPlayerChar(m_Owner)->CanSnapCharacter(SnappingClient))
 			return;

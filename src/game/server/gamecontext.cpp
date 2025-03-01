@@ -1509,6 +1509,8 @@ void CGameContext::OnClientEnter(int ClientId)
 	}
 	m_pController->OnPlayerConnect(m_apPlayers[ClientId]);
 
+	m_apPlayers[ClientId]->m_WeaponIndicator = true;
+
 	{
 		CNetMsg_Sv_CommandInfoGroupStart Msg;
 		Server()->SendPackMsg(&Msg, MSGFLAG_VITAL | MSGFLAG_NORECORD, ClientId);
@@ -3819,7 +3821,6 @@ void CGameContext::RegisterDDRaceCommands()
 	Console()->Register("explosiongun", "?v[id]", CFGFLAG_SERVER, ConExplosionGun, this, "Gives you explosion gun");
 	Console()->Register("headitem", "i[type] ?v[id]", CFGFLAG_SERVER, ConHeadItem, this, "Toggles an entity ontop of a player (id)");
 
-	
 	Console()->Register("telekinesis_immunity", "?v[id]", CFGFLAG_SERVER, ConTelekinesisImmunity, this, "Makes player (id) immunte to telekinesis");
 
 	Console()->Register("telekinesis", "?v[id]", CFGFLAG_SERVER, ConTelekinesis, this, "Gives telekinses to player (id)");
@@ -3941,6 +3942,10 @@ void CGameContext::RegisterChatCommands()
 	Console()->Register("unendless", "", CFGFLAG_CHAT | CMDFLAG_PRACTICE, ConPracticeUnEndlessHook, this, "Removes endless hook from you");
 	Console()->Register("invincible", "?i['0'|'1']", CFGFLAG_CHAT | CMDFLAG_PRACTICE, ConPracticeToggleInvincible, this, "Toggles invincible mode");
 	Console()->Register("kill", "", CFGFLAG_CHAT | CFGFLAG_SERVER, ConProtectedKill, this, "Kill yourself when kill-protected during a long game (use f1, kill for regular kill)");
+
+	// FoxNet
+	Console()->Register("weaponindicator", "?i['0'|'1']", CFGFLAG_CHAT, ConWeaponIndicator, this, "Tells you which weapon you are holding under the heart and armor bar");
+	Console()->Register("afkspectate", "?i['0'|'1']", CFGFLAG_CHAT, ConSpecAfk, this, "Puts you into afk if you're afk");
 }
 
 void CGameContext::OnInit(const void *pPersistentData)
@@ -5405,8 +5410,38 @@ int CGameContext::GetWeaponType(int Weapon)
 		return WEAPON_NINJA;
 	case WEAPON_TELEKINESIS:
 		return WEAPON_GUN;
+	case WEAPON_HEART_GUN:
+		return WEAPON_GUN;
 	}
 	return Weapon;
+}
+
+const char *CGameContext::GetWeaponName(int Weapon)
+{
+	switch(Weapon)
+	{
+	case -2:
+		return "Heart";
+	case -1:
+		return "Armor";
+	case WEAPON_HAMMER:
+		return "Hammer";
+	case WEAPON_GUN:
+		return "Gun";
+	case WEAPON_SHOTGUN:
+		return "Shotgun";
+	case WEAPON_GRENADE:
+		return "Grenade";
+	case WEAPON_LASER:
+		return "Laser";
+	case WEAPON_NINJA:
+		return "Ninja";
+	case WEAPON_HEART_GUN:
+		return "Heart Gun";
+	case WEAPON_TELEKINESIS:
+		return "Telekinesis";
+	}
+	return "Unknown";
 }
 
 void CGameContext::ConRandomMap(IConsole::IResult *pResult, void *pUserData)

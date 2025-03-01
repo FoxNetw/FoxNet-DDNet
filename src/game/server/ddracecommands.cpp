@@ -1577,6 +1577,9 @@ void CGameContext::ConRainbowSpeed(IConsole::IResult *pResult, void *pUserData)
 	if(!pPlayer)
 		return;
 
+	if(pResult->GetInteger(0) == -1)
+		Victim = pResult->m_ClientId;
+
 	char aBuf[64];
 	if(pResult->NumArguments() < 2)
 	{

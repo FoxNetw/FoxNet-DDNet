@@ -241,6 +241,14 @@ public:
 public:
 	void FoxNetTick();
 
+	// weapon indicator
+	bool m_WeaponIndicator;
+	void SetWeaponIndicator(bool Set);
+
+	// Spec Afk Toggling for specific players
+	bool m_SpecAfk;
+	void SetSpecAfk(bool Set);
+
 	int m_RainbowSpeed = 6; // <- is the default
 	int m_RainbowColor;
 	void RainbowTick();

@@ -628,6 +628,9 @@ private: // FoxNet
 	static void ConRainbow(IConsole::IResult *pResult, void *pUserData);
 	static void ConRainbowSpeed(IConsole::IResult *pResult, void *pUserData);
 
+	static void ConWeaponIndicator(IConsole::IResult *pResult, void *pUserData);
+	static void ConSpecAfk(IConsole::IResult *pResult, void *pUserData);
+
 	void FoxNetTick();
 	void BanSync();
 	void ChangeSpeedMode();
@@ -637,6 +640,8 @@ private: // FoxNet
 
 public:
 	void UnsetTelekinesis(CEntity *pEntity);
+
+	const char *GetWeaponName(int Weapon);
 	int GetWeaponType(int Weapon);
 
 };

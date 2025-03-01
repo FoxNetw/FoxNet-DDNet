@@ -22,6 +22,7 @@
 
 // FoxNet
 #include <game/server/entities/head_powerup.h>
+#include <game/server/entities/custom_projectile.h>
 
 MACRO_ALLOC_POOL_ID_IMPL(CCharacter, MAX_CLIENTS)
 
@@ -375,6 +376,7 @@ void CCharacter::DoWeaponSwitch()
 
 	// switch Weapon
 	SetWeapon(m_QueuedWeapon);
+	UpdateWeaponIndicator();
 }
 
 void CCharacter::HandleWeaponSwitch()
@@ -645,11 +647,12 @@ void CCharacter::FireWeapon()
 			if(pEntity)
 				pChr = (CCharacter *)pEntity;
 
-			if(pChr->Core()->m_TelekinesisImmunity)
-				break;
 
 			if((pChr && pChr->GetPlayer()->GetCid() != m_pPlayer->GetCid() && (pChr->m_pTelekinesisEntity != this || (pEntity && pEntity != pChr))))
 			{
+				if(pChr->Core()->m_TelekinesisImmunity)
+					break;
+
 				bool IsTelekinesed = false;
 				for(int i = 0; i < MAX_CLIENTS; i++)
 					if(GameServer()->GetPlayerChar(i) && GameServer()->GetPlayerChar(i)->m_pTelekinesisEntity == pEntity)
@@ -663,6 +666,23 @@ void CCharacter::FireWeapon()
 		}
 		else
 			m_pTelekinesisEntity = 0;
+	}
+	break;
+
+	case WEAPON_HEART_GUN:
+	{
+		new CCustomProjectile(
+			GameWorld(),
+			m_pPlayer->GetCid(), // owner
+			ProjStartPos, // pos
+			Direction, // dir
+			false, // explosive
+			false, // freeze
+			false, // unfreeze
+			WEAPON_HEART_GUN // type
+		);
+		// if(Sound)
+		GameServer()->CreateSound(m_Pos, SOUND_PICKUP_HEALTH, TeamMask());
 	}
 	break;
 	}
@@ -2761,3 +2781,80 @@ vec2 CCharacter::GetCursorPos(int Clientid)
 	return GameServer()->m_apPlayers[Clientid]->m_CameraInfo.ConvertTargetToWorld(GetPos(), Target);
 }
 
+int CCharacter::NumDDraceHudRows()
+{
+	if(Server()->IsSixup(m_pPlayer->GetCid()) || GameServer()->GetClientVersion(m_pPlayer->GetCid()) < VERSION_DDNET_NEW_HUD)
+		return 0;
+
+	CCharacter *pChr = this;
+	if((m_pPlayer->GetTeam() == TEAM_SPECTATORS || m_pPlayer->IsPaused()) && m_pPlayer->m_SpectatorId >= 0 && GameServer()->GetPlayerChar(m_pPlayer->m_SpectatorId))
+		pChr = GameServer()->GetPlayerChar(m_pPlayer->m_SpectatorId);
+
+	int Rows = 0;
+	if(pChr->Core()->m_EndlessJump || pChr->Core()->m_EndlessHook || pChr->Core()->m_Jetpack || pChr->Core()->m_HasTelegunGrenade || pChr->Core()->m_HasTelegunGun || pChr->Core()->m_HasTelegunLaser)
+		Rows++;
+	if(pChr->Core()->m_Solo || pChr->Core()->m_CollisionDisabled || pChr->Core()->m_HookHitDisabled || pChr->Core()->m_HammerHitDisabled || pChr->Core()->m_ShotgunHitDisabled || pChr->Core()->m_GrenadeHitDisabled || pChr->Core()->m_LaserHitDisabled)
+		Rows++;
+	if(Teams()->IsPractice(Team()) || Teams()->TeamLocked(Team()) || pChr->Core()->m_DeepFrozen || pChr->Core()->m_LiveFrozen)
+		Rows++;
+
+	return Rows;
+}
+
+void CCharacter::SendBroadcastHud(const char *pMessage)
+{
+	char aBuf[256] = "";
+	for(int i = 0; i < NumDDraceHudRows(); i++)
+		str_append(aBuf, "\n", sizeof(aBuf));
+
+	str_append(aBuf, pMessage, sizeof(aBuf));
+
+	if(!Server()->IsSixup(m_pPlayer->GetCid()))
+		for(int i = 0; i < 128; i++)
+			str_append(aBuf, " ", sizeof(aBuf));
+
+	GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCid(), false);
+}
+
+bool CCharacter::IsWeaponIndicator()
+{
+	// 2 seconds of showing weapon indicator instead of money broadcast
+	return m_LastWeaponIndTick > Server()->Tick() - Server()->TickSpeed() * 2;
+}
+
+void CCharacter::UpdateWeaponIndicator()
+{
+	if(!m_pPlayer->m_WeaponIndicator)
+		return;
+
+	char aAmmo[32] = "";
+	const char *pName = GameServer()->GetWeaponName(GetActiveWeapon());
+
+	char aBuf[256] = "";
+	if(!Server()->IsSixup(m_pPlayer->GetCid()))
+	{
+		if(GameServer()->GetClientVersion(m_pPlayer->GetCid()) < VERSION_DDNET_NEW_HUD)
+		{
+			str_format(aBuf, sizeof(aBuf), "Weapon: %s%s", pName, aAmmo);
+		}
+		else
+		{
+			if(GetActiveWeapon() >= NUM_WEAPONS) //|| m_IsPortalBlocker || m_NumGrogsHolding)
+				str_format(aBuf, sizeof(aBuf), "> %s%s", pName, aAmmo);
+		}
+	}
+	else
+	{
+		str_format(aBuf, sizeof(aBuf), "> %s%s <", pName, aAmmo);
+	}
+
+	// dont update, when we change between vanilla weapons, so that no "" is being sent to remove another broadcast, for example a money broadcast
+	if(aBuf[0] || IsWeaponIndicator())
+	{
+		SendBroadcastHud(aBuf);
+	}
+
+	// dont update when vanilla weapon got triggered and we have new hud
+	if(aBuf[0])
+		m_LastWeaponIndTick = Server()->Tick();
+}

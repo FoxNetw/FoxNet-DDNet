@@ -23,5 +23,8 @@ public:
 	void Tick() override;
 
 	void DoTeamChange(class CPlayer *pPlayer, int Team, bool DoChatMsg = true) override;
+
+	std::map<int, std::vector<vec2>> m_TeleOuts;
+	std::map<int, std::vector<vec2>> m_TeleCheckOuts;
 };
 #endif // GAME_SERVER_GAMEMODES_DDRACE_H
