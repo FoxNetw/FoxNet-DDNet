@@ -1307,6 +1307,9 @@ void CGameContext::ConHeadItem(IConsole::IResult *pResult, void *pUserData)
 	if(pResult->NumArguments() > 1)
 		Victim = pResult->GetVictim();
 
+	if(pResult->GetInteger(1) == -1)
+		Victim = pResult->m_ClientId;
+
 	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
 
 	if(pChr)
