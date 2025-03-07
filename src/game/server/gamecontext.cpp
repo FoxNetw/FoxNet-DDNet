@@ -5342,6 +5342,27 @@ bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Poi
 		BanAmount = 1000;
 	}
 
+	// anti mass ping ad bot
+	if((str_find_nocase(pMsg, "/whisper") || str_find_nocase(pMsg, "/w")) && str_find_nocase(pMsg, "bro, check out this client"))
+	{
+		if(str_find_nocase(pMsg, "Think you could do better") && str_find_nocase(pMsg, "Not without")) // mass ping advertising
+		{
+			// try to not remove their message if they are just trying to be funny
+			if(!str_find_nocase(pMsg, "github.com") && !str_find_nocase(pMsg, "tater") && !str_find_nocase(pMsg, "tclient") && !str_find_nocase(pMsg, "t-client") && !str_find_nocase(pMsg, "tclient.app") // TClient
+				&& !str_find_nocase(pMsg, "aiodob") && !str_find_nocase(pMsg, "a-client") && !str_find(pMsg, "A Client") && !str_find(pMsg, "A client") // AClient
+				&& !str_find_nocase(pMsg, "chillerbot") && !str_find_nocase(pMsg, "cactus")) // Other
+			{
+				count += 2;
+				BanAmount = 1000;
+			}
+			if(str_find(pMsg, " ")) // This is the little white space it uses between some letters
+			{
+				count += 2;
+				BanAmount = 1200;
+			}
+		}
+	}
+
 	if(count >= 2)
 	{
 		if(BanAmount == 120)
@@ -5350,6 +5371,8 @@ bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Poi
 			Server()->Ban(ClientId, BanAmount * 60, "Don't Advertise Cheat Clients on this Server", "");
 		if(BanAmount == 1000)
 			Server()->Ban(ClientId, BanAmount * 60, "Krx Message", "");
+		if(BanAmount == 1200)
+			Server()->Ban(ClientId, BanAmount * 60, "Mass Advertising", "");
 		return true;
 	}
 	else
