@@ -5329,8 +5329,8 @@ bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Poi
 	// 𝕕𝕠𝕟❜𝕥 𝕔𝕒𝕣𝕖 + 𝕕𝕚𝕕𝕟❜𝕥 𝕒𝕤𝕜 + 𝕔𝕣𝕪 𝕒𝕓𝕠𝕦𝕥 𝕚𝕥 + 𝕤𝕥𝕒𝕪 𝕞𝕒𝕕 + 𝕘𝕖𝕥 𝕣𝕖𝕒𝕝 + 𝕃 + 𝕥𝕣𝕚𝕘𝕘𝕖𝕣𝕖𝕕 + 𝕥𝕠𝕦𝕔𝕙
 
 	// general needles to disallow
-	const char *disallowedStrings[] = {"krx", "free", "bot client", "cheat client", "КРХ"};
-	for(int i = 0; i < 5; i++)
+	const char *disallowedStrings[] = {"krx", "free", "bot client", "cheat client", "КРХ", "http", "t.me"};
+	for(int i = 0; i < 7; i++)
 	{
 		if(str_find_nocase(pMsg, disallowedStrings[i]))
 		{
