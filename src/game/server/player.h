@@ -252,7 +252,7 @@ public:
 	int m_RainbowColor;
 	void RainbowTick();
 
-	bool m_IsAfkSpec;
+	int m_IsAfkSpec;
 
 	bool m_SavedColor;
 	int m_UsedCustomColor;
