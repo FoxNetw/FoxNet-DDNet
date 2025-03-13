@@ -5309,9 +5309,16 @@ bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Poi
 		"🅀", "🅆", "🄴", "🅁", "🅃", "🅈", "🅄", "🄸", "🄾", "🄿", "🄰", "🅂", "🄳", "🄵", "🄶", "🄷", "🄹", "🄺", "🄻", "🅉", "🅇", "🄲", "🅅", "🄱", "🄽", "🄼",
 		"ⓠ", "ⓦ", "ⓔ", "ⓡ", "ⓣ", "ⓨ", "ⓤ", "ⓘ", "ⓞ", "ⓟ", "ⓐ", "ⓢ", "ⓓ", "ⓕ", "ⓖ", "ⓗ", "ⓙ", "ⓚ", "ⓛ", "ⓩ", "ⓧ", "ⓒ", "ⓥ", "ⓑ", "ⓝ", "ⓜ",
 		};
+
+	// Check if someone pinged a name with fancy letters in it, could cause false negatives
+	bool FoundFancyName = false;
+	for(int Clients = 0; Clients < MAX_CLIENTS; Clients++)
+		if(str_find_nocase(pMsg, Server()->ClientName(Clients)) && g_Config.m_SvAntiAdBot == 2)
+			FoundFancyName = true;
+
 	for(int i = 0; i < 130; i++)
 	{
-		if(str_find_nocase(pMsg, alphabet_fancy[i]))
+		if(str_find_nocase(pMsg, alphabet_fancy[i]) && !FoundFancyName)
 			fancy_count++;
 	}
 	if(fancy_count > 3)
@@ -5325,8 +5332,8 @@ bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Poi
 	// 𝕕𝕠𝕟❜𝕥 𝕔𝕒𝕣𝕖 + 𝕕𝕚𝕕𝕟❜𝕥 𝕒𝕤𝕜 + 𝕔𝕣𝕪 𝕒𝕓𝕠𝕦𝕥 𝕚𝕥 + 𝕤𝕥𝕒𝕪 𝕞𝕒𝕕 + 𝕘𝕖𝕥 𝕣𝕖𝕒𝕝 + 𝕃 + 𝕥𝕣𝕚𝕘𝕘𝕖𝕣𝕖𝕕 + 𝕥𝕠𝕦𝕔𝕙
 
 	// general needles to disallow
-	const char *disallowedStrings[] = {"krx", "discord.gg", "http", "free", "bot client", "cheat client"};
-	for(int i = 0; i < 2; i++)
+	const char *disallowedStrings[] = {"krx", "free", "bot client", "cheat client", "КРХ"};
+	for(int i = 0; i < 5; i++)
 	{
 		if(str_find_nocase(pMsg, disallowedStrings[i]))
 		{
@@ -5342,13 +5349,7 @@ bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Poi
 		BanAmount = 1000;
 	}
 
-	if(str_find_nocase(pMsg, "krx") || str_find_nocase(pMsg, "КРХ"))
-	{
-		count += 2;
-		BanAmount = 100;
-	}
-
-	if(str_find_nocase(Server()->ClientName(ClientId), "krx"))
+	if(str_find_nocase(Server()->ClientName(ClientId), "krx")) // If its found in the players name
 	{
 		count += 2;
 		BanAmount = 500;
