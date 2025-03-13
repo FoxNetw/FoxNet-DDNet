@@ -585,8 +585,14 @@ void CGameClient::OnConnected()
 	ConfigManager()->ResetGameSettings();
 	LoadMapSettings();
 
-	if(Client()->State() != IClient::STATE_DEMOPLAYBACK && g_Config.m_ClAutoDemoOnConnect)
-		Client()->DemoRecorder_HandleAutoStart();
+	if(Client()->State() != IClient::STATE_DEMOPLAYBACK)
+	{
+		if(g_Config.m_ClAutoDemoOnConnect)
+			Client()->DemoRecorder_HandleAutoStart();
+
+		if(m_Menus.IsServerRunning() && m_aSavedLocalRconPassword[0] != '\0' && net_addr_is_local(&Client()->ServerAddress()))
+			Client()->RconAuth(DEFAULT_SAVED_RCON_USER, m_aSavedLocalRconPassword, g_Config.m_ClDummy);
+	}
 }
 
 void CGameClient::OnReset()
@@ -1396,6 +1402,9 @@ static CGameInfo GetGameInfo(const CNetObj_GameInfoEx *pInfoEx, int InfoExSize, 
 	bool FDDrace;
 	if(Version < 1)
 	{
+		// The game type is intentionally only available inside this
+		// `if`. Game type sniffing should be avoided and ideally not
+		// extended. Mods should set the relevant game flags instead.
 		const char *pGameType = pFallbackServerInfo->m_aGameType;
 		Race = str_find_nocase(pGameType, "race") || str_find_nocase(pGameType, "fastcap");
 		FastCap = str_find_nocase(pGameType, "fastcap");

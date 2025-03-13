@@ -1351,7 +1351,7 @@ void CEditor::DoToolbarLayers(CUIRect ToolBar)
 					{
 						pButtonName = "Tune";
 						pfnPopupFunc = PopupTune;
-						Rows = 1;
+						Rows = 2;
 					}
 					else if(pS == m_Map.m_pTeleLayer)
 					{
@@ -1998,7 +1998,7 @@ void CEditor::ApplyAlignments(const std::vector<SAlignmentInfo> &vAlignments, in
 	if(vAlignments.empty())
 		return;
 
-	// Find X and Y aligment
+	// Find X and Y alignment
 	const int *pAlignedX = nullptr;
 	const int *pAlignedY = nullptr;
 
@@ -2186,7 +2186,7 @@ void CEditor::DoQuad(int LayerIndex, const std::shared_ptr<CLayerQuads> &pLayer,
 			}
 		}
 
-		// Draw axis and aligments when moving
+		// Draw axis and alignments when moving
 		if(s_Operation == OP_MOVE_PIVOT || s_Operation == OP_MOVE_ALL)
 		{
 			EAxis Axis = GetDragAxis(s_LastOffset.x, s_LastOffset.y);
@@ -7927,7 +7927,7 @@ void CEditor::RenderMenubar(CUIRect MenuBar)
 	if(m_Map.m_Modified)
 	{
 		TextRender()->SetFontPreset(EFontPreset::ICON_FONT);
-		TextRender()->SetRenderFlags(ETextRenderFlags::TEXT_RENDER_FLAG_ONLY_ADVANCE_WIDTH | ETextRenderFlags::TEXT_RENDER_FLAG_NO_X_BEARING | ETextRenderFlags::TEXT_RENDER_FLAG_NO_Y_BEARING | ETextRenderFlags::TEXT_RENDER_FLAG_NO_PIXEL_ALIGMENT | ETextRenderFlags::TEXT_RENDER_FLAG_NO_OVERSIZE);
+		TextRender()->SetRenderFlags(ETextRenderFlags::TEXT_RENDER_FLAG_ONLY_ADVANCE_WIDTH | ETextRenderFlags::TEXT_RENDER_FLAG_NO_X_BEARING | ETextRenderFlags::TEXT_RENDER_FLAG_NO_Y_BEARING | ETextRenderFlags::TEXT_RENDER_FLAG_NO_PIXEL_ALIGNMENT | ETextRenderFlags::TEXT_RENDER_FLAG_NO_OVERSIZE);
 		Ui()->DoLabel(&ChangedIndicator, FONT_ICON_CIRCLE, 8.0f, TEXTALIGN_MC);
 		TextRender()->SetRenderFlags(0);
 		TextRender()->SetFontPreset(EFontPreset::DEFAULT_FONT);
@@ -8945,19 +8945,7 @@ void CEditor::HandleWriterFinishJobs()
 		CServerInfo CurrentServerInfo;
 		Client()->GetServerInfo(&CurrentServerInfo);
 
-		NETADDR pAddr = Client()->ServerAddress();
-		char aAddrStr[NETADDR_MAXSTRSIZE];
-		net_addr_str(&Client()->ServerAddress(), aAddrStr, sizeof(aAddrStr), true);
-
-		// and if we're on a local address
-		bool IsLocalAddress = false;
-		if(pAddr.ip[0] == 127 || pAddr.ip[0] == 10 || (pAddr.ip[0] == 192 && pAddr.ip[1] == 168) || (pAddr.ip[0] == 172 && (pAddr.ip[1] >= 16 && pAddr.ip[1] <= 31)))
-			IsLocalAddress = true;
-
-		if(str_startswith(aAddrStr, "[fe80:") || str_startswith(aAddrStr, "[::1"))
-			IsLocalAddress = true;
-
-		if(IsLocalAddress)
+		if(net_addr_is_local(&Client()->ServerAddress()))
 		{
 			char aMapName[128];
 			IStorage::StripPathAndExtension(pJob->GetRealFileName(), aMapName, sizeof(aMapName));
@@ -9315,8 +9303,8 @@ void CEditor::AdjustBrushSpecialTiles(bool UseNextFree, int Adjust)
 	// Adjust m_Number field of tune, switch and tele tiles by `Adjust` if `UseNextFree` is false
 	// If true, then use the next free number instead
 
-	auto &&AdjustNumber = [Adjust](unsigned char &Number) {
-		Number = ((Number + Adjust) - 1 + 255) % 255 + 1;
+	auto &&AdjustNumber = [Adjust](auto &Number, short Limit = 255) {
+		Number = ((Number + Adjust) - 1 + Limit) % Limit + 1;
 	};
 
 	for(auto &pLayer : m_pBrush->m_vpLayers)
@@ -9326,7 +9314,6 @@ void CEditor::AdjustBrushSpecialTiles(bool UseNextFree, int Adjust)
 
 		std::shared_ptr<CLayerTiles> pLayerTiles = std::static_pointer_cast<CLayerTiles>(pLayer);
 
-		// Only handle tele, switch and tune layers
 		if(pLayerTiles->m_Tele)
 		{
 			int NextFreeTeleNumber = FindNextFreeTeleNumber();
@@ -9399,6 +9386,21 @@ void CEditor::AdjustBrushSpecialTiles(bool UseNextFree, int Adjust)
 				}
 			}
 		}
+		else if(pLayerTiles->m_Speedup && !UseNextFree && Adjust != 0)
+		{
+			std::shared_ptr<CLayerSpeedup> pSpeedupLayer = std::static_pointer_cast<CLayerSpeedup>(pLayer);
+			for(int y = 0; y < pSpeedupLayer->m_Height; y++)
+			{
+				for(int x = 0; x < pSpeedupLayer->m_Width; x++)
+				{
+					int i = y * pSpeedupLayer->m_Width + x;
+					if(!IsValidSpeedupTile(pSpeedupLayer->m_pTiles[i].m_Index))
+						continue;
+
+					AdjustNumber(pSpeedupLayer->m_pSpeedupTile[i].m_Angle, 359);
+				}
+			}
+		}
 	}
 }
 
@@ -9423,6 +9425,20 @@ int CEditor::FindNextFreeTeleNumber(bool Checkpoint)
 	for(int i = 1; i <= 255; i++)
 	{
 		if(!m_Map.m_pTeleLayer->ContainsElementWithId(i, Checkpoint))
+		{
+			Number = i;
+			break;
+		}
+	}
+	return Number;
+}
+
+int CEditor::FindNextFreeTuneNumber()
+{
+	int Number = -1;
+	for(int i = 1; i <= 255; i++)
+	{
+		if(!m_Map.m_pTuneLayer->ContainsElementWithId(i))
 		{
 			Number = i;
 			break;
