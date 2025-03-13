@@ -2229,9 +2229,6 @@ void CGameContext::OnSayNetMessage(const CNetMsg_Cl_Say *pMsg, int ClientId, con
 
 				SendEveryonePing(ClientId, FullMsg, ReceivingIds);
 
-				char aBuf[256];
-				str_format(aBuf, sizeof(aBuf), "%s Sent @Everyone Message:", Server()->ClientName(ClientId));
-				Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
 				Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", pMsg->m_pMessage);
 			}
 		}
