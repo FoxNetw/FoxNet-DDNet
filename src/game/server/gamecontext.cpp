@@ -2142,7 +2142,7 @@ void CGameContext::OnMessage(int MsgId, CUnpacker *pUnpacker, int ClientId)
 
 void CGameContext::OnSayNetMessage(const CNetMsg_Cl_Say *pMsg, int ClientId, const CUnpacker *pUnpacker)
 {
-	if(CheckSpam(ClientId, pMsg->m_pMessage))
+	if(CheckSpam(ClientId, pMsg->m_pMessage) && g_Config.m_SvAntiAdBot)
 		return;
 
 	CPlayer *pPlayer = m_apPlayers[ClientId];
@@ -5342,37 +5342,51 @@ bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Poi
 		BanAmount = 1000;
 	}
 
-	// anti mass ping ad bot
-	if((str_find_nocase(pMsg, "/whisper") || str_find_nocase(pMsg, "/w")) && str_find_nocase(pMsg, "bro, check out this client"))
+	if(str_find_nocase(pMsg, "krx") || str_find_nocase(pMsg, "КРХ"))
 	{
-		if(str_find_nocase(pMsg, "Think you could do better") && str_find_nocase(pMsg, "Not without")) // mass ping advertising
+		count += 2;
+		BanAmount = 100;
+	}
+
+	if(str_find_nocase(Server()->ClientName(ClientId), "krx"))
+	{
+		count += 2;
+		BanAmount = 500;
+	}
+
+	// anti mass ping ad bot
+	if(str_find_nocase(pMsg, "Think you could do better") && str_find_nocase(pMsg, "Not without")) // mass ping advertising
+	{
+		// try to not remove their message if they are just trying to be funny
+		if(!str_find_nocase(pMsg, "github.com") && !str_find_nocase(pMsg, "tater") && !str_find_nocase(pMsg, "tclient") && !str_find_nocase(pMsg, "t-client") && !str_find_nocase(pMsg, "tclient.app") // TClient
+			&& !str_find_nocase(pMsg, "aiodob") && !str_find_nocase(pMsg, "a-client") && !str_find(pMsg, "A Client") && !str_find(pMsg, "A client") // AClient
+			&& !str_find_nocase(pMsg, "chillerbot") && !str_find_nocase(pMsg, "cactus")) // Other
 		{
-			// try to not remove their message if they are just trying to be funny
-			if(!str_find_nocase(pMsg, "github.com") && !str_find_nocase(pMsg, "tater") && !str_find_nocase(pMsg, "tclient") && !str_find_nocase(pMsg, "t-client") && !str_find_nocase(pMsg, "tclient.app") // TClient
-				&& !str_find_nocase(pMsg, "aiodob") && !str_find_nocase(pMsg, "a-client") && !str_find(pMsg, "A Client") && !str_find(pMsg, "A client") // AClient
-				&& !str_find_nocase(pMsg, "chillerbot") && !str_find_nocase(pMsg, "cactus")) // Other
-			{
-				count += 2;
-				BanAmount = 1000;
-			}
-			if(str_find(pMsg, " ")) // This is the little white space it uses between some letters
-			{
-				count += 2;
-				BanAmount = 1200;
-			}
+			count += 2;
+			BanAmount = 1000;
+		}
+		if(str_find(pMsg, " ")) // This is the little white space it uses between some letters
+		{
+			count += 2;
+			BanAmount = 1200;
 		}
 	}
 
 	if(count >= 2)
 	{
-		if(BanAmount == 120)
+		if(BanAmount == 100)
+			Server()->Ban(ClientId, BanAmount * 60, "Don't talk about forbidden Clients", "");
+		else if(BanAmount == 120)
 			Server()->Ban(ClientId, BanAmount * 60, "Refrain from using Fancy Alphabets", "");
-		if(BanAmount == 360)
+		else if(BanAmount == 360)
 			Server()->Ban(ClientId, BanAmount * 60, "Don't Advertise Cheat Clients on this Server", "");
-		if(BanAmount == 1000)
+		else if(BanAmount == 500)
+			Server()->Ban(ClientId, BanAmount * 60, "Don't Use Forbidden Clients as your Name", "");
+		else if(BanAmount == 1000)
 			Server()->Ban(ClientId, BanAmount * 60, "Krx Message", "");
-		if(BanAmount == 1200)
+		else if(BanAmount == 1200)
 			Server()->Ban(ClientId, BanAmount * 60, "Mass Advertising", "");
+
 		return true;
 	}
 	else

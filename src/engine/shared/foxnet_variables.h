@@ -10,8 +10,9 @@ MACRO_CONFIG_STR(SvGameTypeName, fs_gametype_name, 32, "FoxNetwork", CFGFLAG_SER
 
 MACRO_CONFIG_INT(SvSendMotd, fs_send_motd, 0, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "Show Motd on Enter")
 
-
 MACRO_CONFIG_INT(SvGunType, fs_gun_type, 0, 0, 2, CFGFLAG_SERVER | CFGFLAG_GAME, "Change Gun To different Types")
+
+MACRO_CONFIG_INT(SvAntiAdBot, fs_anti_ad_bot, 1, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "Anti Ad Bot")
 
 MACRO_CONFIG_INT(SvSoloOnSpawn, fs_solo_on_spawn, 1, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "Solo the Player for x amount of seconds on spawn")
 MACRO_CONFIG_INT(SvSoloOnSpawnSec, fs_solo_on_spawn_seconds, 5, 0, 20, CFGFLAG_SERVER | CFGFLAG_GAME, "Solo the Player for x amount of seconds on spawn")
