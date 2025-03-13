@@ -5358,18 +5358,21 @@ bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Poi
 	// anti mass ping ad bot
 	if(str_find_nocase(pMsg, "Think you could do better") && str_find_nocase(pMsg, "Not without")) // mass ping advertising
 	{
-		// try to not remove their message if they are just trying to be funny
-		if(!str_find_nocase(pMsg, "github.com") && !str_find_nocase(pMsg, "tater") && !str_find_nocase(pMsg, "tclient") && !str_find_nocase(pMsg, "t-client") && !str_find_nocase(pMsg, "tclient.app") // TClient
-			&& !str_find_nocase(pMsg, "aiodob") && !str_find_nocase(pMsg, "a-client") && !str_find(pMsg, "A Client") && !str_find(pMsg, "A client") // AClient
-			&& !str_find_nocase(pMsg, "chillerbot") && !str_find_nocase(pMsg, "cactus")) // Other
+		if(str_length(pMsg) > 60) // Usually it pings alot of people
 		{
-			count += 2;
-			BanAmount = 1000;
-		}
-		if(str_find(pMsg, " ")) // This is the little white space it uses between some letters
-		{
-			count += 2;
-			BanAmount = 1200;
+			// try to not remove their message if they are just trying to be funny
+			if(!str_find_nocase(pMsg, "github.com") && !str_find_nocase(pMsg, "tater") && !str_find_nocase(pMsg, "tclient") && !str_find_nocase(pMsg, "t-client") && !str_find_nocase(pMsg, "tclient.app") // TClient
+				&& !str_find_nocase(pMsg, "aiodob") && !str_find_nocase(pMsg, "a-client") && !str_find(pMsg, "A Client") && !str_find(pMsg, "A client") // AClient
+				&& !str_find_nocase(pMsg, "chillerbot") && !str_find_nocase(pMsg, "cactus")) // Other
+			{
+				count += 2;
+				BanAmount = 1000;
+			}
+			if(str_find(pMsg, " ")) // This is the little white space it uses between some letters
+			{
+				count += 2;
+				BanAmount = 1200;
+			}
 		}
 	}
 
