@@ -2711,16 +2711,23 @@ void CCharacter::AfkSpectate()
 {
 	if(g_Config.m_SvForcePauseAfk)
 	{
-		if(m_pPlayer->m_IsAfkSpec)
-			GameServer()->SendBroadcast(" << Anti-AFK block spectator mode >>", m_pPlayer->GetCid());
-
-		if(m_pPlayer->IsAfk() && m_pPlayer->m_JoinTick + Server()->TickSpeed() * 40 < Server()->Tick())
+		if(m_pPlayer->m_IsAfkSpec == 1)
 		{
-			m_pPlayer->Pause(m_pPlayer->PAUSE_SPEC, true);
-			m_pPlayer->m_IsAfkSpec = true;
+			Pause(true);
+			m_pPlayer->m_IsAfkSpec = 2;
 		}
-		else if(!m_pPlayer->IsAfk())
-			m_pPlayer->m_IsAfkSpec = false;
+
+		if(m_pPlayer->IsAfk() && m_pPlayer->m_JoinTick + Server()->TickSpeed() * 5 < Server()->Tick())
+		{
+			GameServer()->SendBroadcast(" << Anti-AFK block spectator mode >>", m_pPlayer->GetCid());
+			m_pPlayer->m_IsAfkSpec = 1;
+		}
+		if(!m_pPlayer->IsAfk())
+		{
+			if(m_pPlayer->m_IsAfkSpec == 2)
+				Pause(false);
+			m_pPlayer->m_IsAfkSpec = 0;
+		}
 	}
 }
 
