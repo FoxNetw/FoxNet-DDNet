@@ -248,7 +248,6 @@ public:
 	bool m_Invisible;
 	bool m_Rainbow;
 	bool m_ExplosionGun;
-	bool m_HeartGun;
 
 	// DDNet Character
 	void SetTeamsCore(CTeamsCore *pTeams);
