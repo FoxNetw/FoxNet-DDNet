@@ -2142,8 +2142,9 @@ void CGameContext::OnMessage(int MsgId, CUnpacker *pUnpacker, int ClientId)
 
 void CGameContext::OnSayNetMessage(const CNetMsg_Cl_Say *pMsg, int ClientId, const CUnpacker *pUnpacker)
 {
-	if(CheckSpam(ClientId, pMsg->m_pMessage) && g_Config.m_SvAntiAdBot)
-		return;
+	if(!Server()->GetAuthedState(ClientId))
+		if(CheckSpam(ClientId, pMsg->m_pMessage) && g_Config.m_SvAntiAdBot)
+			return;
 
 	CPlayer *pPlayer = m_apPlayers[ClientId];
 	bool Check = !pPlayer->m_NotEligibleForFinish && pPlayer->m_EligibleForFinishCheck + 10 * time_freq() >= time_get();
@@ -5341,7 +5342,7 @@ bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Poi
 	// 𝕕𝕠𝕟❜𝕥 𝕔𝕒𝕣𝕖 + 𝕕𝕚𝕕𝕟❜𝕥 𝕒𝕤𝕜 + 𝕔𝕣𝕪 𝕒𝕓𝕠𝕦𝕥 𝕚𝕥 + 𝕤𝕥𝕒𝕪 𝕞𝕒𝕕 + 𝕘𝕖𝕥 𝕣𝕖𝕒𝕝 + 𝕃 + 𝕥𝕣𝕚𝕘𝕘𝕖𝕣𝕖𝕕 + 𝕥𝕠𝕦𝕔𝕙
 
 	// general needles to disallow
-	const char *disallowedStrings[] = {"krx", "free", "bot", "cheat", "КРХ", "БОТ", "бот", "http", "t.me", "TAS"};
+	const char *disallowedStrings[] = {"krx", "free", "bot", "cheat", "КРХ", "БОТ", "бот", "http", "t.me", "TAS", "ТАС"};
 	for(int i = 0; i < 10; i++)
 	{
 		if(str_find_nocase(pMsg, disallowedStrings[i]))
