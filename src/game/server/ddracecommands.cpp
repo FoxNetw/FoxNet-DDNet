@@ -1701,10 +1701,10 @@ void CGameContext::DisallowedNeedles(const char *Needle, bool Remove)
 	}
 
 	str_copy(aBuf, "");
-	for(const auto &Entry : m_disallowedStrings)
+	for(const auto &Words : m_disallowedStrings)
 	{
 		char AddStrig[512];
-		str_format(AddStrig, sizeof(AddStrig), "%s, ", Entry.String());
+		str_format(AddStrig, sizeof(AddStrig), "%s, ", Words.String());
 		str_append(aBuf, AddStrig);
 	}
 
