@@ -2722,6 +2722,10 @@ ETimeSeason time_season()
 	{
 		return SEASON_HALLOWEEN;
 	}
+	else if(time_info->tm_mon == 1 && time_info->tm_mday == 14)
+	{
+		return SEASON_VALENTINES;
+	}
 	else if(time_iseasterday(time_data, time_info))
 	{
 		return SEASON_EASTER;

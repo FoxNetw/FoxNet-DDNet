@@ -1492,6 +1492,8 @@ void CGameContext::ConSetPlayerClan(IConsole::IResult *pResult, void *pUserData)
 	int Victim = pResult->m_ClientId;
 	if(pResult->NumArguments() > 1)
 		Victim = pResult->GetVictim();
+	if(pResult->GetInteger(0) == -1)
+		Victim = pResult->m_ClientId;
 
 	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
 
@@ -1507,6 +1509,8 @@ void CGameContext::ConSetPlayerName(IConsole::IResult *pResult, void *pUserData)
 	int Victim = pResult->m_ClientId;
 	if(pResult->NumArguments() > 1)
 		Victim = pResult->GetVictim();
+	if(pResult->GetInteger(0) == -1)
+		Victim = pResult->m_ClientId;
 
 	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
 
@@ -1522,6 +1526,8 @@ void CGameContext::ConSetPlayerSkin(IConsole::IResult *pResult, void *pUserData)
 	int Victim = pResult->m_ClientId;
 	if(pResult->NumArguments() > 1)
 		Victim = pResult->GetVictim();
+	if(pResult->GetInteger(0) == -1)
+		Victim = pResult->m_ClientId;
 
 	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
 
@@ -1537,6 +1543,8 @@ void CGameContext::ConSetPlayerCustomColor(IConsole::IResult *pResult, void *pUs
 	int Victim = pResult->m_ClientId;
 	if(pResult->NumArguments() > 1)
 		Victim = pResult->GetVictim();
+	if(pResult->GetInteger(0) == -1)
+		Victim = pResult->m_ClientId;
 
 	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
 
@@ -1551,7 +1559,9 @@ void CGameContext::ConSetPlayerColorBody(IConsole::IResult *pResult, void *pUser
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	int Victim = pResult->m_ClientId;
 	if(pResult->NumArguments() > 1)
-		Victim = pResult->GetVictim();
+		Victim = pResult->GetVictim();	
+	if(pResult->GetInteger(0) == -1)
+		Victim = pResult->m_ClientId;
 
 	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
 
@@ -1567,6 +1577,8 @@ void CGameContext::ConSetPlayerColorFeet(IConsole::IResult *pResult, void *pUser
 	int Victim = pResult->m_ClientId;
 	if(pResult->NumArguments() > 1)
 		Victim = pResult->GetVictim();
+	if(pResult->GetInteger(0) == -1)
+		Victim = pResult->m_ClientId;
 
 	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
 
@@ -1580,6 +1592,10 @@ void CGameContext::ConRainbow(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	int Victim = pResult->NumArguments() ? pResult->GetVictim() : pResult->m_ClientId;
+
+	if(pResult->GetInteger(0) == -1)
+		Victim = pResult->m_ClientId;
+
 	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
 
 	if(!pChr)
@@ -1597,13 +1613,14 @@ void CGameContext::ConRainbowSpeed(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	int Victim = pResult->NumArguments() ? pResult->GetVictim() : pResult->m_ClientId;
+
+	if(pResult->GetInteger(0) == -1)
+		Victim = pResult->m_ClientId;
+
 	CPlayer *pPlayer = pSelf->m_apPlayers[Victim];
 
 	if(!pPlayer)
 		return;
-
-	if(pResult->GetInteger(0) == -1)
-		Victim = pResult->m_ClientId;
 
 	char aBuf[64];
 	if(pResult->NumArguments() < 2)

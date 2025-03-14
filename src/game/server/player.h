@@ -262,6 +262,8 @@ public:
 	bool m_ShouldSolo;
 	int64_t m_SoloTime;
 	bool m_SpawnSoloShowOthers;
+
+	bool m_Valentines;
 };
 
 #endif

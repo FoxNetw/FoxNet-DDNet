@@ -61,7 +61,6 @@ void CPlayer::Reset()
 	pIdMap[0] = m_ClientId;
 
 	// DDRace
-
 	m_LastCommandPos = 0;
 	m_LastPlaytime = 0;
 	m_ChatScore = 0;
@@ -87,6 +86,9 @@ void CPlayer::Reset()
 
 	m_SendVoteIndex = -1;
 
+	// FoxNet
+	m_Valentines = false;
+
 	if(g_Config.m_Events)
 	{
 		const ETimeSeason Season = time_season();
@@ -98,6 +100,11 @@ void CPlayer::Reset()
 		{
 			m_DefEmote = EMOTE_ANGRY;
 			m_Halloween = true;
+		}
+		else if(Season == SEASON_VALENTINES)
+		{
+			m_DefEmote = EMOTE_HAPPY;
+			m_Valentines = true;
 		}
 		else
 		{
@@ -277,6 +284,13 @@ void CPlayer::Tick()
 		if(1200 - ((Server()->Tick() - m_pCharacter->GetLastAction()) % (1200)) < 5)
 		{
 			GameServer()->SendEmoticon(GetCid(), EMOTICON_GHOST, -1);
+		}
+	}
+	if(m_Valentines && m_pCharacter && !m_pCharacter->IsPaused())
+	{
+		if(1200 - ((Server()->Tick() - m_pCharacter->GetLastAction()) % (1200)) < 5)
+		{
+			GameServer()->SendEmoticon(GetCid(), EMOTICON_HEARTS, -1);
 		}
 	}
 }
