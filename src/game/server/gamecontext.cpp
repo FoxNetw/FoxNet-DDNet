@@ -3840,6 +3840,8 @@ void CGameContext::RegisterDDRaceCommands()
 	Console()->Register("rainbow_speed", "?v[id] ?i[speed]", CFGFLAG_SERVER, ConRainbowSpeed, this, "Makes a players (id) Rainbow");
 
 	Console()->Register("next_ban_sync", "", CFGFLAG_SERVER, ConNextBanSync, this, "When the next ban sync is happening");
+
+	Console()->Register("disallow_string", "?s[name] ?i[remove]", CFGFLAG_SERVER, ConDisallowedWords, this, "Add or remove strings to add to the auto ban check");
 }
 
 void CGameContext::RegisterChatCommands()
@@ -3961,7 +3963,7 @@ void CGameContext::OnInit(const void *pPersistentData)
 	m_pAntibot = Kernel()->RequestInterface<IAntibot>();
 	m_World.SetGameServer(this);
 	m_Events.SetGameServer(this);
-
+	
 	m_GameUuid = RandomUuid();
 	Console()->SetTeeHistorianCommandCallback(CommandCallback, this);
 
@@ -5342,10 +5344,9 @@ bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Poi
 	// 𝕕𝕠𝕟❜𝕥 𝕔𝕒𝕣𝕖 + 𝕕𝕚𝕕𝕟❜𝕥 𝕒𝕤𝕜 + 𝕔𝕣𝕪 𝕒𝕓𝕠𝕦𝕥 𝕚𝕥 + 𝕤𝕥𝕒𝕪 𝕞𝕒𝕕 + 𝕘𝕖𝕥 𝕣𝕖𝕒𝕝 + 𝕃 + 𝕥𝕣𝕚𝕘𝕘𝕖𝕣𝕖𝕕 + 𝕥𝕠𝕦𝕔𝕙
 
 	// general needles to disallow
-	const char *disallowedStrings[] = {"krx", "free", "bot", "cheat", "КРХ", "БОТ", "бот", "http", "t.me", "TAS", "ТАС"};
-	for(int i = 0; i < 10; i++)
+	for(int i = 0; i < m_disallowedStrings.size(); i++)
 	{
-		if(str_find_nocase(pMsg, disallowedStrings[i]))
+		if(str_find_nocase(pMsg, m_disallowedStrings[i].String()))
 		{
 			count++;
 			BanAmount = 360;

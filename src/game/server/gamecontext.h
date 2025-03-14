@@ -1,4 +1,4 @@
-/* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
+﻿/* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #ifndef GAME_SERVER_GAMECONTEXT_H
 #define GAME_SERVER_GAMECONTEXT_H
@@ -68,6 +68,25 @@ struct CSnapContext
 private:
 	int m_ClientVersion;
 	bool m_Sixup;
+};
+
+class AutoBanNeedles
+{
+	char m_disallowedStrings[10];
+
+public:
+	AutoBanNeedles(const char *pAutoBanNeedles)
+	{
+		if(!str_comp(m_disallowedStrings, ""))
+			str_copy(m_disallowedStrings, pAutoBanNeedles);
+	}
+
+	const char *String() const { return m_disallowedStrings; }
+
+	bool operator==(const AutoBanNeedles &Other) const
+	{
+		return str_comp(String(), Other.String()) == 0;
+	}
 };
 
 class CGameContext : public IGameServer
@@ -633,6 +652,9 @@ private: // FoxNet
 
 	static void ConNextBanSync(IConsole::IResult *pResult, void *pUserData);
 
+	static void ConDisallowedWords(IConsole::IResult *pResult, void *pUserData);
+	void DisallowedNeedles(const char *Needle, bool Remove = false);
+
 	void FoxNetTick();
 
 	void BanSync();
@@ -642,6 +664,7 @@ private: // FoxNet
 	void SendEveryonePing(int ChatterClientId, const char *pText, int ReceivingIds) const;
 
 public:
+	std::vector<AutoBanNeedles> m_disallowedStrings = {};
 	int64_t m_BanSaveDelay = 0;
 	void UnsetTelekinesis(CEntity *pEntity);
 

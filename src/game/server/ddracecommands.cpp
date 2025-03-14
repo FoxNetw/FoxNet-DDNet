@@ -10,6 +10,8 @@
 #include <game/server/save.h>
 #include <game/server/teams.h>
 
+#include <algorithm>
+
 bool CheckClientId(int ClientId);
 
 void CGameContext::ConGoLeft(IConsole::IResult *pResult, void *pUserData)
@@ -1661,4 +1663,49 @@ void CGameContext::ConNextBanSync(IConsole::IResult *pResult, void *pUserData)
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "Next Sync: %d Seconds", (pChr->GameServer()->m_BanSaveDelay - pChr->Server()->Tick()) / pChr->Server()->TickSpeed());
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
+}
+
+void CGameContext::ConDisallowedWords(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	pSelf->DisallowedNeedles(pResult->GetString(0), pResult->GetInteger(1));
+}
+
+void CGameContext::DisallowedNeedles(const char *Needle, bool Remove)
+{
+	// Wonky wonky code :c
+
+	char aBuf[512];
+	str_copy(aBuf, "");
+
+	AutoBanNeedles Entry(Needle);
+
+	if(str_comp(Needle, "") != 0)
+	{
+		if(Remove)
+		{
+			auto it = std::find(m_disallowedStrings.begin(), m_disallowedStrings.end(), Entry);
+			if(it != m_disallowedStrings.end())
+			{
+				m_disallowedStrings.erase(it);
+				str_format(aBuf, sizeof(aBuf), "Removed \"%s\" from disallowed words", Needle);
+				Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
+			}
+		}
+		else
+		{
+			m_disallowedStrings.push_back(Needle);
+			str_format(aBuf, sizeof(aBuf), "Added \"%s\" to disallowed words", Needle);
+			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
+		}
+	}
+
+	str_copy(aBuf, "");
+	for(int i = 0; i < m_disallowedStrings.size(); i++)
+	{
+		char AddStrig[512];
+		str_format(AddStrig, sizeof(AddStrig), "%s, ", m_disallowedStrings.at(i));
+		str_append(aBuf, AddStrig);
+	}
+	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
 }
