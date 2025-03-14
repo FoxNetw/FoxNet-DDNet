@@ -1701,11 +1701,12 @@ void CGameContext::DisallowedNeedles(const char *Needle, bool Remove)
 	}
 
 	str_copy(aBuf, "");
-	for(int i = 0; i < m_disallowedStrings.size(); i++)
+	for(const auto &Entry : m_disallowedStrings)
 	{
 		char AddStrig[512];
-		str_format(AddStrig, sizeof(AddStrig), "%s, ", m_disallowedStrings.at(i));
+		str_format(AddStrig, sizeof(AddStrig), "%s, ", Entry.String());
 		str_append(aBuf, AddStrig);
 	}
+
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
 }

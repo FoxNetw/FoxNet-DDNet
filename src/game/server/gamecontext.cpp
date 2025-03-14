@@ -3963,7 +3963,7 @@ void CGameContext::OnInit(const void *pPersistentData)
 	m_pAntibot = Kernel()->RequestInterface<IAntibot>();
 	m_World.SetGameServer(this);
 	m_Events.SetGameServer(this);
-	
+
 	m_GameUuid = RandomUuid();
 	Console()->SetTeeHistorianCommandCallback(CommandCallback, this);
 
@@ -5344,9 +5344,9 @@ bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Poi
 	// 𝕕𝕠𝕟❜𝕥 𝕔𝕒𝕣𝕖 + 𝕕𝕚𝕕𝕟❜𝕥 𝕒𝕤𝕜 + 𝕔𝕣𝕪 𝕒𝕓𝕠𝕦𝕥 𝕚𝕥 + 𝕤𝕥𝕒𝕪 𝕞𝕒𝕕 + 𝕘𝕖𝕥 𝕣𝕖𝕒𝕝 + 𝕃 + 𝕥𝕣𝕚𝕘𝕘𝕖𝕣𝕖𝕕 + 𝕥𝕠𝕦𝕔𝕙
 
 	// general needles to disallow
-	for(int i = 0; i < m_disallowedStrings.size(); i++)
+	for(const auto &Entry : m_disallowedStrings)
 	{
-		if(str_find_nocase(pMsg, m_disallowedStrings[i].String()))
+		if(str_find_nocase(pMsg, Entry.String()))
 		{
 			count++;
 			BanAmount = 360;
