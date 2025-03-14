@@ -12,8 +12,8 @@ MACRO_CONFIG_INT(SvSendMotd, fs_send_motd, 0, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAM
 
 MACRO_CONFIG_INT(SvAntiAdBot, fs_anti_ad_bot, 2, 0, 2, CFGFLAG_SERVER | CFGFLAG_GAME, "Anti Ad Bot, 1 Normal Detection, 2 tries to not ban people if they ping someone with a fancy name")
 
-MACRO_CONFIG_INT(SvSoloOnSpawn, fs_solo_on_spawn, 1, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "Solo the Player for x amount of seconds on spawn")
-MACRO_CONFIG_INT(SvSoloOnSpawnSec, fs_solo_on_spawn_seconds, 5, 0, 20, CFGFLAG_SERVER | CFGFLAG_GAME, "Solo the Player for x amount of seconds on spawn")
+MACRO_CONFIG_INT(SvSoloOnSpawn, fs_solo_on_spawn, 1, -1, 11, CFGFLAG_SERVER | CFGFLAG_GAME, "Solo the Player for x amount of seconds on spawn")
+MACRO_CONFIG_INT(SvSoloOnSpawnSec, fs_solo_on_spawn_seconds, 5, 0, 100, CFGFLAG_SERVER | CFGFLAG_GAME, "Solo the Player for x amount of seconds on spawn")
 
 MACRO_CONFIG_INT(SvForcePauseAfk, fs_force_pause_afk, 1, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "To Prevent AFK blocking, put players into spectator mode if afk")
 

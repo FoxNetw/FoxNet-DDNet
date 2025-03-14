@@ -2676,13 +2676,17 @@ void CCharacter::FoxNetSpawn()
 
 void CCharacter::TryRespawn()
 {
-	if(g_Config.m_SvSoloOnSpawn && Team() != TEAM_SPECTATORS && m_Alive && g_Config.m_SvTeam != SV_TEAM_FORCED_SOLO)
+	if(g_Config.m_SvSoloOnSpawn != 0 && Team() != TEAM_SPECTATORS && m_Alive && g_Config.m_SvTeam != SV_TEAM_FORCED_SOLO)
 	{
+		int Type = g_Config.m_SvSoloOnSpawn;
+		if(m_pPlayer->m_Valentines)
+			Type = -1; // Heart
+
 		m_pPlayer->m_ShouldSolo = true;
 		m_pPlayer->m_SoloTime = Server()->Tick() - Server()->TickSpeed();
 		m_pPlayer->m_SpawnSoloShowOthers = true;
 		GameServer()->GetPlayerChar(m_pPlayer->GetCid())->SetSolo(true);
-		HeadItem(1, m_pPlayer->GetCid());
+		HeadItem(Type, m_pPlayer->GetCid());
 	}
 }
 
