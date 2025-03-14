@@ -5151,7 +5151,8 @@ void CGameContext::FoxNetTick()
 		str_copy(OldName, g_Config.m_SvGameTypeName);
 	}
 
-	BanSync();
+	if(g_Config.m_SvBanSyncing)
+		BanSync();
 }
 
 void CGameContext::ChangeSpeedMode()
@@ -5268,15 +5269,25 @@ void CGameContext::BanSync()
 	{
 		static bool ExecBans = false;
 
-		if(Storage()->FileExists("Bans.cfg", IStorage::TYPE_ALL) && !ExecBans)
+		if(Storage()->FileExists("Bans.cfg", IStorage::TYPE_ALL))
 		{
-			ExecBans = true;
-			Console()->ExecuteLine("exec \"Bans.cfg\"", -1);
+			if(!ExecBans)
+			{
+				ExecBans = true;
+				Console()->ExecuteLine("exec \"Bans.cfg\"", -1);
 
-			ExecSaveDelay = Server()->Tick() + Server()->TickSpeed();
+				ExecSaveDelay = Server()->Tick() + Server()->TickSpeed();
 
+				// Info Message
+				Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", "Executed Bans");
+			}
+		}
+		else
+		{
 			// Info Message
-			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", "Executed Bans");
+			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", "Couldn't find \"Bans.cfg\", disabling component ");
+			g_Config.m_SvBanSyncing = 0;
+			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", "fs_ban_syncing set to 0");
 		}
 
 		if(ExecSaveDelay < Server()->Tick() && ExecBans)
