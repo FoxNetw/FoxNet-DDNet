@@ -72,7 +72,7 @@ private:
 
 class AutoBanNeedles
 {
-	char m_disallowedStrings[10];
+	char m_disallowedStrings[10] = {0}; // Initialize with zeros
 
 public:
 	AutoBanNeedles(const char *pAutoBanNeedles)
