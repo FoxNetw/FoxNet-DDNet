@@ -1648,3 +1648,17 @@ void CGameContext::ConInvisible(IConsole::IResult *pResult, void *pUserData)
 
 	pChr->SetInvisible(!pChr->Core()->m_Invisible);
 }
+
+void CGameContext::ConNextBanSync(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->NumArguments() ? pResult->GetVictim() : pResult->m_ClientId;
+	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+
+	char aBuf[256];
+	str_format(aBuf, sizeof(aBuf), "Next Sync: %d Seconds", (pChr->GameServer()->m_BanSaveDelay - pChr->Server()->Tick()) / pChr->Server()->TickSpeed());
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
+}

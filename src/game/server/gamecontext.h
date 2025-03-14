@@ -631,7 +631,10 @@ private: // FoxNet
 	static void ConWeaponIndicator(IConsole::IResult *pResult, void *pUserData);
 	static void ConSpecAfk(IConsole::IResult *pResult, void *pUserData);
 
+	static void ConNextBanSync(IConsole::IResult *pResult, void *pUserData);
+
 	void FoxNetTick();
+
 	void BanSync();
 	void ChangeSpeedMode();
 	bool CheckSpam(int ClientId, const char *pLine) const;
@@ -639,6 +642,7 @@ private: // FoxNet
 	void SendEveryonePing(int ChatterClientId, const char *pText, int ReceivingIds) const;
 
 public:
+	int64_t m_BanSaveDelay = 0;
 	void UnsetTelekinesis(CEntity *pEntity);
 
 	const char *GetWeaponName(int Weapon);

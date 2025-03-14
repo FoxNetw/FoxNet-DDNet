@@ -3837,6 +3837,8 @@ void CGameContext::RegisterDDRaceCommands()
 
 	Console()->Register("rainbow", "?v[id]", CFGFLAG_SERVER, ConRainbow, this, "Makes a players (id) Rainbow");
 	Console()->Register("rainbow_speed", "?v[id] ?i[speed]", CFGFLAG_SERVER, ConRainbowSpeed, this, "Makes a players (id) Rainbow");
+
+	Console()->Register("next_ban_sync", "", CFGFLAG_SERVER, ConNextBanSync, this, "When the next ban sync is happening");
 }
 
 void CGameContext::RegisterChatCommands()
@@ -5261,9 +5263,8 @@ void CGameContext::ChangeSpeedMode()
 
 void CGameContext::BanSync()
 {
-	static int64_t BanSaveDelay = Server()->Tick() * Server()->TickSpeed() * 1800;
 	static int64_t ExecSaveDelay = Server()->Tick() + Server()->TickSpeed(); // Might be needed if the File Gets big
-	if(BanSaveDelay < Server()->Tick())
+	if(m_BanSaveDelay < Server()->Tick())
 	{
 		static bool ExecBans = false;
 
@@ -5281,7 +5282,7 @@ void CGameContext::BanSync()
 		if(ExecSaveDelay < Server()->Tick() && ExecBans)
 		{
 			ExecBans = false;
-			BanSaveDelay = Server()->Tick() + Server()->TickSpeed() * 1800; // 30 minutes
+			m_BanSaveDelay = Server()->Tick() + Server()->TickSpeed() * 1800; // 30 minutes
 			Console()->ExecuteLine("bans_save \"Bans.cfg\"", -1);
 
 			// Info Message
