@@ -5329,8 +5329,8 @@ bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Poi
 	// 𝕕𝕠𝕟❜𝕥 𝕔𝕒𝕣𝕖 + 𝕕𝕚𝕕𝕟❜𝕥 𝕒𝕤𝕜 + 𝕔𝕣𝕪 𝕒𝕓𝕠𝕦𝕥 𝕚𝕥 + 𝕤𝕥𝕒𝕪 𝕞𝕒𝕕 + 𝕘𝕖𝕥 𝕣𝕖𝕒𝕝 + 𝕃 + 𝕥𝕣𝕚𝕘𝕘𝕖𝕣𝕖𝕕 + 𝕥𝕠𝕦𝕔𝕙
 
 	// general needles to disallow
-	const char *disallowedStrings[] = {"krx", "free", "bot client", "cheat client", "КРХ", "http", "t.me", "TAS"};
-	for(int i = 0; i < 7; i++)
+	const char *disallowedStrings[] = {"krx", "free", "bot", "cheat", "КРХ", "БОТ", "бот", "http", "t.me", "TAS"};
+	for(int i = 0; i < 10; i++)
 	{
 		if(str_find_nocase(pMsg, disallowedStrings[i]))
 		{
@@ -5355,11 +5355,11 @@ bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Poi
 	// anti mass ping ad bot
 	if(str_find_nocase(pMsg, "Think you could do better") && str_find_nocase(pMsg, "Not without")) // mass ping advertising
 	{
-		if(str_length(pMsg) > 60) // Usually it pings alot of people
+		if(str_length(pMsg) > 70) // Usually it pings alot of people
 		{
 			// try to not remove their message if they are just trying to be funny
 			if(!str_find_nocase(pMsg, "github.com") && !str_find_nocase(pMsg, "tater") && !str_find_nocase(pMsg, "tclient") && !str_find_nocase(pMsg, "t-client") && !str_find_nocase(pMsg, "tclient.app") // TClient
-				&& !str_find_nocase(pMsg, "aiodob") && !str_find_nocase(pMsg, "a-client") && !str_find(pMsg, "A Client") && !str_find(pMsg, "A client") // AClient
+				&& !str_find_nocase(pMsg, "aiodob") && !str_find_nocase(pMsg, "aidob") && !str_find_nocase(pMsg, "a-client") && !str_find(pMsg, "A Client") && !str_find(pMsg, "A client") // AClient
 				&& !str_find_nocase(pMsg, "chillerbot") && !str_find_nocase(pMsg, "cactus")) // Other
 			{
 				count += 2;
@@ -5380,7 +5380,7 @@ bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Poi
 		else if(BanAmount == 120)
 			Server()->Ban(ClientId, BanAmount * 60, "Refrain from using Fancy Alphabets", "");
 		else if(BanAmount == 360)
-			Server()->Ban(ClientId, BanAmount * 60, "Don't Talk about Cheats or share bad stuff", "");
+			Server()->Ban(ClientId, BanAmount * 60, "Don't Talk about Cheats", "");
 		else if(BanAmount == 500)
 			Server()->Ban(ClientId, BanAmount * 60, "Don't Use Forbidden Clients as your Name", "");
 		else if(BanAmount == 1000)
