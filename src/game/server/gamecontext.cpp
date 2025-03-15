@@ -5423,6 +5423,7 @@ bool CGameContext::BanCheckMessages(int ClientId, const char *pMsg)
 	else
 		return false;
 }
+
 bool CGameContext::BanCheckName(int ClientId)
 {
 	const char *ClientName = Server()->ClientName(ClientId);
@@ -5610,4 +5611,13 @@ void CGameContext::ConRandomMap(IConsole::IResult *pResult, void *pUserData)
 	str_format(Info, sizeof(Info), "%s used Command : \"random_map\"", pSelf->Server()->ClientName(pResult->m_ClientId));
 
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", Info);
+}
+
+void CGameContext::SaveNeedles(int Type)
+{
+	static std::vector<AutoBanNeedles> Needles;
+	if(Type == 0)
+		Needles = m_disallowedStrings;
+	if(Type == 1)
+		m_disallowedStrings = Needles;
 }

@@ -1705,6 +1705,7 @@ void CGameContext::DisallowedNeedles(const char *Needle, bool Remove)
 		str_append(aBuf, Words.String());
 		str_append(aBuf, ", ");
 	}
+	SaveNeedles(0);
 
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
 }
@@ -1755,6 +1756,6 @@ void CGameContext::DisallowedNames(const char *Needle, bool Remove)
 		str_append(aBuf, Words.Names());
 		str_append(aBuf, ", ");
 	}
-
+	SaveNeedles(0);
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
 }

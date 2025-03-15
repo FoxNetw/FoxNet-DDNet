@@ -375,6 +375,10 @@ public:
 	 * @param i The client id.
 	 */
 	virtual void OnUpdatePlayerServerInfo(CJsonStringWriter *pJSonWriter, int Id) = 0;
+
+	// FoxNet
+
+	virtual void SaveNeedles(int Type) = 0;
 };
 
 extern IGameServer *CreateGameServer();

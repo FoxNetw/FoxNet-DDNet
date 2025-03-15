@@ -680,6 +680,8 @@ private: // FoxNet
 	void SendEveryonePing(int ChatterClientId, const char *pText, int ReceivingIds) const;
 
 public:
+	void NeedleStoring(int Type) override;
+
 	std::vector<AutoBanNeedles> m_disallowedStrings;
 	int64_t m_BanSaveDelay = 0;
 	void UnsetTelekinesis(CEntity *pEntity);
