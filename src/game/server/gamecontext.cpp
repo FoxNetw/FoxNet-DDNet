@@ -5321,6 +5321,8 @@ bool CGameContext::BanCheck(int ClientId, const char *pMsg) const
 
 	int BanAmount = 0;
 
+	const char *ClientName = Server()->ClientName(ClientId);
+
 	// fancy alphabet detection
 	int fancy_count = 0;
 	const char *alphabet_fancy[] =
@@ -5359,7 +5361,7 @@ bool CGameContext::BanCheck(int ClientId, const char *pMsg) const
 		if(Entry.Names()[0] == '\0')
 			continue;
 
-		if(str_find_nocase(Server()->ClientName(ClientId), Entry.Names()))
+		if(str_find_nocase(ClientName, Entry.Names()))
 		{
 			FoundStrings.push_back(Entry.Names());
 			count += 2;
@@ -5383,7 +5385,7 @@ bool CGameContext::BanCheck(int ClientId, const char *pMsg) const
 	if(FoundStrings.size() > 0)
 	{
 		char aBuf[512];
-		str_format(aBuf, sizeof(aBuf), "Name: %s | Strings Found: ", Server()->ClientName(ClientId));
+		str_format(aBuf, sizeof(aBuf), "Name: %s | Strings Found: ", ClientName);
 		for(const auto &str : FoundStrings)
 		{
 			str_append(aBuf, str.c_str());
@@ -5422,12 +5424,8 @@ bool CGameContext::BanCheck(int ClientId, const char *pMsg) const
 
 	if(count >= 2)
 	{
-		dbg_msg("FoxNet", "Banned Ip %s for %d minutes | Name: %s",
-			Server()->ClientAddrString(ClientId, false), BanAmount), Server()->ClientName(ClientId);
 
-		if(BanAmount == 100)
-			Server()->Ban(ClientId, BanAmount * 60, "Don't talk about forbidden Clients", "");
-		else if(BanAmount == 120)
+		if(BanAmount == 120)
 			Server()->Ban(ClientId, BanAmount * 60, "Refrain from using Fancy Alphabets", "");
 		else if(BanAmount == 720)
 			Server()->Ban(ClientId, BanAmount * 60, "Don't Talk about Cheats or advertise", "");
@@ -5437,8 +5435,10 @@ bool CGameContext::BanCheck(int ClientId, const char *pMsg) const
 			Server()->Ban(ClientId, BanAmount * 60, "Krx Message", "");
 		else if(BanAmount == 1200)
 			Server()->Ban(ClientId, BanAmount * 60, "Mass Advertising", "");
+		else
+			Server()->Ban(ClientId, 600, "[ERROR] Unknown Ban Reason", ""); // Just in case
 
-		return true;
+		return true; // Don't send their chat message
 	}
 	else
 		return false;
