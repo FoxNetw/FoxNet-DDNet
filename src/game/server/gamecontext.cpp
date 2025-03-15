@@ -2142,9 +2142,9 @@ void CGameContext::OnMessage(int MsgId, CUnpacker *pUnpacker, int ClientId)
 
 void CGameContext::OnSayNetMessage(const CNetMsg_Cl_Say *pMsg, int ClientId, const CUnpacker *pUnpacker)
 {
-	if(g_Config.m_SvAntiAdBot)
-		if(!Server()->GetAuthedState(ClientId))
-			if(BanCheck(ClientId, pMsg->m_pMessage))
+	if(g_Config.m_SvAntiAdBot) // Config needs to be 1
+		if(!Server()->GetAuthedState(ClientId)) // player must not be authed
+			if(BanCheck(ClientId, pMsg->m_pMessage)) // actual check
 				return;
 
 	CPlayer *pPlayer = m_apPlayers[ClientId];
@@ -3840,7 +3840,7 @@ void CGameContext::RegisterDDRaceCommands()
 	Console()->Register("rainbow", "?v[id]", CFGFLAG_SERVER, ConRainbow, this, "Makes a players (id) Rainbow");
 	Console()->Register("rainbow_speed", "?v[id] ?i[speed]", CFGFLAG_SERVER, ConRainbowSpeed, this, "Makes a players (id) Rainbow");
 
-	Console()->Register("next_ban_sync", "", CFGFLAG_SERVER, ConNextBanSync, this, "When the next ban sync is happening");
+	Console()->Register("next_ban_sync", "?i[set]", CFGFLAG_SERVER, ConNextBanSync, this, "When the next ban sync is happening");
 
 	Console()->Register("disallow_string", "?s[name] ?i[remove]", CFGFLAG_SERVER, ConDisallowedWords, this, "Add or remove strings to add to the auto ban Ingame Chat check");
 	Console()->Register("disallow_name", "?s[name] ?i[remove]", CFGFLAG_SERVER, ConDisallowedNames, this, "Add or remove strings to add to the auto ban Name check");

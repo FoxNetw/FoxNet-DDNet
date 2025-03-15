@@ -19,7 +19,6 @@ MACRO_CONFIG_INT(SvForcePauseAfk, fs_force_pause_afk, 1, 0, 1, CFGFLAG_SERVER | 
 MACRO_CONFIG_INT(SvBanSyncing, fs_ban_syncing, 1, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "Whether to Sync bans every fs_ban_syncing_delay mins across servers")
 MACRO_CONFIG_INT(SvBanSyncingDelay, fs_ban_syncing_delay, 15, 1, 500, CFGFLAG_SERVER | CFGFLAG_GAME, "How long the server waits between syncs")
 
-
 MACRO_CONFIG_INT(SvCommandOutput, fs_command_output, 0, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "when using a command on someone, it will show them what happened")
 
 MACRO_CONFIG_INT(SvPingEveryone, fs_allow_ping_everyone, 1, 0, 2, CFGFLAG_SERVER | CFGFLAG_GAME, "When turned on, it will ping everyone if any moderator or admin says \n@everyone\" | 1 = only mods/admins | 2 = anyone")
