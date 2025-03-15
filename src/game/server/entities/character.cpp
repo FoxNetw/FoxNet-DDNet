@@ -2649,7 +2649,6 @@ void CCharacter::SwapClients(int Client1, int Client2)
 void CCharacter::FoxNetTick()
 {
 	UnsoloAfterSpawn();
-	AfkSpectate();
 
 	// update telekinesis entitiy position
 	if(m_pTelekinesisEntity)
@@ -2687,30 +2686,6 @@ void CCharacter::TryRespawn()
 		m_pPlayer->m_SpawnSoloShowOthers = true;
 		GameServer()->GetPlayerChar(m_pPlayer->GetCid())->SetSolo(true);
 		HeadItem(Type, m_pPlayer->GetCid());
-	}
-}
-
-void CCharacter::AfkSpectate()
-{
-	if(g_Config.m_SvForcePauseAfk)
-	{
-		if(m_pPlayer->m_IsAfkSpec == 1)
-		{
-			Pause(true);
-			m_pPlayer->m_IsAfkSpec = 2;
-		}
-
-		if(m_pPlayer->IsAfk() && m_pPlayer->m_JoinTick + Server()->TickSpeed() * 40 < Server()->Tick())
-		{
-			GameServer()->SendBroadcast(" << Anti-AFK block spectator mode >>", m_pPlayer->GetCid());
-			m_pPlayer->m_IsAfkSpec = 1;
-		}
-		if(!m_pPlayer->IsAfk())
-		{
-			if(m_pPlayer->m_IsAfkSpec == 2)
-				Pause(false);
-			m_pPlayer->m_IsAfkSpec = 0;
-		}
 	}
 }
 

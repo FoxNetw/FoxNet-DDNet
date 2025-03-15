@@ -37,7 +37,6 @@ public:
 	void FoxNetTick();
 	void FoxNetSpawn();
 
-	void AfkSpectate();
 	void UnsoloAfterSpawn();
 	void TryRespawn();
 

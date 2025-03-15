@@ -1072,6 +1072,36 @@ void CPlayer::CCameraInfo::Reset()
 void CPlayer::FoxNetTick()
 {
 	RainbowTick();
+	AfkSpectateTick();
+}
+
+void CPlayer::AfkSpectateTick()
+{
+	if(g_Config.m_SvForcePauseAfk)
+	{
+		if(m_SpecAfk)
+		{
+			if(m_IsAfkSpec == 1)
+			{
+				GetCharacter()->Pause(true);
+				m_IsAfkSpec = 2;
+				SetAfk(true);
+			}
+
+			if(IsAfk() && m_JoinTick + Server()->TickSpeed() * 40 < Server()->Tick() && m_IsAfkSpec == 0)
+			{
+				GameServer()->SendBroadcast(" << Anti-AFK block spectator mode >>", GetCid());
+				m_IsAfkSpec = 1;
+			}
+			if(!m_Afk && m_IsAfkSpec == 2)
+			{
+				GameServer()->SendBroadcast(" << Anti-AFK block spectator mode >>", GetCid());
+				GetCharacter()->Pause(false);
+				m_IsAfkSpec = 0;
+			}
+		}
+	}
+	
 }
 
 void CPlayer::RainbowTick()

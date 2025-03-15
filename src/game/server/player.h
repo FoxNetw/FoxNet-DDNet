@@ -245,8 +245,9 @@ public:
 	void SetWeaponIndicator(bool Set);
 
 	// Spec Afk Toggling for specific players
-	bool m_SpecAfk;
+	bool m_SpecAfk = true;
 	void SetSpecAfk(bool Set);
+	void AfkSpectateTick();
 
 	int m_RainbowSpeed = 6; // <- is the default
 	int m_RainbowColor;
