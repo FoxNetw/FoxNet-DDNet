@@ -5351,19 +5351,8 @@ bool CGameContext::BanCheck(int ClientId, const char *pMsg) const
 	
 	// Maybe Remove things like these from it so it doesn't ban people who have these binds
 	// 𝕕𝕠𝕟❜𝕥 𝕔𝕒𝕣𝕖 + 𝕕𝕚𝕕𝕟❜𝕥 𝕒𝕤𝕜 + 𝕔𝕣𝕪 𝕒𝕓𝕠𝕦𝕥 𝕚𝕥 + 𝕤𝕥𝕒𝕪 𝕞𝕒𝕕 + 𝕘𝕖𝕥 𝕣𝕖𝕒𝕝 + 𝕃 + 𝕥𝕣𝕚𝕘𝕘𝕖𝕣𝕖𝕕 + 𝕥𝕠𝕦𝕔𝕙
-
-	// general needles to disallow
-	for(const auto &Entry : m_disallowedStrings)
-	{
-		if(Entry.String()[0] == '\0')
-			continue;
-
-		if(str_find_nocase(pMsg, Entry.String()))
-		{
-			count++;
-			BanAmount = 720;
-		}
-	}
+	
+	std::vector<std::string> FoundStrings = {};
 
 	for(const auto &Entry : m_disallowedStrings)
 	{
@@ -5372,10 +5361,35 @@ bool CGameContext::BanCheck(int ClientId, const char *pMsg) const
 
 		if(str_find_nocase(Server()->ClientName(ClientId), Entry.Names()))
 		{
-			dbg_msg("FoxNet", "Found a disallowed string %s", Entry.Names());
+			FoundStrings.push_back(Entry.Names());
 			count += 2;
 			BanAmount = 722;
 		}
+	}
+
+	for(const auto &Entry : m_disallowedStrings)
+	{
+		if(Entry.String()[0] == '\0')
+			continue;
+
+		if(str_find_nocase(pMsg, Entry.String()))
+		{
+			FoundStrings.push_back(Entry.String());
+			count++;
+			BanAmount = 720;
+		}
+	}
+
+	if(FoundStrings.size() > 0)
+	{
+		char aBuf[512];
+		str_format(aBuf, sizeof(aBuf), "Name: %s | Strings Found: ", Server()->ClientName(ClientId));
+		for(int i = 0; i < FoundStrings.size(); i++)
+		{
+			str_append(aBuf, FoundStrings.at(i).c_str());
+			str_append(aBuf, ", ");
+		}
+		dbg_msg("FoxNet", aBuf);
 	}
 
 	// anti whisper ad bot
@@ -5408,6 +5422,9 @@ bool CGameContext::BanCheck(int ClientId, const char *pMsg) const
 
 	if(count >= 2)
 	{
+		dbg_msg("FoxNet", "Banned Ip %s for %d minutes | Name: %s",
+			Server()->ClientAddrString(ClientId, false), BanAmount), Server()->ClientName(ClientId);
+
 		if(BanAmount == 100)
 			Server()->Ban(ClientId, BanAmount * 60, "Don't talk about forbidden Clients", "");
 		else if(BanAmount == 120)
