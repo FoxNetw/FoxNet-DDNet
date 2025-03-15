@@ -5355,10 +5355,26 @@ bool CGameContext::BanCheck(int ClientId, const char *pMsg) const
 	// general needles to disallow
 	for(const auto &Entry : m_disallowedStrings)
 	{
+		if(Entry.String()[0] == '\0')
+			continue;
+
 		if(str_find_nocase(pMsg, Entry.String()))
 		{
 			count++;
 			BanAmount = 720;
+		}
+	}
+
+	for(const auto &Entry : m_disallowedStrings)
+	{
+		if(Entry.Names()[0] == '\0')
+			continue;
+
+		if(str_find_nocase(Server()->ClientName(ClientId), Entry.Names()))
+		{
+			dbg_msg("FoxNet", "Found a disallowed string %s", Entry.Names());
+			count += 2;
+			BanAmount = 722;
 		}
 	}
 
@@ -5367,15 +5383,6 @@ bool CGameContext::BanCheck(int ClientId, const char *pMsg) const
 	{
 		count += 2;
 		BanAmount = 1000;
-	}
-
-	for(const auto &Entry : m_disallowedStrings)
-	{
-		if(str_find_nocase(pMsg, Entry.Names()))
-		{
-			count += 2;
-			BanAmount = 722;
-		}
 	}
 
 	// anti mass ping ad bot
