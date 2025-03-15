@@ -5384,9 +5384,9 @@ bool CGameContext::BanCheck(int ClientId, const char *pMsg) const
 	{
 		char aBuf[512];
 		str_format(aBuf, sizeof(aBuf), "Name: %s | Strings Found: ", Server()->ClientName(ClientId));
-		for(int i = 0; i < (int)FoundStrings.size(); i++)
+		for(const auto &str : FoundStrings)
 		{
-			str_append(aBuf, FoundStrings.at(i).c_str());
+			str_append(aBuf, str.c_str());
 			str_append(aBuf, ", ");
 		}
 		dbg_msg("FoxNet", aBuf);
