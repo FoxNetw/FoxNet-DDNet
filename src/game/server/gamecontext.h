@@ -666,7 +666,7 @@ private: // FoxNet
 
 	void BanSync();
 	void ChangeSpeedMode();
-	bool CheckSpam(int ClientId, const char *pLine) const;
+	bool BanCheck(int ClientId, const char *pLine) const;
 
 	void SendEveryonePing(int ChatterClientId, const char *pText, int ReceivingIds) const;
 

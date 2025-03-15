@@ -2142,9 +2142,10 @@ void CGameContext::OnMessage(int MsgId, CUnpacker *pUnpacker, int ClientId)
 
 void CGameContext::OnSayNetMessage(const CNetMsg_Cl_Say *pMsg, int ClientId, const CUnpacker *pUnpacker)
 {
-	if(!Server()->GetAuthedState(ClientId))
-		if(BanCheck(ClientId, pMsg->m_pMessage) && g_Config.m_SvAntiAdBot)
-			return;
+	if(g_Config.m_SvAntiAdBot)
+		if(!Server()->GetAuthedState(ClientId))
+			if(BanCheck(ClientId, pMsg->m_pMessage))
+				return;
 
 	CPlayer *pPlayer = m_apPlayers[ClientId];
 	bool Check = !pPlayer->m_NotEligibleForFinish && pPlayer->m_EligibleForFinishCheck + 10 * time_freq() >= time_get();
@@ -5306,7 +5307,15 @@ void CGameContext::BanSync()
 	}
 }
 
-bool CGameContext::BanCheck(int ClientId, const char *pMsg) const // Thx to Pointer31 for making this - MODIFIED
+// Thx to Pointer31 for the blueprint
+/* BanCheck
+ * Checks if a player should be banned
+ * Returns true if the player should be banned
+ * Returns false if the player should not be banned
+ * ClientId: The Id of the player
+ * pMsg: The message to check
+ */
+bool CGameContext::BanCheck(int ClientId, const char *pMsg) const
 {
 	int count = 0; // amount of flagged strings (some strings may count more than others)
 
