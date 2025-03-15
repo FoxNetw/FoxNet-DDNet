@@ -5613,7 +5613,7 @@ void CGameContext::ConRandomMap(IConsole::IResult *pResult, void *pUserData)
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", Info);
 }
 
-void CGameContext::SaveNeedles(int Type)
+void CGameContext::NeedleStoring(int Type)
 {
 	static std::vector<AutoBanNeedles> Needles;
 	if(Type == 0)

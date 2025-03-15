@@ -378,7 +378,7 @@ public:
 
 	// FoxNet
 
-	virtual void SaveNeedles(int Type) = 0;
+	virtual void NeedleStoring(int Type) = 0;
 };
 
 extern IGameServer *CreateGameServer();
