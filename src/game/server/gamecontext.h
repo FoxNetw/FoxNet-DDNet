@@ -666,7 +666,16 @@ private: // FoxNet
 
 	void BanSync();
 	void ChangeSpeedMode();
-	bool BanCheck(int ClientId, const char *pLine) const;
+
+	/* BanCheck
+	* Checks if a player should be banned
+	* Returns true if the player should be banned
+	* Returns false if the player should not be banned
+	* ClientId: The Id of the player
+	* pMsg: The message to check
+	*/
+	bool BanCheckMessages(int ClientId, const char *pLine);
+	bool BanCheckName(int ClientId);
 
 	void SendEveryonePing(int ChatterClientId, const char *pText, int ReceivingIds) const;
 

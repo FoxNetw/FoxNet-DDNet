@@ -1503,6 +1503,9 @@ void CGameContext::ProgressVoteOptions(int ClientId)
 
 void CGameContext::OnClientEnter(int ClientId)
 {
+	if(BanCheckName(ClientId))
+		return;
+
 	if(m_TeeHistorianActive)
 	{
 		m_TeeHistorian.RecordPlayerReady(ClientId);
@@ -2144,7 +2147,7 @@ void CGameContext::OnSayNetMessage(const CNetMsg_Cl_Say *pMsg, int ClientId, con
 {
 	if(g_Config.m_SvAntiAdBot) // Config needs to be 1
 		if(!Server()->GetAuthedState(ClientId)) // player must not be authed
-			if(BanCheck(ClientId, pMsg->m_pMessage)) // actual check
+			if(BanCheckMessages(ClientId, pMsg->m_pMessage)) // actual check
 				return;
 
 	CPlayer *pPlayer = m_apPlayers[ClientId];
@@ -5307,16 +5310,8 @@ void CGameContext::BanSync()
 	}
 }
 
-// Thx to Pointer31 for the blueprint
-/* BanCheck
- * Checks if a player should be banned
- * Returns true if the player should be banned
- * Returns false if the player should not be banned
- * ClientId: The Id of the player
- * pMsg: The message to check
- */
-bool CGameContext::BanCheck(int ClientId, const char *pMsg) const
-{
+bool CGameContext::BanCheckMessages(int ClientId, const char *pMsg)
+{	// Thx to Pointer31 for the blueprint
 	int count = 0; // amount of flagged strings (some strings may count more than others)
 
 	int BanAmount = 0;
@@ -5354,20 +5349,8 @@ bool CGameContext::BanCheck(int ClientId, const char *pMsg) const
 	// Maybe Remove things like these from it so it doesn't ban people who have these binds
 	// 𝕕𝕠𝕟❜𝕥 𝕔𝕒𝕣𝕖 + 𝕕𝕚𝕕𝕟❜𝕥 𝕒𝕤𝕜 + 𝕔𝕣𝕪 𝕒𝕓𝕠𝕦𝕥 𝕚𝕥 + 𝕤𝕥𝕒𝕪 𝕞𝕒𝕕 + 𝕘𝕖𝕥 𝕣𝕖𝕒𝕝 + 𝕃 + 𝕥𝕣𝕚𝕘𝕘𝕖𝕣𝕖𝕕 + 𝕥𝕠𝕦𝕔𝕙
 	
-	std::vector<std::string> FoundStrings = {};
-
-	for(const auto &Entry : m_disallowedStrings)
-	{
-		if(Entry.Names()[0] == '\0')
-			continue;
-
-		if(str_find_nocase(ClientName, Entry.Names()))
-		{
-			FoundStrings.push_back(Entry.Names());
-			count += 2;
-			BanAmount = 722;
-		}
-	}
+	std::vector<std::string> FoundStrings;
+	FoundStrings.clear();
 
 	for(const auto &Entry : m_disallowedStrings)
 	{
@@ -5378,7 +5361,7 @@ bool CGameContext::BanCheck(int ClientId, const char *pMsg) const
 		{
 			FoundStrings.push_back(Entry.String());
 			count++;
-			BanAmount = 720;
+			BanAmount = 800;
 		}
 	}
 
@@ -5424,28 +5407,66 @@ bool CGameContext::BanCheck(int ClientId, const char *pMsg) const
 
 	if(count >= 2)
 	{
-
 		if(BanAmount == 120)
-			Server()->Ban(ClientId, BanAmount * 60, "Refrain from using Fancy Alphabets", "");
-		else if(BanAmount == 720)
-			Server()->Ban(ClientId, BanAmount * 60, "Don't Talk about Cheats or advertise", "");
-		else if(BanAmount == 722)
-			Server()->Ban(ClientId, BanAmount * 60, "Don't Use your name to Advertise", "");
+			Server()->Ban(ClientId, BanAmount * 60, "Refrain from using Fancy Alphabets", "Banned for 120 minutes");
+		else if(BanAmount == 800)
+			Server()->Ban(ClientId, BanAmount * 60, "Don't Talk about Cheats or advertise", "Banned for 800 minutes");
 		else if(BanAmount == 1000)
-			Server()->Ban(ClientId, BanAmount * 60, "Krx Message", "");
+			Server()->Ban(ClientId, BanAmount * 60, "Krx Message", "Banned for 1000 minutes");
 		else if(BanAmount == 1200)
-			Server()->Ban(ClientId, BanAmount * 60, "Mass Advertising", "");
+			Server()->Ban(ClientId, BanAmount * 60, "Mass Advertising", "Banned for 1200 minutes");
 		else
-			Server()->Ban(ClientId, 600, "[ERROR] Unknown Ban Reason", ""); // Just in case
+			Server()->Ban(ClientId, 600, "[ERROR] Unknown Ban Reason", "Banned for 10 minutes"); // Just in case
 
 		return true; // Don't send their chat message
 	}
 	else
 		return false;
 }
+bool CGameContext::BanCheckName(int ClientId)
+{
+	const char *ClientName = Server()->ClientName(ClientId);
+
+	int BanAmount = 0;
+
+	std::vector<std::string> FoundStrings;
+	FoundStrings.clear();
+
+	for(const auto &Entry : m_disallowedStrings)
+	{
+		if(Entry.Names()[0] == '\0')
+			continue;
+
+		if(str_find_nocase(ClientName, Entry.Names()))
+		{
+			FoundStrings.push_back(Entry.Names());
+			BanAmount = 800;
+		}
+	}
+
+	if(FoundStrings.size() > 0)
+	{
+		char aBuf[512];
+		str_format(aBuf, sizeof(aBuf), "Name: %s | Banned String Found: ", ClientName);
+		for(const auto &str : FoundStrings)
+		{
+			str_append(aBuf, str.c_str());
+			str_append(aBuf, ", ");
+		}
+		dbg_msg("FoxNet", aBuf);
+	}
+
+	if(BanAmount == 800)
+	{
+		Server()->Ban(ClientId, BanAmount * 60, "Don't Use your name to Advertise", "Banned for 800 minutes");
+		return true;
+	}
+	return false;
+}
+
 
 void CGameContext::UnsetTelekinesis(CEntity *pEntity)
-{
+	{
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
 		CCharacter *pChr = GetPlayerChar(i);
