@@ -5297,8 +5297,8 @@ void CGameContext::BanSync()
 		if(ExecSaveDelay < Server()->Tick() && ExecBans)
 		{
 			ExecBans = false;
-			m_BanSaveDelay = Server()->Tick() + Server()->TickSpeed() * 1800; // 30 minutes
-			Console()->ExecuteLine("bans_save \"Bans.cfg\"", -1);
+			m_BanSaveDelay = Server()->Tick() + Server()->TickSpeed() * (g_Config.m_SvBanSyncingDelay * 60);
+			Console()->ExecuteLine("bans_save \"Bans.cfg\"");
 
 			// Info Message
 			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", "Saved Bans");

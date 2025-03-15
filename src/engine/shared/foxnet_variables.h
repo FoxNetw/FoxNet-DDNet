@@ -16,7 +16,9 @@ MACRO_CONFIG_INT(SvSoloOnSpawn, fs_solo_on_spawn, 1, -1, 11, CFGFLAG_SERVER | CF
 MACRO_CONFIG_INT(SvSoloOnSpawnSec, fs_solo_on_spawn_seconds, 5, 0, 100, CFGFLAG_SERVER | CFGFLAG_GAME, "Solo the Player for x amount of seconds on spawn")
 
 MACRO_CONFIG_INT(SvForcePauseAfk, fs_force_pause_afk, 1, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "To Prevent AFK blocking, put players into spectator mode if afk")
-MACRO_CONFIG_INT(SvBanSyncing, fs_ban_syncing, 1, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "Whether to Sync bans every 30 mins across servers")
+MACRO_CONFIG_INT(SvBanSyncing, fs_ban_syncing, 1, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "Whether to Sync bans every fs_ban_syncing_delay mins across servers")
+MACRO_CONFIG_INT(SvBanSyncingDelay, fs_ban_syncing_delay, 15, 1, 500, CFGFLAG_SERVER | CFGFLAG_GAME, "How long the server waits between syncs")
+
 
 MACRO_CONFIG_INT(SvCommandOutput, fs_command_output, 0, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "when using a command on someone, it will show them what happened")
 
