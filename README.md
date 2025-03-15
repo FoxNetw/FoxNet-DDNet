@@ -30,5 +30,5 @@ If you wish to build it yourself you can read the instructions in the [DDNet Rea
 - commands to change other peoples info (Name, Clan, Skin, etc..)
 - Heart Gun from (F-DDRace)
 - Weapon Indicator for custom weapons (F-DDRace)
-- Automatic Bans if a player send a flagged message (fs_anti_ad_bot), using disallow_string you can add strings that the server will search for in message sent by players,
-  if it finds two strings in one message it will ban the player for a few hours -> it also bans krx whisper messages automatically by default
+- Automatic Bans if a player send a flagged message (fs_anti_ad_bot), using disallow_string and disallow_name you can add strings that the server will search for in message sent by players and names of players,
+  if it finds two strings in one message or one string in the name it will ban the player for a few hours -> it also bans krx whisper messages automatically by default
