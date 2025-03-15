@@ -1,17 +1,19 @@
-FoxNet, a simple DDNet Server improvement
+FoxNetwork, a simple open source DDNet Server improvement
 
 From the Same Creator as [Aiodob Client](https://github.com/qxdFox/Aiodob-Client-DDNet)
 
 To Download this extension you can head to the [Actions Tab](https://github.com/qxdFoxs/FoxNet-DDNet/actions/workflows/build.yml), go to the newest build if it succeded and download the artifact for your system. You need to be logged in for this
 
+If you wish to build it yourself you can read the instructions in the [DDNet Readme](https://github.com/ddnet/ddnet)
+
 #
 ### Current Features
 
 - Allowing Ports past 8310 -> now up to 8360, meaning you can start around ~50 servers without needing to change any configurations
-- Solo on Spawn -> As the name suggests, when you spawn you will be put into solo and have a shield floating above you
-- quicker rcon command loadtime
+- Solo on Spawn -> As the name suggests, when you spawn you will be put into solo and have a shield(changeable with fs_solo_on_spawn | 0 = off) floating above you
+- quicker rcon commands loadtime
 - Welcome Text
-- quick and simple gametype renaming using the fs_gametype_name command
+- quick and simple gametype renaming using the fs_gametype_name config
 - Allow using alot more commands on other player (e.g. grenade (id), infinite_jump (id), etc.)
 - Edit weapons you spawn with using commands that start with fs_auto_ and then the weapon name
 - explosion gun -> when you shoot it acts like a grenade and explodes if it hits something -> can also be automatically activated using fs_explgun 1
@@ -28,3 +30,5 @@ To Download this extension you can head to the [Actions Tab](https://github.com/
 - commands to change other peoples info (Name, Clan, Skin, etc..)
 - Heart Gun from (F-DDRace)
 - Weapon Indicator for custom weapons (F-DDRace)
+- Automatic Bans if a player send a flagged message (fs_anti_ad_bot), using disallow_string you can add strings that the server will search for in message sent by players,
+  if it finds two strings in one message it will ban the player for a few hours -> it also bans krx whisper messages automatically by default

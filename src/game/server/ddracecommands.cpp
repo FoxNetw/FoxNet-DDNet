@@ -1678,7 +1678,8 @@ void CGameContext::DisallowedNeedles(const char *Needle, bool Remove)
 	char aBuf[512];
 	str_copy(aBuf, "");
 
-	AutoBanNeedles Entry(Needle);
+	AutoBanNeedles Entry(Needle, "");
+	str_copy(Entry.m_disallowedStrings, Needle);
 
 	if(str_comp(Needle, "") != 0)
 	{
@@ -1694,7 +1695,7 @@ void CGameContext::DisallowedNeedles(const char *Needle, bool Remove)
 		}
 		else
 		{
-			m_disallowedStrings.push_back(Needle);
+			m_disallowedStrings.push_back(Entry);
 			str_format(aBuf, sizeof(aBuf), "Added \"%s\" to disallowed words", Needle);
 			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
 		}
@@ -1703,9 +1704,61 @@ void CGameContext::DisallowedNeedles(const char *Needle, bool Remove)
 	str_copy(aBuf, "");
 	for(const auto &Words : m_disallowedStrings)
 	{
-		char AddStrig[512];
-		str_format(AddStrig, sizeof(AddStrig), "%s, ", Words.String());
-		str_append(aBuf, AddStrig);
+		if(Words.String()[0] == '\0')
+			continue;
+
+		str_append(aBuf, Words.String());
+		str_append(aBuf, ", ");
+	}
+
+	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
+}
+
+void CGameContext::ConDisallowedNames(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	pSelf->DisallowedNames(pResult->GetString(0), pResult->GetInteger(1));
+}
+
+void CGameContext::DisallowedNames(const char *Needle, bool Remove)
+{
+	// Wonky wonky code but copied
+
+	char aBuf[512];
+	str_copy(aBuf, "");
+
+	AutoBanNeedles Entry("", Needle);
+	str_copy(Entry.m_disallowedNames, Needle);
+
+	if(str_comp(Needle, "") != 0)
+	{
+		if(Remove)
+		{
+			auto it = std::find(m_disallowedStrings.begin(), m_disallowedStrings.end(), Entry);
+			if(it != m_disallowedStrings.end())
+			{
+				m_disallowedStrings.erase(it);
+				str_format(aBuf, sizeof(aBuf), "Removed \"%s\" from disallowed names", Needle);
+				Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
+			}
+		}
+		else
+		{
+			m_disallowedStrings.push_back(Entry);
+			str_format(aBuf, sizeof(aBuf), "Added \"%s\" to disallowed names", Needle);
+			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
+		}
+	}
+
+	str_copy(aBuf, "");
+
+	for(const auto &Words : m_disallowedStrings)
+	{
+		if(Words.Names()[0] == '\0')
+			continue;
+
+		str_append(aBuf, Words.Names());
+		str_append(aBuf, ", ");
 	}
 
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);

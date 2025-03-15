@@ -72,20 +72,24 @@ private:
 
 class AutoBanNeedles
 {
-	char m_disallowedStrings[10] = {0}; // Initialize with zeros
-
 public:
-	AutoBanNeedles(const char *pAutoBanNeedles)
+	char m_disallowedStrings[10] = "";
+	char m_disallowedNames[10] = "";
+
+	AutoBanNeedles(const char *pAutoBannedNeedles, const char *pAutoBannedNames)
 	{
 		if(!str_comp(m_disallowedStrings, ""))
-			str_copy(m_disallowedStrings, pAutoBanNeedles);
+			str_copy(m_disallowedStrings, pAutoBannedNeedles);
+		if(!str_comp(m_disallowedNames, ""))
+			str_copy(m_disallowedNames, pAutoBannedNames);
 	}
 
 	const char *String() const { return m_disallowedStrings; }
+	const char *Names() const { return m_disallowedNames; }
 
 	bool operator==(const AutoBanNeedles &Other) const
 	{
-		return str_comp(String(), Other.String()) == 0;
+		return !str_comp(String(), Other.String()) || !str_comp(Names(), Other.Names());
 	}
 };
 
@@ -655,6 +659,9 @@ private: // FoxNet
 	static void ConDisallowedWords(IConsole::IResult *pResult, void *pUserData);
 	void DisallowedNeedles(const char *Needle, bool Remove = false);
 
+	static void ConDisallowedNames(IConsole::IResult *pResult, void *pUserData);
+	void DisallowedNames(const char *Needle, bool Remove = false);
+
 	void FoxNetTick();
 
 	void BanSync();
@@ -664,7 +671,7 @@ private: // FoxNet
 	void SendEveryonePing(int ChatterClientId, const char *pText, int ReceivingIds) const;
 
 public:
-	std::vector<AutoBanNeedles> m_disallowedStrings = {};
+	std::vector<AutoBanNeedles> m_disallowedStrings;
 	int64_t m_BanSaveDelay = 0;
 	void UnsetTelekinesis(CEntity *pEntity);
 

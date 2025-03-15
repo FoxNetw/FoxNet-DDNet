@@ -2143,7 +2143,7 @@ void CGameContext::OnMessage(int MsgId, CUnpacker *pUnpacker, int ClientId)
 void CGameContext::OnSayNetMessage(const CNetMsg_Cl_Say *pMsg, int ClientId, const CUnpacker *pUnpacker)
 {
 	if(!Server()->GetAuthedState(ClientId))
-		if(CheckSpam(ClientId, pMsg->m_pMessage) && g_Config.m_SvAntiAdBot)
+		if(BanCheck(ClientId, pMsg->m_pMessage) && g_Config.m_SvAntiAdBot)
 			return;
 
 	CPlayer *pPlayer = m_apPlayers[ClientId];
@@ -3841,7 +3841,8 @@ void CGameContext::RegisterDDRaceCommands()
 
 	Console()->Register("next_ban_sync", "", CFGFLAG_SERVER, ConNextBanSync, this, "When the next ban sync is happening");
 
-	Console()->Register("disallow_string", "?s[name] ?i[remove]", CFGFLAG_SERVER, ConDisallowedWords, this, "Add or remove strings to add to the auto ban check");
+	Console()->Register("disallow_string", "?s[name] ?i[remove]", CFGFLAG_SERVER, ConDisallowedWords, this, "Add or remove strings to add to the auto ban Ingame Chat check");
+	Console()->Register("disallow_name", "?s[name] ?i[remove]", CFGFLAG_SERVER, ConDisallowedNames, this, "Add or remove strings to add to the auto ban Name check");
 }
 
 void CGameContext::RegisterChatCommands()
@@ -5305,7 +5306,7 @@ void CGameContext::BanSync()
 	}
 }
 
-bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Pointer31 for making this - MODIFIED
+bool CGameContext::BanCheck(int ClientId, const char *pMsg) const // Thx to Pointer31 for making this - MODIFIED
 {
 	int count = 0; // amount of flagged strings (some strings may count more than others)
 
@@ -5340,7 +5341,6 @@ bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Poi
 	}
 	
 	// Maybe Remove things like these from it so it doesn't ban people who have these binds
-	// 𝕕𝕠𝕟❜𝕥 𝕔𝕒𝕣𝕖 + 𝕕𝕚𝕕𝕟❜𝕥 𝕒𝕤𝕜 + 𝕔𝕣𝕪 𝕒𝕓𝕠𝕦𝕥 𝕚𝕥 + 𝕤𝕥𝕒𝕪 𝕞𝕒𝕕 + 𝕘𝕖𝕥 𝕣𝕖𝕒𝕝 + 𝕃 +  𝕥𝕣𝕚𝕘𝕘𝕖𝕣𝕖𝕕 + 𝕥𝕠𝕦𝕔𝕙
 	// 𝕕𝕠𝕟❜𝕥 𝕔𝕒𝕣𝕖 + 𝕕𝕚𝕕𝕟❜𝕥 𝕒𝕤𝕜 + 𝕔𝕣𝕪 𝕒𝕓𝕠𝕦𝕥 𝕚𝕥 + 𝕤𝕥𝕒𝕪 𝕞𝕒𝕕 + 𝕘𝕖𝕥 𝕣𝕖𝕒𝕝 + 𝕃 + 𝕥𝕣𝕚𝕘𝕘𝕖𝕣𝕖𝕕 + 𝕥𝕠𝕦𝕔𝕙
 
 	// general needles to disallow
@@ -5349,7 +5349,7 @@ bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Poi
 		if(str_find_nocase(pMsg, Entry.String()))
 		{
 			count++;
-			BanAmount = 360;
+			BanAmount = 720;
 		}
 	}
 
@@ -5360,10 +5360,13 @@ bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Poi
 		BanAmount = 1000;
 	}
 
-	if(str_find_nocase(Server()->ClientName(ClientId), "krx")) // If its found in the players name
+	for(const auto &Entry : m_disallowedStrings)
 	{
-		count += 2;
-		BanAmount = 500;
+		if(str_find_nocase(pMsg, Entry.Names()))
+		{
+			count += 2;
+			BanAmount = 722;
+		}
 	}
 
 	// anti mass ping ad bot
@@ -5393,10 +5396,10 @@ bool CGameContext::CheckSpam(int ClientId, const char *pMsg) const // Thx to Poi
 			Server()->Ban(ClientId, BanAmount * 60, "Don't talk about forbidden Clients", "");
 		else if(BanAmount == 120)
 			Server()->Ban(ClientId, BanAmount * 60, "Refrain from using Fancy Alphabets", "");
-		else if(BanAmount == 360)
-			Server()->Ban(ClientId, BanAmount * 60, "Don't Talk about Cheats", "");
-		else if(BanAmount == 500)
-			Server()->Ban(ClientId, BanAmount * 60, "Don't Use Forbidden Clients as your Name", "");
+		else if(BanAmount == 720)
+			Server()->Ban(ClientId, BanAmount * 60, "Don't Talk about Cheats or advertise", "");
+		else if(BanAmount == 722)
+			Server()->Ban(ClientId, BanAmount * 60, "Don't Use your name to Advertise", "");
 		else if(BanAmount == 1000)
 			Server()->Ban(ClientId, BanAmount * 60, "Krx Message", "");
 		else if(BanAmount == 1200)
