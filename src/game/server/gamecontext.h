@@ -656,7 +656,7 @@ private: // FoxNet
 
 	static void ConNextBanSync(IConsole::IResult *pResult, void *pUserData);
 
-	static void ConDisallowedWords(IConsole::IResult *pResult, void *pUserData);
+	static void ConDisallowedStrings(IConsole::IResult *pResult, void *pUserData);
 	void DisallowedNeedles(const char *Needle, bool Remove = false);
 
 	static void ConDisallowedNames(IConsole::IResult *pResult, void *pUserData);

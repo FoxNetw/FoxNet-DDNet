@@ -1655,17 +1655,12 @@ void CGameContext::ConNextBanSync(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 
-	if(pResult->NumArguments() > 0)
-	{
-		pSelf->m_BanSaveDelay = pResult->GetInteger(0);
-	}
-
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "Next Sync: %d Seconds", (pSelf->m_BanSaveDelay - pSelf->Server()->Tick()) / pSelf->Server()->TickSpeed());
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
 }
 
-void CGameContext::ConDisallowedWords(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConDisallowedStrings(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	pSelf->DisallowedNeedles(pResult->GetString(0), pResult->GetInteger(1));

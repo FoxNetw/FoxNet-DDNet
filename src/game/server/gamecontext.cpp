@@ -3840,9 +3840,9 @@ void CGameContext::RegisterDDRaceCommands()
 	Console()->Register("rainbow", "?v[id]", CFGFLAG_SERVER, ConRainbow, this, "Makes a players (id) Rainbow");
 	Console()->Register("rainbow_speed", "?v[id] ?i[speed]", CFGFLAG_SERVER, ConRainbowSpeed, this, "Makes a players (id) Rainbow");
 
-	Console()->Register("next_ban_sync", "?i[set]", CFGFLAG_SERVER, ConNextBanSync, this, "When the next ban sync is happening");
+	Console()->Register("next_ban_sync", "", CFGFLAG_SERVER, ConNextBanSync, this, "When the next ban sync is happening");
 
-	Console()->Register("disallow_string", "?s[name] ?i[remove]", CFGFLAG_SERVER, ConDisallowedWords, this, "Add or remove strings to add to the auto ban Ingame Chat check");
+	Console()->Register("disallow_string", "?s[name] ?i[remove]", CFGFLAG_SERVER, ConDisallowedStrings, this, "Add or remove strings to add to the auto ban Ingame Chat check");
 	Console()->Register("disallow_name", "?s[name] ?i[remove]", CFGFLAG_SERVER, ConDisallowedNames, this, "Add or remove strings to add to the auto ban Name check");
 }
 
