@@ -5384,7 +5384,7 @@ bool CGameContext::BanCheck(int ClientId, const char *pMsg) const
 	{
 		char aBuf[512];
 		str_format(aBuf, sizeof(aBuf), "Name: %s | Strings Found: ", Server()->ClientName(ClientId));
-		for(int i = 0; i < FoundStrings.size(); i++)
+		for(int i = 0; i < (int)FoundStrings.size(); i++)
 		{
 			str_append(aBuf, FoundStrings.at(i).c_str());
 			str_append(aBuf, ", ");
