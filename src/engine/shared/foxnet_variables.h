@@ -9,6 +9,8 @@ MACRO_CONFIG_INT(SvSpeed, fs_speed, 1, 1, 4, CFGFLAG_SERVER | CFGFLAG_GAME, "Spe
 MACRO_CONFIG_STR(SvGameTypeName, fs_gametype_name, 32, "FoxNetwork", CFGFLAG_SERVER | CFGFLAG_GAME, "game type name")
 
 MACRO_CONFIG_INT(SvSendMotd, fs_send_motd, 0, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "Show Motd on Enter")
+MACRO_CONFIG_INT(SvSendWelcome, fs_send_welcome, 1, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "Send a Welcome broadcast to players who joined")
+MACRO_CONFIG_STR(SvWelcomeMessage, fs_welcome_message, 256, "< Welcome to the Server %s >", CFGFLAG_SERVER | CFGFLAG_GAME, "Welcome Message")
 
 MACRO_CONFIG_INT(SvAntiAdBot, fs_anti_ad_bot, 2, 0, 2, CFGFLAG_SERVER | CFGFLAG_GAME, "Anti Ad Bot, 1 Normal Detection, 2 tries to not ban people if they ping someone with a fancy name")
 
