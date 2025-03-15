@@ -131,18 +131,13 @@ void CGameControllerDDRace::OnPlayerConnect(CPlayer *pPlayer)
 		IServer::CClientInfo Info;
 		char PlayerInfo[512] = "";
 		if(Server()->GetClientInfo(ClientId, &Info) && Info.m_GotDDNetVersion)
-		{
 			str_format(PlayerInfo, sizeof(PlayerInfo), " (%s)", Info.m_pDDNetVersionStr);
-		}
 
 		char aBuf[512];
 		str_format(aBuf, sizeof(aBuf), "'%s' entered and joined the %s%s", Server()->ClientName(ClientId), GetTeamName(pPlayer->GetTeam()), PlayerInfo);
 		GameServer()->SendChat(-1, TEAM_ALL, aBuf, -1, CGameContext::FLAG_SIX);
 
 		GameServer()->SendChatTarget(ClientId, "FoxNetwork mod " GAME_VERSION);
-		GameServer()->SendChatTarget(ClientId, "This Server serves as a Testing Server");
-		GameServer()->SendChatTarget(ClientId, "Expect Random Restarts or bans");
-		GameServer()->SendChatTarget(ClientId, "Cheaters will still be banned.");
 
 		char WelcomeText[256];
 		str_format(WelcomeText, sizeof(WelcomeText), "< Welcome to the Server %s >", Server()->ClientName(ClientId));
