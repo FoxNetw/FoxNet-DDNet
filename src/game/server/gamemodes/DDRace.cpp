@@ -130,8 +130,16 @@ void CGameControllerDDRace::OnPlayerConnect(CPlayer *pPlayer)
 	{
 		IServer::CClientInfo Info;
 		char PlayerInfo[512] = "";
+		int StrLength = 0;
 		if(Server()->GetClientInfo(ClientId, &Info) && Info.m_GotDDNetVersion)
-			str_format(PlayerInfo, sizeof(PlayerInfo), " (%s)", Info.m_pDDNetVersionStr);
+		{
+			StrLength = str_length(Info.m_pDDNetVersionStr);
+			if(str_find_nocase(Info.m_pDDNetVersionStr, " ("))
+				StrLength = StrLength - str_length(str_find_nocase(Info.m_pDDNetVersionStr, " ("));
+
+			str_format(PlayerInfo, StrLength + 3, " (%s)", Info.m_pDDNetVersionStr);
+			str_append(PlayerInfo, ")", sizeof(PlayerInfo));
+		}
 
 		char aBuf[512];
 		str_format(aBuf, sizeof(aBuf), "'%s' entered and joined the %s%s", Server()->ClientName(ClientId), GetTeamName(pPlayer->GetTeam()), PlayerInfo);
