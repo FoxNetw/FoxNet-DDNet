@@ -36,8 +36,11 @@ public:
 	// FoxNet
 	void CreatePowerupExplosion(int ClientId, int Type);
 
-	int64_t VoteActionDelay;
+	bool m_NeedsUpdate = true;
+	int64_t VoteActionDelay = 0;
 	void VoteAction(const CNetMsg_Cl_Vote *pMsg, int ClientId);
+
+	float FoxNetGetFireDelay(int Weapon);
 
 	void FoxNetTick();
 	void FoxNetSpawn();
@@ -67,6 +70,9 @@ public:
 
 	int m_HeadItem;
 	void HeadItem(int Type = 1, int ClientId = -1);
+
+	bool m_AbilityInd;
+	void AbilityInd(bool Set = false, int ClientId = -1);
 
 	// DDNet
 	void Reset() override;

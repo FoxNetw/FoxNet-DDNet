@@ -23,6 +23,7 @@
 // FoxNet
 #include <game/server/entities/head_powerup.h>
 #include <game/server/entities/custom_projectile.h>
+#include <game/server/entities/ability_ind.h>
 #include <game/server/foxnet_types.h>
 
 MACRO_ALLOC_POOL_ID_IMPL(CCharacter, MAX_CLIENTS)
@@ -691,11 +692,27 @@ void CCharacter::FireWeapon()
 
 	if(!m_ReloadTimer)
 	{
-		float FireDelay;
-		GetTuning(m_TuneZone)->Get(offsetof(CTuningParams, m_HammerFireDelay) / sizeof(CTuneParam) + m_Core.m_ActiveWeapon, &FireDelay);
+		float FireDelay = FoxNetGetFireDelay(Core()->m_ActiveWeapon);
 		m_ReloadTimer = FireDelay * Server()->TickSpeed() / 1000;
 	}
 }
+
+float CCharacter::FoxNetGetFireDelay(int Weapon)
+{
+	switch(Weapon)
+	{
+	case WEAPON_HAMMER: return (float)Tuning()->m_HammerFireDelay;
+	case WEAPON_GUN: return (float)Tuning()->m_GunFireDelay;
+	case WEAPON_SHOTGUN: return (float)Tuning()->m_ShotgunFireDelay;
+	case WEAPON_GRENADE: return (float)Tuning()->m_GrenadeFireDelay;
+	case WEAPON_LASER: return (float)Tuning()->m_LaserFireDelay;
+	case WEAPON_NINJA: return (float)Tuning()->m_NinjaFireDelay;
+	case WEAPON_HEART_GUN: return (float)Tuning()->m_HeartgunFireDelay;
+	case WEAPON_TELEKINESIS: return (float)Tuning()->m_TelekinesisFireDelay;
+	default: dbg_assert(false, "invalid weapon"); return 0.0f; // this value should not be reached
+	}
+}
+
 
 void CCharacter::HandleWeapons()
 {
@@ -2651,11 +2668,6 @@ void CCharacter::FoxNetTick()
 {
 	UnsoloAfterSpawn();
 
-	if (GetActiveWeapon() == WEAPON_HEART_GUN)
-	{
-
-	}
-
 	// update telekinesis entitiy position
 	if(m_pTelekinesisEntity)
 	{
@@ -2671,6 +2683,19 @@ void CCharacter::FoxNetTick()
 			m_pTelekinesisEntity = 0;
 		}
 	}
+
+	if(m_pPlayer->m_Ability > 0 && VoteActionDelay > Server()->Tick())
+	{
+		AbilityInd(false, m_pPlayer->GetCid());
+		m_NeedsUpdate = true;
+	}
+	else if(m_NeedsUpdate && m_pPlayer->m_Ability > 0)
+	{
+		AbilityInd(true, m_pPlayer->GetCid());
+		m_NeedsUpdate = false;
+	}
+	else if(m_AbilityInd && !m_pPlayer->m_Ability)
+		AbilityInd(false, m_pPlayer->GetCid());
 }
 
 void CCharacter::CreatePowerupExplosion(int ClientId, int Type)
@@ -2778,6 +2803,16 @@ void CCharacter::HeadItem(int Type, int ClientId)
 	m_HeadItem = Type;
 	if(m_HeadItem)
 		new CHeadItem(GameWorld(), m_Pos, ClientId, Type);
+}
+
+void CCharacter::AbilityInd(bool Set, int ClientId)
+{
+	if(ClientId < 0)
+		return;
+
+	m_AbilityInd = Set;
+	if(m_AbilityInd)
+		new CAbilityInd(GameWorld(), m_Pos, ClientId);
 }
 
 void CCharacter::SetTelekinesisImmunity(bool Active)
