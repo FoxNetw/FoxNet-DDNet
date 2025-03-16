@@ -1537,7 +1537,7 @@ void CGameContext::ConSetPlayerSkin(IConsole::IResult *pResult, void *pUserData)
 	if(!pChr)
 		return;
 
-	str_copy(pSelf->m_apPlayers[Victim]->m_TeeInfos.m_aSkinName, pResult->GetString(1));
+	str_copy(pChr->GetPlayer()->m_TeeInfos.m_aSkinName, pResult->GetString(1));
 }
 
 void CGameContext::ConSetPlayerCustomColor(IConsole::IResult *pResult, void *pUserData)
@@ -1554,7 +1554,7 @@ void CGameContext::ConSetPlayerCustomColor(IConsole::IResult *pResult, void *pUs
 	if(!pChr)
 		return;
 
-	pSelf->m_apPlayers[Victim]->m_TeeInfos.m_UseCustomColor = pResult->GetInteger(1);
+	pChr->GetPlayer()->m_TeeInfos.m_UseCustomColor = pResult->GetInteger(1);
 }
 
 void CGameContext::ConSetPlayerColorBody(IConsole::IResult *pResult, void *pUserData)
@@ -1571,7 +1571,7 @@ void CGameContext::ConSetPlayerColorBody(IConsole::IResult *pResult, void *pUser
 	if(!pChr)
 		return;
 
-	pSelf->m_apPlayers[Victim]->m_TeeInfos.m_ColorBody = pResult->GetInteger(1);
+	pChr->GetPlayer()->m_TeeInfos.m_ColorBody = pResult->GetInteger(1);
 }
 
 void CGameContext::ConSetPlayerColorFeet(IConsole::IResult *pResult, void *pUserData)
@@ -1588,7 +1588,28 @@ void CGameContext::ConSetPlayerColorFeet(IConsole::IResult *pResult, void *pUser
 	if(!pChr)
 		return;
 
-	pSelf->m_apPlayers[Victim]->m_TeeInfos.m_ColorFeet = pResult->GetInteger(1);
+	pChr->GetPlayer()->m_TeeInfos.m_ColorFeet = pResult->GetInteger(1);
+}
+
+void CGameContext::ConSetPlayerAfk(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->m_ClientId;
+	if(pResult->NumArguments() > 1)
+		Victim = pResult->GetVictim();
+	if(pResult->GetInteger(0) == -1)
+		Victim = pResult->m_ClientId;
+
+	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+
+	bool Afk = !pChr->GetPlayer()->IsAfk();
+	if(pResult->NumArguments() > 1)
+		Afk = pResult->GetInteger(1);
+
+	pChr->GetPlayer()->SetInitialAfk(Afk);
 }
 
 void CGameContext::ConRainbow(IConsole::IResult *pResult, void *pUserData)
@@ -1604,12 +1625,12 @@ void CGameContext::ConRainbow(IConsole::IResult *pResult, void *pUserData)
 	if(!pChr)
 		return;
 	
-	if(pChr->Core()->m_Rainbow)
-		pChr->RestoreColor();
+	if(pChr->m_Rainbow)
+		pChr->GetPlayer()->RestoreColor();
 	else
-		pChr->SaveColor();
+		pChr->GetPlayer()->SaveColor();
 
-	pChr->SetRainbow(!pChr->Core()->m_Rainbow);
+	pChr->SetRainbow(!pChr->m_Rainbow);
 }
 
 void CGameContext::ConRainbowSpeed(IConsole::IResult *pResult, void *pUserData)
@@ -1649,7 +1670,7 @@ void CGameContext::ConInvisible(IConsole::IResult *pResult, void *pUserData)
 	if(!pChr)
 		return;
 
-	pChr->SetInvisible(!pChr->Core()->m_Invisible);
+	pChr->SetInvisible(!pChr->m_Invisible);
 }
 
 void CGameContext::ConNextBanSync(IConsole::IResult *pResult, void *pUserData)
@@ -1759,4 +1780,24 @@ void CGameContext::DisallowedNames(const char *Needle, bool Remove)
 	}
 	NeedleStoring(0);
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
+}
+
+void CGameContext::ConSetAbility(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->NumArguments() ? pResult->GetVictim() : pResult->m_ClientId;
+
+	if(pResult->GetInteger(0) == -1)
+		Victim = pResult->m_ClientId;
+
+	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+
+	pChr->SetAbility(pResult->GetInteger(1));
+	char aBuf[128];
+	str_format(aBuf, sizeof(aBuf), "Ability set to %s", pSelf->GetAbilityName(pResult->GetInteger(1)));
+	pSelf->SendChatTarget(Victim, aBuf);
+	pSelf->SendChatTarget(Victim, "Use f3 (Vote Yes) to use it");
 }

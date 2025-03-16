@@ -12,6 +12,7 @@
 #include <game/generated/server_data.h>
 
 #include <engine/shared/config.h>
+#include <game/server/foxnet_types.h>
 
 CCustomProjectile::CCustomProjectile(CGameWorld *pGameWorld, int Owner, vec2 Pos, vec2 Dir,
 	bool Explosive, bool Freeze, bool Unfreeze, int Type, float Lifetime, float Accel, float Speed)
@@ -118,10 +119,10 @@ void CCustomProjectile::HitCharacter()
 		GameServer()->CreateExplosion(m_Pos, m_Owner, m_Type, m_Owner == -1, pHit->Team(), m_TeamMask);
 		GameServer()->CreateSound(m_Pos, SOUND_GRENADE_EXPLODE, m_TeamMask);
 	}
-	else
-		pHit->TakeDamage(vec2(0, 0), g_pData->m_Weapons.m_aId[GameServer()->GetWeaponType(m_Type)].m_Damage, m_Owner, m_Type);
+	//else
+		//pHit->TakeDamage(vec2(0, 0), g_pData->m_Weapons.m_aId[GameServer()->GetWeaponType(m_Type)].m_Damage, m_Owner, m_Type);
 
-	if(m_Type == WEAPON_HEART_GUN)
+	if(GameServer()->GetPlayerChar(m_Owner)->GetActiveWeapon() == WEAPON_HEART_GUN || GameServer()->GetPlayerChar(m_Owner)->m_Ability == TYPE_HEART)
 	{
 		pHit->SetEmote(EMOTE_HAPPY, Server()->Tick() + 2 * Server()->TickSpeed());
 		GameServer()->SendEmoticon(pHit->GetPlayer()->GetCid(), EMOTICON_HEARTS, -1);
@@ -135,23 +136,20 @@ void CCustomProjectile::Snap(int SnappingClient)
 	if(NetworkClipped(SnappingClient))
 		return;
 
-	if(m_Type == WEAPON_HEART_GUN)
-	{
-		CCharacter *pOwner = GameServer()->GetPlayerChar(m_Owner);
+	CCharacter *pOwner = GameServer()->GetPlayerChar(m_Owner);
 
-		if(GameServer()->GetPlayerChar(SnappingClient) && pOwner)
-			if(!GameServer()->GetPlayerChar(m_Owner)->CanSnapCharacter(SnappingClient))
-				return;
-
-		int Size = !Server()->IsSixup(SnappingClient) ? 4*4 : sizeof(CNetObj_Pickup);
-		CNetObj_Pickup *pPickup = static_cast<CNetObj_Pickup *>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, GetId(), Size));
-		if (!pPickup)
+	if(GameServer()->GetPlayerChar(SnappingClient) && pOwner)
+		if(!GameServer()->GetPlayerChar(m_Owner)->CanSnapCharacter(SnappingClient))
 			return;
 
-		pPickup->m_X = (int)m_Pos.x;
-		pPickup->m_Y = (int)m_Pos.y;
-		pPickup->m_Type = POWERUP_HEALTH;
-		if(!Server()->IsSixup(SnappingClient))
-			((int*)pPickup)[3] = 0;
-	}
+	int Size = !Server()->IsSixup(SnappingClient) ? 4 * 4 : sizeof(CNetObj_Pickup);
+	CNetObj_Pickup *pPickup = static_cast<CNetObj_Pickup *>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, GetId(), Size));
+	if(!pPickup)
+		return;
+
+	pPickup->m_X = (int)m_Pos.x;
+	pPickup->m_Y = (int)m_Pos.y;
+	pPickup->m_Type = m_Type;
+	if(!Server()->IsSixup(SnappingClient))
+		((int *)pPickup)[3] = 0;
 }

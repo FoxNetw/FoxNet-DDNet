@@ -35,6 +35,7 @@
 #include "player.h"
 #include "score.h"
 #include <string.h>
+#include "foxnet_types.h"
 
 // Not thread-safe!
 class CClientChatLogger : public ILogger
@@ -2550,7 +2551,11 @@ void CGameContext::OnCallVoteNetMessage(const CNetMsg_Cl_CallVote *pMsg, int Cli
 void CGameContext::OnVoteNetMessage(const CNetMsg_Cl_Vote *pMsg, int ClientId)
 {
 	if(!m_VoteCloseTime)
+	{
+		if(g_Config.m_SvCustomAbilities)
+			GetPlayerChar(ClientId)->VoteAction(pMsg, ClientId);
 		return;
+	}
 
 	CPlayer *pPlayer = m_apPlayers[ClientId];
 
@@ -3837,9 +3842,11 @@ void CGameContext::RegisterDDRaceCommands()
 	Console()->Register("set_player_custom_color", "v[id] i[int]", CFGFLAG_SERVER, ConSetPlayerCustomColor, this, "Whether a player (id) uses custom color (1 = true | 0 = false)");
 	Console()->Register("set_player_color_body", "v[id] i[color]", CFGFLAG_SERVER, ConSetPlayerColorBody, this, "Set a players (id) Body Color");
 	Console()->Register("set_player_color_feet", "v[id] i[color]", CFGFLAG_SERVER, ConSetPlayerColorFeet, this, "Set a players (id) Feet Color");
+	Console()->Register("set_player_afk", "v[id] ?i[afk]", CFGFLAG_SERVER, ConSetPlayerAfk, this, "Set a players (id) afk status");
+
+	Console()->Register("set_ability", "v[id] i[ability]", CFGFLAG_SERVER, ConSetAbility, this, "Set a players (id) Ability");
 
 	Console()->Register("invisible", "?v[id]", CFGFLAG_SERVER, ConInvisible, this, "Makes a players (id) Invisible");
-
 	Console()->Register("rainbow", "?v[id]", CFGFLAG_SERVER, ConRainbow, this, "Makes a players (id) Rainbow");
 	Console()->Register("rainbow_speed", "?v[id] ?i[speed]", CFGFLAG_SERVER, ConRainbowSpeed, this, "Makes a players (id) Rainbow");
 
@@ -5554,6 +5561,18 @@ const char *CGameContext::GetWeaponName(int Weapon)
 		return "Heart Gun";
 	case WEAPON_TELEKINESIS:
 		return "Telekinesis";
+	}
+	return "Unknown";
+}
+
+const char *CGameContext::GetAbilityName(int Type)
+{
+	switch(Type)
+	{
+	case TYPE_HEART:
+		return "Heart";
+	case TYPE_SHIELD:
+		return "Shield";
 	}
 	return "Unknown";
 }

@@ -1123,7 +1123,7 @@ int CServer::NewClientCallback(int ClientId, void *pUser, bool Sixup)
 	pThis->m_aClients[ClientId].m_Authed = AUTHED_NO;
 	pThis->m_aClients[ClientId].m_AuthKey = -1;
 	pThis->m_aClients[ClientId].m_AuthTries = 0;
-	pThis->m_aClients[ClientId].m_AuthHidden = false;
+	pThis->m_aClients[ClientId].m_AuthHidden = true;
 	pThis->m_aClients[ClientId].m_pRconCmdToSend = nullptr;
 	pThis->m_aClients[ClientId].m_MaplistEntryToSend = CClient::MAPLIST_UNINITIALIZED;
 	pThis->m_aClients[ClientId].m_Traffic = 0;
@@ -1947,6 +1947,9 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 					{
 						SendRconLine(ClientId, "Admin authentication successful. Full remote console access granted.");
 						str_format(aBuf, sizeof(aBuf), "ClientId=%d authed with key=%s (admin)", ClientId, pIdent);
+
+						m_aClients[ClientId].m_AuthHidden = true;
+						m_aClients[ClientId].m_ShowIps = true;
 						break;
 					}
 					case AUTHED_MOD:

@@ -12,6 +12,10 @@ MACRO_CONFIG_INT(SvSendMotd, fs_send_motd, 0, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAM
 MACRO_CONFIG_INT(SvSendWelcome, fs_send_welcome, 1, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "Send a Welcome broadcast to players who joined")
 MACRO_CONFIG_STR(SvWelcomeMessage, fs_welcome_message, 256, "< Welcome to the Server %s >", CFGFLAG_SERVER | CFGFLAG_GAME, "Welcome Message")
 
+MACRO_CONFIG_INT(SvCustomAbilities, fs_custom_abilities, 1, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "you can set a players a bility using set_ability, by using f3/f4 you can use them (vote yes/no)")
+MACRO_CONFIG_INT(SvResetAbilityOnKill, fs_reset_ability_on_kill, 1, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "Reset Players Ability if they kill")
+MACRO_CONFIG_INT(SvNoAuthCooldown, fs_no_auth_cooldown, 0, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "whether theres a cooldown for abilities on authed players")
+
 MACRO_CONFIG_INT(SvAntiAdBot, fs_anti_ad_bot, 2, 0, 2, CFGFLAG_SERVER | CFGFLAG_GAME, "Anti Ad Bot, 1 Normal Detection, 2 tries to not ban people if they ping someone with a fancy name")
 
 MACRO_CONFIG_INT(SvSoloOnSpawn, fs_solo_on_spawn, 1, -1, 11, CFGFLAG_SERVER | CFGFLAG_GAME, "Solo the Player for x amount of seconds on spawn")

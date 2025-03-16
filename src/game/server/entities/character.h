@@ -34,6 +34,11 @@ public:
 	CCharacter(CGameWorld *pWorld, CNetObj_PlayerInput LastInput);
 
 	// FoxNet
+	void CreatePowerupExplosion(int ClientId, int Type);
+
+	int64_t VoteActionDelay;
+	void VoteAction(const CNetMsg_Cl_Vote *pMsg, int ClientId);
+
 	void FoxNetTick();
 	void FoxNetSpawn();
 
@@ -47,12 +52,15 @@ public:
 	void SendBroadcastHud(const char *pMessage);
 	int NumDDraceHudRows();
 
-	// Restoring Color
-	void SaveColor();
-	void RestoreColor();
+	int m_Ability;
+	void SetAbility(int Type);
 
+	bool m_Rainbow;
 	void SetRainbow(bool Active);
+
+	bool m_Invisible;
 	void SetInvisible(bool Active);
+
 	void SetExplosionGun(bool Active);
 	void SetTelekinesisImmunity(bool Active);
 

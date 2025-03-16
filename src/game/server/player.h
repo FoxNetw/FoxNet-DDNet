@@ -248,6 +248,11 @@ public:
 	bool m_SpecAfk = true;
 	void SetSpecAfk(bool Set);
 	void AfkSpectateTick();
+	void SetPlayerAfk(bool Set);
+
+	// Restoring Color
+	void SaveColor();
+	void RestoreColor();
 
 	int m_RainbowSpeed = 6; // <- is the default
 	int m_RainbowColor;

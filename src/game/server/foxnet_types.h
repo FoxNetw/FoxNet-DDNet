@@ -1,0 +1,7 @@
+enum
+{
+	TYPE_NONE = 0,
+	TYPE_HEART,
+	TYPE_SHIELD,
+	NUM_TYPES
+};

@@ -646,6 +646,7 @@ private: // FoxNet
 	static void ConSetPlayerClan(IConsole::IResult *pResult, void *pUserData);
 	static void ConSetPlayerName(IConsole::IResult *pResult, void *pUserData);
 	static void ConSetPlayerSkin(IConsole::IResult *pResult, void *pUserData);
+	static void ConSetPlayerAfk(IConsole::IResult *pResult, void *pUserData);
 
 	static void ConInvisible(IConsole::IResult *pResult, void *pUserData);
 	static void ConRainbow(IConsole::IResult *pResult, void *pUserData);
@@ -661,6 +662,8 @@ private: // FoxNet
 
 	static void ConDisallowedNames(IConsole::IResult *pResult, void *pUserData);
 	void DisallowedNames(const char *Needle, bool Remove = false);
+
+	static void ConSetAbility(IConsole::IResult *pResult, void *pUserData);
 
 	void FoxNetTick();
 
@@ -686,6 +689,7 @@ public:
 	int64_t m_BanSaveDelay = 0;
 	void UnsetTelekinesis(CEntity *pEntity);
 
+	const char *GetAbilityName(int Type);
 	const char *GetWeaponName(int Weapon);
 	int GetWeaponType(int Weapon);
 

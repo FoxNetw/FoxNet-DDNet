@@ -23,6 +23,7 @@
 // FoxNet
 #include <game/server/entities/head_powerup.h>
 #include <game/server/entities/custom_projectile.h>
+#include <game/server/foxnet_types.h>
 
 MACRO_ALLOC_POOL_ID_IMPL(CCharacter, MAX_CLIENTS)
 
@@ -679,7 +680,7 @@ void CCharacter::FireWeapon()
 			false, // explosive
 			false, // freeze
 			false, // unfreeze
-			WEAPON_HEART_GUN // type
+			POWERUP_HEALTH // type
 		);
 		GameServer()->CreateSound(m_Pos, SOUND_PICKUP_HEALTH, TeamMask());
 	}
@@ -1061,7 +1062,7 @@ void CCharacter::Die(int Killer, int Weapon, bool SendKillMsg)
 
 	// unset skin specific stuff
 	if(m_pPlayer->m_SavedColor)
-		RestoreColor();
+		m_pPlayer->RestoreColor();
 
 	// unset anyones telekinesis on us
 	if(Server()->GetAuthedState(m_pPlayer->GetCid()) > AUTHED_NO)
@@ -1313,7 +1314,7 @@ void CCharacter::Snap(int SnappingClient)
 		return;
 
 	// invisibility
-	if(Core()->m_Invisible && SnappingClient != m_pPlayer->GetCid() && SnappingClient != -1)
+	if(m_Invisible && SnappingClient != m_pPlayer->GetCid() && SnappingClient != -1)
 		if(!Server()->GetAuthedState(SnappingClient) || Server()->Tick() % 150 == 0)
 			return;
 
@@ -2650,6 +2651,11 @@ void CCharacter::FoxNetTick()
 {
 	UnsoloAfterSpawn();
 
+	if (GetActiveWeapon() == WEAPON_HEART_GUN)
+	{
+
+	}
+
 	// update telekinesis entitiy position
 	if(m_pTelekinesisEntity)
 	{
@@ -2667,10 +2673,63 @@ void CCharacter::FoxNetTick()
 	}
 }
 
+void CCharacter::CreatePowerupExplosion(int ClientId, int Type)
+{
+	vec2 Direction;
+	int Amount = 8;
+
+	for(int Repeat = 1; Repeat < Amount + 1; Repeat++)
+	{
+		Direction = direction(45 * Repeat * (pi / 180.0f));
+
+		new CCustomProjectile(
+			GameWorld(),
+			ClientId, // owner
+			m_Pos, // pos
+			Direction, // dir
+			false, // explosive
+			false, // freeze
+			false, // unfreeze
+			Type // type
+		);
+
+		int Sound = Type + 24;
+
+		if(Repeat == Amount)
+			GameServer()->CreateSound(m_Pos, Sound, TeamMask());
+	}
+}
+
+void CCharacter::VoteAction(const CNetMsg_Cl_Vote *pMsg, int ClientId)
+{
+	if(!(Server()->GetAuthedState(ClientId) && g_Config.m_SvNoAuthCooldown))
+		if(VoteActionDelay > Server()->Tick())
+			return;
+
+	if(pMsg->m_Vote == 1)
+	{
+		// Heart "Explosion"
+		if(GetActiveWeapon() == WEAPON_HEART_GUN || m_Ability == TYPE_HEART)
+			CreatePowerupExplosion(ClientId, POWERUP_HEALTH);
+		if(m_Ability == TYPE_SHIELD)
+			CreatePowerupExplosion(ClientId, POWERUP_ARMOR);
+
+		VoteActionDelay = Server()->Tick() + Server()->TickSpeed();
+	}
+}
+
+void CCharacter::SetAbility(int Type)
+{
+	m_Ability = Type;
+}
+
 void CCharacter::FoxNetSpawn()
 {
-	m_Core.m_Rainbow = false;
-	m_Core.m_Invisible = false;
+	if(g_Config.m_SvResetAbilityOnKill)
+		m_Ability = 0;
+
+	m_Rainbow = false;
+	m_Invisible = false;
 }
 
 void CCharacter::TryRespawn()
@@ -2686,28 +2745,6 @@ void CCharacter::TryRespawn()
 		m_pPlayer->m_SpawnSoloShowOthers = true;
 		GameServer()->GetPlayerChar(m_pPlayer->GetCid())->SetSolo(true);
 		HeadItem(Type, m_pPlayer->GetCid());
-	}
-}
-
-void CCharacter::RestoreColor()
-{
-	if(m_Core.m_Rainbow)
-	{
-		m_pPlayer->m_TeeInfos.m_UseCustomColor = m_pPlayer->m_UsedCustomColor;
-		m_pPlayer->m_TeeInfos.m_ColorBody = m_pPlayer->m_SavedColorBody;
-		m_pPlayer->m_TeeInfos.m_ColorFeet = m_pPlayer->m_SavedColorFeet;
-		m_pPlayer->m_SavedColor = false;
-	}
-}
-
-void CCharacter::SaveColor()
-{
-	if(!m_pPlayer->m_SavedColor)
-	{
-		m_pPlayer->m_UsedCustomColor = m_pPlayer->m_TeeInfos.m_UseCustomColor;
-		m_pPlayer->m_SavedColorBody = m_pPlayer->m_TeeInfos.m_ColorBody;
-		m_pPlayer->m_SavedColorFeet = m_pPlayer->m_TeeInfos.m_ColorFeet;
-		m_pPlayer->m_SavedColor = true;
 	}
 }
 
@@ -2755,12 +2792,12 @@ void CCharacter::SetExplosionGun(bool Active)
 
 void CCharacter::SetRainbow(bool Active)
 {
-	m_Core.m_Rainbow = Active;
+	m_Rainbow = Active;
 }
 
 void CCharacter::SetInvisible(bool Active)
 {
-	m_Core.m_Invisible = Active;
+	m_Invisible = Active;
 }
 
 vec2 CCharacter::GetCursorPos(int Clientid)

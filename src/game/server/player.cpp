@@ -1110,12 +1110,12 @@ void CPlayer::RainbowTick()
 	if(Server()->Tick() % 2 != 0)
 		return;
 
-	if(!m_pCharacter || !m_pCharacter->Core()->m_Rainbow || m_Spawning)
+	if(!m_pCharacter || !m_pCharacter->m_Rainbow || m_Spawning)
 		return;
 
 	if(!m_SavedColor)
 	{
-		m_pCharacter->SaveColor();
+		SaveColor();
 		return;
 	}
 
@@ -1132,6 +1132,29 @@ void CPlayer::RainbowTick()
 			m_TeeInfos.m_UseCustomColor = 1;
 			m_TeeInfos.m_ColorBody = BaseColor + Color;
 		}
+}
+
+
+void CPlayer::RestoreColor()
+{
+	if(GetCharacter()->m_Rainbow)
+	{
+		m_TeeInfos.m_UseCustomColor = m_UsedCustomColor;
+		m_TeeInfos.m_ColorBody = m_SavedColorBody;
+		m_TeeInfos.m_ColorFeet = m_SavedColorFeet;
+		m_SavedColor = false;
+	}
+}
+
+void CPlayer::SaveColor()
+{
+	if(!m_SavedColor)
+	{
+		m_UsedCustomColor = m_TeeInfos.m_UseCustomColor;
+		m_SavedColorBody = m_TeeInfos.m_ColorBody;
+		m_SavedColorFeet = m_TeeInfos.m_ColorFeet;
+		m_SavedColor = true;
+	}
 }
 
 void CPlayer::SetWeaponIndicator(bool Set)
@@ -1154,4 +1177,13 @@ void CPlayer::SetSpecAfk(bool Set)
 		GameServer()->SendChatTarget(m_ClientId, "Auto Spectator on Afk Enabled");
 	else
 		GameServer()->SendChatTarget(m_ClientId, "Auto Spectator on Afk Disabled");
+}
+
+void CPlayer::SetPlayerAfk(bool Set)
+{
+	if(m_Afk == Set)
+		return;
+
+	Server()->ExpireServerInfo();
+	m_Afk = Set;
 }

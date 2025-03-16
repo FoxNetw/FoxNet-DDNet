@@ -2747,6 +2747,7 @@ if(SERVER)
     entity.h
     eventhandler.cpp
     eventhandler.h
+    foxnet_types.h
     gamecontext.cpp
     gamecontext.h
     gamecontroller.cpp
