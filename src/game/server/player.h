@@ -244,6 +244,10 @@ public:
 	bool m_WeaponIndicator;
 	void SetWeaponIndicator(bool Set);
 
+	// ability indicator
+	bool m_AbilityIndicator;
+	void SetAbilityIndicator(bool Set);
+
 	// Spec Afk Toggling for specific players
 	bool m_SpecAfk = true;
 	void SetSpecAfk(bool Set);

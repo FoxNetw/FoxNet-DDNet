@@ -653,6 +653,7 @@ private: // FoxNet
 	static void ConRainbowSpeed(IConsole::IResult *pResult, void *pUserData);
 
 	static void ConWeaponIndicator(IConsole::IResult *pResult, void *pUserData);
+	static void ConAbilityIndicator(IConsole::IResult *pResult, void *pUserData);
 	static void ConSpecAfk(IConsole::IResult *pResult, void *pUserData);
 
 	static void ConNextBanSync(IConsole::IResult *pResult, void *pUserData);

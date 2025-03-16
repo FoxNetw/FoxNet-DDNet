@@ -35,7 +35,7 @@ void CAbilityInd::Tick()
 
 	m_TeamMask = pOwner->TeamMask();
 	m_Pos = pOwner->GetPos();
-	m_aPos = vec2(m_Pos.x + (int)Vel.x, m_Pos.y - 70.f + (int)Vel.y);
+	m_aPos = vec2(m_Pos.x + (int)Vel.x, m_Pos.y - 45.f + (int)Vel.y);
 }
 
 void CAbilityInd::Snap(int SnappingClient)
@@ -48,8 +48,13 @@ void CAbilityInd::Snap(int SnappingClient)
 		return;
 
 	if(GameServer()->GetPlayerChar(SnappingClient) && pOwner)
+	{
 		if(!GameServer()->GetPlayerChar(m_Owner)->CanSnapCharacter(SnappingClient))
 			return;
+
+		if(!GameServer()->GetPlayerChar(SnappingClient)->GetPlayer()->m_AbilityIndicator)
+			return;
+	}
 
 	if(GameServer()->GetClientVersion(SnappingClient) >= VERSION_DDNET_MULTI_LASER)
 	{

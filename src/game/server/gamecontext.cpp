@@ -1514,6 +1514,7 @@ void CGameContext::OnClientEnter(int ClientId)
 	m_pController->OnPlayerConnect(m_apPlayers[ClientId]);
 
 	m_apPlayers[ClientId]->m_WeaponIndicator = true;
+	m_apPlayers[ClientId]->m_AbilityIndicator = true;
 
 	{
 		CNetMsg_Sv_CommandInfoGroupStart Msg;
@@ -3960,8 +3961,9 @@ void CGameContext::RegisterChatCommands()
 	Console()->Register("kill", "", CFGFLAG_CHAT | CFGFLAG_SERVER, ConProtectedKill, this, "Kill yourself when kill-protected during a long game (use f1, kill for regular kill)");
 
 	// FoxNet
+	Console()->Register("abilityindicator", "?i['0'|'1']", CFGFLAG_CHAT, ConAbilityIndicator, this, "Gives you an indication on when you can use your ability again");
 	Console()->Register("weaponindicator", "?i['0'|'1']", CFGFLAG_CHAT, ConWeaponIndicator, this, "Tells you which weapon you are holding under the heart and armor bar");
-	Console()->Register("afkspectate", "?i['0'|'1']", CFGFLAG_CHAT, ConSpecAfk, this, "Puts you into afk if you're afk");
+	Console()->Register("afkspectate", "?i['0'|'1']", CFGFLAG_CHAT, ConSpecAfk, this, "Puts you into spectator mode if you're afk");
 }
 
 void CGameContext::OnInit(const void *pPersistentData)
@@ -5170,6 +5172,30 @@ void CGameContext::FoxNetTick()
 
 	if(g_Config.m_SvBanSyncing)
 		BanSync();
+
+	static int64_t TypeSwitchDelay = Server()->Tick() + Server()->TickSpeed() * 5.0f;
+	static bool Switcher = false;
+	static bool Set = false;
+
+	if(str_comp(g_Config.m_SvGameTypeName, "FoxNetwork"))
+	{
+		if(TypeSwitchDelay < Server()->Tick())
+		{
+			m_pController->m_pGameType = Switcher ? "FoxNetwork": g_Config.m_SvGameTypeName;
+
+			Server()->UpdateServerInfo(true);
+			TypeSwitchDelay = Server()->Tick() + Server()->TickSpeed() * 5.0f;
+
+			Switcher = !Switcher;
+		}
+		Set = false;
+	}
+	else if(!Set)
+	{
+		m_pController->m_pGameType = "FoxNetwork";
+		Server()->UpdateServerInfo(true);
+		Set = true;
+	}
 }
 
 void CGameContext::ChangeSpeedMode()

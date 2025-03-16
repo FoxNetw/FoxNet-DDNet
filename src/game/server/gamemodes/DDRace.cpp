@@ -14,7 +14,6 @@
 CGameControllerDDRace::CGameControllerDDRace(class CGameContext *pGameServer) :
 	IGameController(pGameServer)
 {
-	m_pGameType = g_Config.m_SvGameTypeName;
 	m_GameFlags = protocol7::GAMEFLAG_RACE;
 }
 

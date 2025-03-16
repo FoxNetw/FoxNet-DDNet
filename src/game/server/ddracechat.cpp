@@ -2485,3 +2485,11 @@ void CGameContext::ConSpecAfk(IConsole::IResult *pResult, void *pUserData)
 	if(pPlayer)
 		pPlayer->SetSpecAfk(pResult->NumArguments() ? pResult->GetInteger(0) : !pPlayer->m_SpecAfk);
 }
+
+void CGameContext::ConAbilityIndicator(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientId];
+	if(pPlayer)
+		pPlayer->SetAbilityIndicator(pResult->NumArguments() ? pResult->GetInteger(0) : !pPlayer->m_WeaponIndicator);
+}

@@ -1157,17 +1157,6 @@ void CPlayer::SaveColor()
 	}
 }
 
-void CPlayer::SetWeaponIndicator(bool Set)
-{
-	if(m_WeaponIndicator == Set)
-		return;
-	m_WeaponIndicator = Set;
-	if(Set)
-		GameServer()->SendChatTarget(m_ClientId, "Weapon indicator enabled");
-	else
-		GameServer()->SendChatTarget(m_ClientId, "Weapon indicator disabled");
-}
-
 void CPlayer::SetSpecAfk(bool Set)
 {
 	if(m_SpecAfk == Set)
@@ -1186,4 +1175,26 @@ void CPlayer::SetPlayerAfk(bool Set)
 
 	Server()->ExpireServerInfo();
 	m_Afk = Set;
+}
+
+void CPlayer::SetWeaponIndicator(bool Set)
+{
+	if(m_WeaponIndicator == Set)
+		return;
+	m_WeaponIndicator = Set;
+	if(Set)
+		GameServer()->SendChatTarget(m_ClientId, "Weapon indicator enabled");
+	else
+		GameServer()->SendChatTarget(m_ClientId, "Weapon indicator disabled");
+}
+
+void CPlayer::SetAbilityIndicator(bool Set)
+{
+	if(m_AbilityIndicator == Set)
+		return;
+	m_AbilityIndicator = Set;
+	if(Set)
+		GameServer()->SendChatTarget(m_ClientId, "Ability indicator enabled");
+	else
+		GameServer()->SendChatTarget(m_ClientId, "Ability indicator disabled");
 }
