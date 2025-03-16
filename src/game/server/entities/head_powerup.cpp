@@ -16,7 +16,7 @@ CHeadItem::CHeadItem(CGameWorld *pGameWorld, vec2 Pos, int Owner, int Type) :
 	CCharacter *pOwnerChar = GameServer()->GetPlayerChar(m_Owner);
 	m_TeamMask = pOwnerChar ? pOwnerChar->TeamMask() : CClientMask();
 
-	m_aID = Server()->SnapNewId();
+	m_aId = Server()->SnapNewId();
 
 	Server()->SnapNewId();
 	GameWorld()->InsertEntity(this);
@@ -24,7 +24,7 @@ CHeadItem::CHeadItem(CGameWorld *pGameWorld, vec2 Pos, int Owner, int Type) :
 
 void CHeadItem::Reset()
 {
-	Server()->SnapFreeId(m_aID);
+	Server()->SnapFreeId(m_aId);
 	GameWorld()->RemoveEntity(this);
 }
 
@@ -57,7 +57,7 @@ void CHeadItem::Snap(int SnappingClient)
 			return;
 
 	int Size = Server()->IsSixup(SnappingClient) ? 4 * 4 : sizeof(CNetObj_Pickup);
-	CNetObj_Pickup *pPickup = static_cast<CNetObj_Pickup *>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, m_aID, Size));
+	CNetObj_Pickup *pPickup = static_cast<CNetObj_Pickup *>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, m_aId, Size));
 	if(!pPickup)
 		return;
 

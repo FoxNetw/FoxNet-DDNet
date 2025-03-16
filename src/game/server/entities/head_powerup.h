@@ -10,7 +10,7 @@ class CHeadItem : public CEntity
 	CClientMask m_TeamMask;
 	int m_Owner;
 	float m_Dist;
-	int m_aID;
+	int m_aId;
 
 	int m_Type;
 
