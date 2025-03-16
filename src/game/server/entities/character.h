@@ -52,7 +52,6 @@ public:
 	void SendBroadcastHud(const char *pMessage);
 	int NumDDraceHudRows();
 
-	int m_Ability;
 	void SetAbility(int Type);
 
 	bool m_Rainbow;

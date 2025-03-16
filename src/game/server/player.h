@@ -270,6 +270,8 @@ public:
 	bool m_SpawnSoloShowOthers;
 
 	bool m_Valentines;
+
+	int m_Ability = 0;
 };
 
 #endif

@@ -59,8 +59,6 @@ void CCharacter::Reset()
 
 bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 {
-	FoxNetSpawn();
-
 	m_EmoteStop = -1;
 	m_LastAction = -1;
 	m_LastNoAmmoSound = -1;
@@ -75,6 +73,8 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 
 	m_pPlayer = pPlayer;
 	m_Pos = Pos;
+
+	FoxNetSpawn();
 
 	mem_zero(&m_LatestPrevPrevInput, sizeof(m_LatestPrevPrevInput));
 	m_LatestPrevPrevInput.m_TargetY = -1;
@@ -2709,24 +2709,24 @@ void CCharacter::VoteAction(const CNetMsg_Cl_Vote *pMsg, int ClientId)
 	if(pMsg->m_Vote == 1)
 	{
 		// Heart "Explosion"
-		if(GetActiveWeapon() == WEAPON_HEART_GUN || m_Ability == TYPE_HEART)
+		if(GetActiveWeapon() == WEAPON_HEART_GUN || m_pPlayer->m_Ability == TYPE_HEART)
 			CreatePowerupExplosion(ClientId, POWERUP_HEALTH);
-		if(m_Ability == TYPE_SHIELD)
+		if(m_pPlayer->m_Ability == TYPE_SHIELD)
 			CreatePowerupExplosion(ClientId, POWERUP_ARMOR);
 
-		VoteActionDelay = Server()->Tick() + Server()->TickSpeed();
+		VoteActionDelay = Server()->Tick() + Server()->TickSpeed() * g_Config.m_SvAbilityCooldown;
 	}
 }
 
 void CCharacter::SetAbility(int Type)
 {
-	m_Ability = Type;
+	m_pPlayer->m_Ability = Type;
 }
 
 void CCharacter::FoxNetSpawn()
 {
 	if(g_Config.m_SvResetAbilityOnKill)
-		m_Ability = 0;
+		m_pPlayer->m_Ability;
 
 	m_Rainbow = false;
 	m_Invisible = false;

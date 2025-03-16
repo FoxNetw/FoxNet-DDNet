@@ -122,7 +122,7 @@ void CCustomProjectile::HitCharacter()
 	//else
 		//pHit->TakeDamage(vec2(0, 0), g_pData->m_Weapons.m_aId[GameServer()->GetWeaponType(m_Type)].m_Damage, m_Owner, m_Type);
 
-	if(GameServer()->GetPlayerChar(m_Owner)->GetActiveWeapon() == WEAPON_HEART_GUN || GameServer()->GetPlayerChar(m_Owner)->m_Ability == TYPE_HEART)
+	if(GameServer()->GetPlayerChar(m_Owner)->GetActiveWeapon() == WEAPON_HEART_GUN || GameServer()->GetPlayerChar(m_Owner)->GetPlayer()->m_Ability == TYPE_HEART)
 	{
 		pHit->SetEmote(EMOTE_HAPPY, Server()->Tick() + 2 * Server()->TickSpeed());
 		GameServer()->SendEmoticon(pHit->GetPlayer()->GetCid(), EMOTICON_HEARTS, -1);
