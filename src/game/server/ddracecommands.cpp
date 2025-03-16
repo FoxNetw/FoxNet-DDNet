@@ -1424,14 +1424,10 @@ void CGameContext::ConHeartGun(IConsole::IResult *pResult, void *pUserData)
 	if(GotWeapon)
 		pChr->GiveWeapon(WEAPON_HEART_GUN, true);
 	else
-		pChr->GiveWeapon(WEAPON_HEART_GUN);
-
-	if(g_Config.m_SvCommandOutput)
 	{
-		if(GotWeapon)
-			pSelf->SendBroadcast("<< You have a Heart Gun >>", Victim);
-		else
-			pSelf->SendBroadcast("<< You lost the Heart Gun >>", Victim);
+		pChr->GiveWeapon(WEAPON_HEART_GUN);
+		pChr->SetActiveWeapon(WEAPON_HEART_GUN);
+		pChr->UpdateWeaponIndicator();
 	}
 }
 
