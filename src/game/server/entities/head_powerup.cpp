@@ -38,9 +38,11 @@ void CHeadItem::Tick()
 		return;
 	}
 
+	vec2 Vel = pOwner->Core()->m_Vel / 2.0f;
+
 	m_TeamMask = pOwner->TeamMask();
 	m_Pos = pOwner->GetPos();
-	m_aPos = vec2(m_Pos.x, m_Pos.y - 70.f);
+	m_aPos = vec2(m_Pos.x + (int)Vel.x, m_Pos.y - 70.f + (int)Vel.y);
 }
 
 void CHeadItem::Snap(int SnappingClient)
@@ -56,62 +58,45 @@ void CHeadItem::Snap(int SnappingClient)
 		if(!GameServer()->GetPlayerChar(m_Owner)->CanSnapCharacter(SnappingClient))
 			return;
 
-	int Size = Server()->IsSixup(SnappingClient) ? 4 * 4 : sizeof(CNetObj_Pickup);
-	CNetObj_Pickup *pPickup = static_cast<CNetObj_Pickup *>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, m_aId, Size));
-	if(!pPickup)
-		return;
+	int Type = m_Type;
+	int SubType = Type - 7;
+	if(m_Type == 8)
+		Type = POWERUP_WEAPON;
+	else if(m_Type == 9)
+		Type = POWERUP_WEAPON;
+	else if(m_Type == 10)
+		Type = POWERUP_WEAPON;
+	else if(m_Type == 11)
+		Type = POWERUP_WEAPON;
 
-	pPickup->m_X = round_to_int(m_aPos.x);
-	pPickup->m_Y = round_to_int(m_aPos.y);
-	if(Server()->IsSixup(SnappingClient))
+	if(GameServer()->GetClientVersion(SnappingClient) >= VERSION_DDNET_ENTITY_NETOBJS)
 	{
-		if(m_Type == 8)
-		{
-			pPickup->m_Type = POWERUP_WEAPON;
-			pPickup->m_Subtype = WEAPON_GUN;
-		}
-		else if(m_Type == 9)
-		{
-			pPickup->m_Type = POWERUP_WEAPON;
-			pPickup->m_Subtype = WEAPON_SHOTGUN;
-		}
-		else if(m_Type == 10)
-		{
-			pPickup->m_Type = POWERUP_WEAPON;
-			pPickup->m_Subtype = WEAPON_GRENADE;
-		}
-		else if(m_Type == 11)
-		{
-			pPickup->m_Type = POWERUP_WEAPON;
-			pPickup->m_Subtype = WEAPON_LASER;
-		}
-		else
-			pPickup->m_Type = m_Type;
-		((int *)pPickup)[3] = 0;
+		CNetObj_DDNetPickup *pPickup = Server()->SnapNewItem<CNetObj_DDNetPickup>(m_aId);
+		if(!pPickup)
+			return;
+
+		pPickup->m_X = (int)(m_aPos.x);
+		pPickup->m_Y = (int)(m_aPos.y);
+		pPickup->m_Type = Type;
+		pPickup->m_Subtype = SubType;
 	}
 	else
 	{
-		if(m_Type == 8)
+		CNetObj_Pickup *pPickup = Server()->SnapNewItem<CNetObj_Pickup>(m_aId);
+		if(!pPickup)
+			return;
+
+		pPickup->m_X = (int)(m_aPos.x);
+		pPickup->m_Y = (int)(m_aPos.y);
+
+		pPickup->m_Type = Type;
+		if(GameServer()->GetClientVersion(SnappingClient) < VERSION_DDNET_WEAPON_SHIELDS)
 		{
-			pPickup->m_Type = 2;
-			pPickup->m_Subtype = WEAPON_GUN;
+			if(Type >= POWERUP_ARMOR_SHOTGUN && Type <= POWERUP_ARMOR_LASER)
+			{
+				pPickup->m_Type = POWERUP_ARMOR;
+			}
 		}
-		else if(m_Type == 9)
-		{
-			pPickup->m_Type = 2;
-			pPickup->m_Subtype = WEAPON_SHOTGUN;
-		}
-		else if(m_Type == 10)
-		{
-			pPickup->m_Type = 2;
-			pPickup->m_Subtype = WEAPON_GRENADE;
-		}
-		else if(m_Type == 11)
-		{
-			pPickup->m_Type = 2;
-			pPickup->m_Subtype = WEAPON_LASER;
-		}
-		else
-			pPickup->m_Type = m_Type;
+		pPickup->m_Subtype = SubType;
 	}
 }
