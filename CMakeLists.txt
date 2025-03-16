@@ -2719,6 +2719,8 @@ if(SERVER)
   set_src(GAME_SERVER GLOB_RECURSE src/game/server
     ddracechat.cpp
     ddracecommands.cpp
+    entities/ability_ind.cpp
+    entities/ability_ind.h
     entities/character.cpp
     entities/character.h
     entities/custom_projectile.cpp
