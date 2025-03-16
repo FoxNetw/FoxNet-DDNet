@@ -23,7 +23,8 @@
 // FoxNet
 #include <game/server/entities/head_powerup.h>
 #include <game/server/entities/custom_projectile.h>
-#include <game/server/entities/ability_ind.h>
+#include <game/server/entities/ability_indF3.h>
+#include <game/server/entities/ability_indF4.h>
 #include <game/server/foxnet_types.h>
 
 MACRO_ALLOC_POOL_ID_IMPL(CCharacter, MAX_CLIENTS)
@@ -2667,13 +2668,14 @@ void CCharacter::SwapClients(int Client1, int Client2)
 void CCharacter::FoxNetTick()
 {
 	UnsoloAfterSpawn();
+	UpdateAbilityInd();
 
 	// update telekinesis entitiy position
 	if(m_pTelekinesisEntity)
 	{
 		CCharacter *pChr = (CCharacter *)m_pTelekinesisEntity;
 
-		if(GetActiveWeapon() == WEAPON_TELEKINESIS)
+		if(GetActiveWeapon() == WEAPON_TELEKINESIS || m_pPlayer->m_Ability == TYPE_TELEKINESIS)
 		{
 			pChr->m_Core.m_Pos = GetCursorPos(m_pPlayer->GetCid());
 			pChr->m_Core.m_Vel = vec2(0.f, 0.0f);
@@ -2683,22 +2685,9 @@ void CCharacter::FoxNetTick()
 			m_pTelekinesisEntity = 0;
 		}
 	}
-
-	if(m_pPlayer->m_Ability > 0 && VoteActionDelay > Server()->Tick())
-	{
-		AbilityInd(false, m_pPlayer->GetCid());
-		m_NeedsUpdate = true;
-	}
-	else if(m_NeedsUpdate && m_pPlayer->m_Ability > 0)
-	{
-		AbilityInd(true, m_pPlayer->GetCid());
-		m_NeedsUpdate = false;
-	}
-	else if(m_AbilityInd && !m_pPlayer->m_Ability)
-		AbilityInd(false, m_pPlayer->GetCid());
 }
 
-void CCharacter::CreatePowerupExplosion(int ClientId, int Type)
+void CCharacter::CreatePowerupExplosion(vec2 Pos, int ClientId, int Type)
 {
 	vec2 Direction;
 	int Amount = 8;
@@ -2710,36 +2699,115 @@ void CCharacter::CreatePowerupExplosion(int ClientId, int Type)
 		new CCustomProjectile(
 			GameWorld(),
 			ClientId, // owner
-			m_Pos, // pos
+			Pos, // pos
 			Direction, // dir
 			false, // explosive
 			false, // freeze
 			false, // unfreeze
-			Type // type
+			Type, // type
+			6.0f, // Lifetime
+			1.0f, // Accel
+			10.0f // Speed
 		);
 
 		int Sound = Type + 24;
 
 		if(Repeat == Amount)
-			GameServer()->CreateSound(m_Pos, Sound, TeamMask());
+			GameServer()->CreateSound(Pos, Sound, TeamMask());
+	}
+}
+
+void CCharacter::CreatePowerupCircle(vec2 Pos, int ClientId, int Type)
+{
+	vec2 Direction;
+	int Amount = 16;
+
+	for(int Repeat = 1; Repeat < Amount + 1; Repeat++)
+	{
+		Direction = direction(22.5 * Repeat * (pi / 180.0f)) * 50;
+
+		new CCustomProjectile(
+			GameWorld(),
+			ClientId, // owner
+			Pos + Direction, // pos
+			-Direction, // dir
+			false, // explosive
+			false, // freeze
+			false, // unfreeze
+			Type, // type
+			6.0f, // Lifetime
+			1.0f, // Accel
+			2.00f // Speed
+		);
+
+		int Sound = Type + 24;
+
+		if(Repeat == Amount)
+			GameServer()->CreateSound(Pos, Sound, TeamMask());
 	}
 }
 
 void CCharacter::VoteAction(const CNetMsg_Cl_Vote *pMsg, int ClientId)
 {
-	if(!(Server()->GetAuthedState(ClientId) && g_Config.m_SvNoAuthCooldown))
-		if(VoteActionDelay > Server()->Tick())
-			return;
+	bool NoCooldown = Server()->GetAuthedState(ClientId) && g_Config.m_SvNoAuthCooldown;
 
-	if(pMsg->m_Vote == 1)
+	bool F3 = pMsg->m_Vote == 1;
+	bool F4 = pMsg->m_Vote == -1;
+
+	if(F3 && (VoteActionDelayF3 < Server()->Tick() || NoCooldown))
 	{
+		VoteActionDelayF3 = Server()->Tick() + Server()->TickSpeed() * g_Config.m_SvAbilityCooldown;
+
 		// Heart "Explosion"
 		if(GetActiveWeapon() == WEAPON_HEART_GUN || m_pPlayer->m_Ability == TYPE_HEART)
-			CreatePowerupExplosion(ClientId, POWERUP_HEALTH);
-		if(m_pPlayer->m_Ability == TYPE_SHIELD)
-			CreatePowerupExplosion(ClientId, POWERUP_ARMOR);
+			CreatePowerupExplosion(m_Pos, ClientId, POWERUP_HEALTH);
+		else if(m_pPlayer->m_Ability == TYPE_SHIELD)
+			CreatePowerupExplosion(m_Pos, ClientId, POWERUP_ARMOR);
+		else if(m_pPlayer->m_Ability == TYPE_TELEKINESIS)
+		{
+			if(!m_pTelekinesisEntity)
+			{
+				CEntity *pEntity = GameWorld()->ClosestCharacter(GetCursorPos(m_pPlayer->GetCid()), 60.f, this);
 
-		VoteActionDelay = Server()->Tick() + Server()->TickSpeed() * g_Config.m_SvAbilityCooldown;
+				CCharacter *pChr = 0;
+				if(pEntity)
+					pChr = (CCharacter *)pEntity;
+
+				if((pChr && pChr->GetPlayer()->GetCid() != m_pPlayer->GetCid() && (pChr->m_pTelekinesisEntity != this || (pEntity && pEntity != pChr))))
+				{
+					if(!pChr->Core()->m_TelekinesisImmunity)
+					{
+						bool IsTelekinesed = false;
+						for(int i = 0; i < MAX_CLIENTS; i++)
+						{
+							if(GameServer()->GetPlayerChar(i) && GameServer()->GetPlayerChar(i)->m_pTelekinesisEntity == pEntity)
+							{
+								IsTelekinesed = true;
+								break;
+							}
+						}
+						if(!IsTelekinesed)
+							m_pTelekinesisEntity = pEntity;
+					}
+					GameServer()->CreateSound(m_Pos, SOUND_NINJA_HIT, TeamMask());
+				}
+			}
+			else
+				m_pTelekinesisEntity = 0;
+
+			float FireDelay = FoxNetGetFireDelay(Core()->m_ActiveWeapon);
+			VoteActionDelayF3 = Server()->Tick() + FireDelay * Server()->TickSpeed() / 1000;
+		}
+	}
+
+	if(F4 && (VoteActionDelayF4 < Server()->Tick() || NoCooldown))
+	{
+		VoteActionDelayF4 = Server()->Tick() + Server()->TickSpeed() * (g_Config.m_SvAbilityCooldown + 3.0f);
+
+		if(GetActiveWeapon() == WEAPON_HEART_GUN || m_pPlayer->m_Ability == TYPE_HEART)
+			CreatePowerupCircle(GetCursorPos(m_pPlayer->GetCid()), ClientId, POWERUP_HEALTH);
+		if(m_pPlayer->m_Ability == TYPE_SHIELD)
+			CreatePowerupCircle(GetCursorPos(m_pPlayer->GetCid()), ClientId, POWERUP_ARMOR);
 	}
 }
 
@@ -2805,14 +2873,24 @@ void CCharacter::HeadItem(int Type, int ClientId)
 		new CHeadItem(GameWorld(), m_Pos, ClientId, Type);
 }
 
-void CCharacter::AbilityInd(bool Set, int ClientId)
+void CCharacter::AbilityIndF3(bool Set, int ClientId, vec2 Offset, int Type)
 {
 	if(ClientId < 0)
 		return;
 
-	m_AbilityInd = Set;
-	if(m_AbilityInd)
-		new CAbilityInd(GameWorld(), m_Pos, ClientId);
+	m_AbilityIndF3 = Set;
+	if(m_AbilityIndF3)
+		new CAbilityIndF3(GameWorld(), Offset, ClientId, Type);
+}
+
+void CCharacter::AbilityIndF4(bool Set, int ClientId, vec2 Offset, int Type)
+{
+	if(ClientId < 0)
+		return;
+
+	m_AbilityIndF4 = Set;
+	if(m_AbilityIndF4)
+		new CAbilityIndF4(GameWorld(), Offset, ClientId, Type);
 }
 
 void CCharacter::SetTelekinesisImmunity(bool Active)
@@ -2918,4 +2996,60 @@ void CCharacter::UpdateWeaponIndicator()
 	// dont update when vanilla weapon got triggered and we have new hud
 	if(aBuf[0])
 		m_LastWeaponIndTick = Server()->Tick();
+}
+
+void CCharacter::UpdateAbilityInd()
+{
+	// I hate this code too dw but im lazy and it works
+	if(!g_Config.m_SvAbilityIndicator)
+		return;
+
+	if(m_pPlayer->m_Ability == TYPE_TELEKINESIS)
+	{
+		if(m_pPlayer->m_Ability > 0 && VoteActionDelayF3 > Server()->Tick() && !m_NeedsUpdate[0])
+		{
+			AbilityIndF3(false, m_pPlayer->GetCid());
+			m_NeedsUpdate[0] = true;
+		}
+		else if(m_NeedsUpdate[0] && m_pPlayer->m_Ability > 0)
+		{
+			AbilityIndF3(true, m_pPlayer->GetCid());
+
+			m_NeedsUpdate[0] = false;
+		}
+		else if(m_AbilityIndF3 && !m_pPlayer->m_Ability)
+			AbilityIndF3(false, m_pPlayer->GetCid());
+
+		if(m_AbilityIndF4)
+			AbilityIndF4(false, m_pPlayer->GetCid());
+	}
+	else
+	{
+		if(m_pPlayer->m_Ability > 0 && VoteActionDelayF3 > Server()->Tick() && !m_NeedsUpdate[0])
+		{
+			AbilityIndF3(false, m_pPlayer->GetCid());
+			m_NeedsUpdate[0] = true;
+		}
+		else if(m_NeedsUpdate[0] && m_pPlayer->m_Ability > 0)
+		{
+			AbilityIndF3(true, m_pPlayer->GetCid(), vec2(-25.0f, 0.0f), 0);
+
+			m_NeedsUpdate[0] = false;
+		}
+		else if(m_AbilityIndF3 && !m_pPlayer->m_Ability)
+			AbilityIndF3(false, m_pPlayer->GetCid());
+
+		if(m_pPlayer->m_Ability > 0 && VoteActionDelayF4 > Server()->Tick())
+		{
+			AbilityIndF4(false, m_pPlayer->GetCid());
+			m_NeedsUpdate[1] = true;
+		}
+		else if(m_NeedsUpdate[1] && m_pPlayer->m_Ability > 0)
+		{
+			AbilityIndF4(true, m_pPlayer->GetCid(), vec2(25.0f, 0.0f), 1);
+			m_NeedsUpdate[1] = false;
+		}
+		else if(m_AbilityIndF4 && !m_pPlayer->m_Ability)
+			AbilityIndF4(false, m_pPlayer->GetCid());
+	}
 }

@@ -1,10 +1,10 @@
 #include "character.h"
-#include "ability_ind.h"
+#include "ability_indF4.h"
 #include <game/server/gamecontext.h>
 #include <game/server/player.h>
 #include <game/server/teams.h>
 
-CAbilityInd::CAbilityInd(CGameWorld *pGameWorld, vec2 Pos, int Owner) :
+CAbilityIndF4::CAbilityIndF4(CGameWorld *pGameWorld, vec2 Pos, int Owner, int Type) :
 	CEntity(pGameWorld, CGameWorld::ENTTYPE_ABILITY_IND, Pos)
 {
 	m_Owner = Owner;
@@ -13,19 +13,22 @@ CAbilityInd::CAbilityInd(CGameWorld *pGameWorld, vec2 Pos, int Owner) :
 	m_TeamMask = pOwnerChar ? pOwnerChar->TeamMask() : CClientMask();
 
 	m_aId = Server()->SnapNewId();
+	m_Type = Type;
+	m_Offset = Pos;
+
 	GameWorld()->InsertEntity(this);
 }
 
-void CAbilityInd::Reset()
+void CAbilityIndF4::Reset()
 {
 	Server()->SnapFreeId(m_aId);
 	GameWorld()->RemoveEntity(this);
 }
 
-void CAbilityInd::Tick()
+void CAbilityIndF4::Tick()
 {
 	CCharacter *pOwner = GameServer()->GetPlayerChar(m_Owner);
-	if(!pOwner || !pOwner->m_AbilityInd)
+	if(!pOwner || !pOwner->m_AbilityIndF4)
 	{
 		Reset();
 		return;
@@ -35,10 +38,10 @@ void CAbilityInd::Tick()
 
 	m_TeamMask = pOwner->TeamMask();
 	m_Pos = pOwner->GetPos();
-	m_aPos = vec2(m_Pos.x + (int)Vel.x, m_Pos.y - 45.f + (int)Vel.y);
+	m_aPos = vec2(m_Pos.x + (int)Vel.x, m_Pos.y - 45.f + (int)Vel.y) + m_Offset;
 }
 
-void CAbilityInd::Snap(int SnappingClient)
+void CAbilityIndF4::Snap(int SnappingClient)
 {
 	if(NetworkClipped(SnappingClient))
 		return;
@@ -68,7 +71,7 @@ void CAbilityInd::Snap(int SnappingClient)
 		pObj->m_FromY = round_to_int(m_aPos.y);
 		pObj->m_StartTick = Server()->Tick();
 		pObj->m_Owner = m_Owner;
-		pObj->m_Type = 0;
+		pObj->m_Type = m_Type;
 	}
 	else
 	{

@@ -34,16 +34,20 @@ public:
 	CCharacter(CGameWorld *pWorld, CNetObj_PlayerInput LastInput);
 
 	// FoxNet
-	void CreatePowerupExplosion(int ClientId, int Type);
+	void CreatePowerupExplosion(vec2 Pos, int ClientId, int Type);
+	void CreatePowerupCircle(vec2 Pos, int ClientId, int Type);
 
-	bool m_NeedsUpdate = true;
-	int64_t VoteActionDelay = 0;
+	bool m_NeedsUpdate[2] = {true,true};
+	int64_t VoteActionDelayF3 = 0;
+	int64_t VoteActionDelayF4 = 0;
 	void VoteAction(const CNetMsg_Cl_Vote *pMsg, int ClientId);
 
 	float FoxNetGetFireDelay(int Weapon);
 
 	void FoxNetTick();
 	void FoxNetSpawn();
+	void UpdateAbilityInd();
+
 
 	void UnsoloAfterSpawn();
 	void TryRespawn();
@@ -71,8 +75,10 @@ public:
 	int m_HeadItem;
 	void HeadItem(int Type = 1, int ClientId = -1);
 
-	bool m_AbilityInd;
-	void AbilityInd(bool Set = false, int ClientId = -1);
+	bool m_AbilityIndF3;
+	void AbilityIndF3(bool Set = false, int ClientId = -1, vec2 Offset = vec2(0.f, 0.f), int Type = 0.0f);
+	bool m_AbilityIndF4;
+	void AbilityIndF4(bool Set = false, int ClientId = -1, vec2 Offset = vec2(0.f, 0.f), int Type = 0.0f);
 
 	// DDNet
 	void Reset() override;

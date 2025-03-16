@@ -1,5 +1,5 @@
-#ifndef GAME_SERVER_ENTITIES_SPECIAL_SHIELD_H
-#define GAME_SERVER_ENTITIES_SPECIAL_SHIELD_H
+#ifndef GAME_SERVER_ENTITIES_HEAD_POWERUP_H
+#define GAME_SERVER_ENTITIES_HEAD_POWERUP_H
 
 #include <game/server/entity.h>
 
@@ -22,4 +22,4 @@ public:
 	virtual void Snap(int SnappingClient) override;
 };
 
-#endif // GAME_SERVER_ENTITIES_SPECIAL_SHIELD_H
+#endif // GAME_SERVER_ENTITIES_HEAD_POWERUP_H
