@@ -54,10 +54,8 @@ public:
 
 	void SetAbility(int Type);
 
-	bool m_Rainbow;
 	void SetRainbow(bool Active);
 
-	bool m_Invisible;
 	void SetInvisible(bool Active);
 
 	void SetExplosionGun(bool Active);

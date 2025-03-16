@@ -1110,7 +1110,7 @@ void CPlayer::RainbowTick()
 	if(Server()->Tick() % 2 != 0)
 		return;
 
-	if(!m_pCharacter || !m_pCharacter->m_Rainbow || m_Spawning)
+	if(!m_pCharacter || !m_Rainbow || m_Spawning)
 		return;
 
 	if(!m_SavedColor)
@@ -1137,7 +1137,7 @@ void CPlayer::RainbowTick()
 
 void CPlayer::RestoreColor()
 {
-	if(GetCharacter()->m_Rainbow)
+	if(m_Rainbow)
 	{
 		m_TeeInfos.m_UseCustomColor = m_UsedCustomColor;
 		m_TeeInfos.m_ColorBody = m_SavedColorBody;

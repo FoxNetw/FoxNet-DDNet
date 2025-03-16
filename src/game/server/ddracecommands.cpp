@@ -1625,12 +1625,12 @@ void CGameContext::ConRainbow(IConsole::IResult *pResult, void *pUserData)
 	if(!pChr)
 		return;
 	
-	if(pChr->m_Rainbow)
+	if(pChr->GetPlayer()->m_Rainbow)
 		pChr->GetPlayer()->RestoreColor();
 	else
 		pChr->GetPlayer()->SaveColor();
 
-	pChr->SetRainbow(!pChr->m_Rainbow);
+	pChr->SetRainbow(!pChr->GetPlayer()->m_Rainbow);
 }
 
 void CGameContext::ConRainbowSpeed(IConsole::IResult *pResult, void *pUserData)
@@ -1670,7 +1670,7 @@ void CGameContext::ConInvisible(IConsole::IResult *pResult, void *pUserData)
 	if(!pChr)
 		return;
 
-	pChr->SetInvisible(!pChr->m_Invisible);
+	pChr->SetInvisible(!pChr->GetPlayer()->m_Invisible);
 }
 
 void CGameContext::ConNextBanSync(IConsole::IResult *pResult, void *pUserData)

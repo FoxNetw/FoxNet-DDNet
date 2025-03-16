@@ -433,7 +433,7 @@ void CGameContext::SnapSwitchers(int SnappingClient)
 	CPlayer *pPlayer = SnappingClient != SERVER_DEMO_CLIENT ? m_apPlayers[SnappingClient] : nullptr;
 	int Team = pPlayer && pPlayer->GetCharacter() ? pPlayer->GetCharacter()->Team() : 0;
 
-	if(pPlayer && (pPlayer->GetTeam() == TEAM_SPECTATORS || pPlayer->IsPaused()) && pPlayer->m_SpectatorId != SPEC_FREEVIEW && m_apPlayers[pPlayer->m_SpectatorId] && m_apPlayers[pPlayer->m_SpectatorId]->GetCharacter())
+	if(pPlayer && (pPlayer->GetTeam() == TEAM_SPECTATORS || pPlayer->IsPaused()) && pPlayer->m_SpectatorId != SPEC_FREEVIEW && m_apPlayers[pPlayer->m_SpectatorId] && m_apPlayers[pPlayer->m_SpectatorId]->GetCharacter() )
 		Team = m_apPlayers[pPlayer->m_SpectatorId]->GetCharacter()->Team();
 
 	if(Team == TEAM_SUPER)
@@ -2694,6 +2694,8 @@ void CGameContext::OnSetSpectatorModeNetMessage(const CNetMsg_Cl_SetSpectatorMod
 	pPlayer->UpdatePlaytime();
 	if(SpectatorId >= 0 && (!m_apPlayers[SpectatorId] || m_apPlayers[SpectatorId]->GetTeam() == TEAM_SPECTATORS))
 		SendChatTarget(ClientId, "Invalid spectator id used");
+	else if(SpectatorId >= 0 && SpectatorId < MAX_CLIENTS && m_apPlayers[SpectatorId] && m_apPlayers[SpectatorId]->m_Invisible && ClientId != SpectatorId)
+		SendChatTarget(ClientId, "Player Character doesn't exist");
 	else
 		pPlayer->m_SpectatorId = SpectatorId;
 }

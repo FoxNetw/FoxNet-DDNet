@@ -1314,7 +1314,7 @@ void CCharacter::Snap(int SnappingClient)
 		return;
 
 	// invisibility
-	if(m_Invisible && SnappingClient != m_pPlayer->GetCid() && SnappingClient != -1)
+	if(m_pPlayer->m_Invisible && SnappingClient != m_pPlayer->GetCid() && SnappingClient != -1)
 		if(!Server()->GetAuthedState(SnappingClient) || Server()->Tick() % 150 == 0)
 			return;
 
@@ -2726,10 +2726,10 @@ void CCharacter::SetAbility(int Type)
 void CCharacter::FoxNetSpawn()
 {
 	if(g_Config.m_SvResetAbilityOnKill)
-		m_pPlayer->m_Ability;
+		m_pPlayer->m_Ability = 0;
 
-	m_Rainbow = false;
-	m_Invisible = false;
+	m_pPlayer->m_Rainbow = false;
+	m_pPlayer->m_Invisible = false;
 }
 
 void CCharacter::TryRespawn()
@@ -2792,12 +2792,12 @@ void CCharacter::SetExplosionGun(bool Active)
 
 void CCharacter::SetRainbow(bool Active)
 {
-	m_Rainbow = Active;
+	m_pPlayer->m_Rainbow = Active;
 }
 
 void CCharacter::SetInvisible(bool Active)
 {
-	m_Invisible = Active;
+	m_pPlayer->m_Invisible = Active;
 }
 
 vec2 CCharacter::GetCursorPos(int Clientid)
