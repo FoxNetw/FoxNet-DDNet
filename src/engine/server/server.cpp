@@ -4130,6 +4130,7 @@ void CServer::RegisterCommands()
 #if !defined(CONF_PLATFORM_ANDROID)
 	Console()->Register("restart_server", "", CFGFLAG_SERVER, ConRestartServer, this, "Restarts the Server (testing purposes)");
 #endif
+	Console()->Register("client_infos", "", CFGFLAG_SERVER, ConClientInfo, this, "Prints information about what clients players are using");
 
 	// register console commands in sub parts
 	m_ServerBan.InitServerBan(Console(), Storage(), this);
@@ -4337,3 +4338,25 @@ void CServer::ConRestartServer(IConsole::IResult *pResult, void *pUserData)
 	shell_execute(aRestartBinaryPath, EShellExecuteWindowState::FOREGROUND);
 }
 #endif
+
+void CServer::ConClientInfo(IConsole::IResult *pResult, void *pUser)
+{
+	char aBuf[1024] = "No Clients Ingame";
+	CServer *pThis = static_cast<CServer *>(pUser);
+
+	for(int ClientId = 0; ClientId < MAX_CLIENTS; ClientId++)
+	{
+		if(pThis->m_aClients[ClientId].m_State == CClient::STATE_EMPTY)
+			continue;
+
+		if(pThis->m_aClients[ClientId].m_State == CClient::STATE_INGAME)
+		{
+			IServer::CClientInfo Info;
+			if(pThis->GetClientInfo(ClientId, &Info) && Info.m_GotDDNetVersion)
+			{
+				str_format(aBuf, sizeof(aBuf), "Name: %s (%d) | Client: %s", pThis->m_aClients[ClientId].m_aName, ClientId, Info.m_pDDNetVersionStr);
+				pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
+			}
+		}
+	}
+}

@@ -428,6 +428,8 @@ public:
 #if !defined(CONF_PLATFORM_ANDROID)
 	static void ConRestartServer(IConsole::IResult *pResult, void *pUserData);
 #endif
+	static void ConClientInfo(IConsole::IResult *pResult, void *pUser);
+
 	static void ConKick(IConsole::IResult *pResult, void *pUser);
 	static void ConStatus(IConsole::IResult *pResult, void *pUser);
 	static void ConShutdown(IConsole::IResult *pResult, void *pUser);
