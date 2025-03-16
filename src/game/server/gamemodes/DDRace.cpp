@@ -139,7 +139,7 @@ void CGameControllerDDRace::OnPlayerConnect(CPlayer *pPlayer)
 
 		GameServer()->SendChatTarget(ClientId, "FoxNetwork mod " GAME_VERSION);
 
-		if(g_Config.m_SvWelcome)
+		if(g_Config.m_SvSendWelcome)
 		{
 			char WelcomeText[256];
 			str_format(WelcomeText, sizeof(WelcomeText), g_Config.m_SvWelcomeMessage, Server()->ClientName(ClientId));
