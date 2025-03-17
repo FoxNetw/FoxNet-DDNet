@@ -2679,9 +2679,7 @@ void CCharacter::FoxNetTick()
 			pChr->m_Core.m_Vel = vec2(0.f, 0.0f);
 		}
 		else
-		{
 			m_pTelekinesisEntity = 0;
-		}
 	}
 }
 
@@ -2795,8 +2793,9 @@ void CCharacter::VoteAction(const CNetMsg_Cl_Vote *pMsg, int ClientId)
 						}
 						if(!IsTelekinesed)
 							m_pTelekinesisEntity = pEntity;
+
+						GameServer()->CreateSound(m_Pos, SOUND_NINJA_HIT, TeamMask());
 					}
-					GameServer()->CreateSound(m_Pos, SOUND_NINJA_HIT, TeamMask());
 				}
 			}
 			else
