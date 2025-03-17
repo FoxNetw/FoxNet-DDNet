@@ -23,8 +23,6 @@
 // FoxNet
 #include <game/server/entities/head_powerup.h>
 #include <game/server/entities/custom_projectile.h>
-#include <game/server/entities/ability_indF3.h>
-#include <game/server/entities/ability_indF4.h>
 #include <game/server/foxnet_types.h>
 
 MACRO_ALLOC_POOL_ID_IMPL(CCharacter, MAX_CLIENTS)
@@ -2720,11 +2718,20 @@ void CCharacter::CreatePowerupExplosion(vec2 Pos, int ClientId, int Type)
 void CCharacter::CreatePowerupCircle(vec2 Pos, int ClientId, int Type)
 {
 	vec2 Direction;
-	int Amount = 16;
+	float LifeTime = 3.0f;
+	int Amount = 32;
+	float Angle = 360.0f / Amount;
 
 	for(int Repeat = 1; Repeat < Amount + 1; Repeat++)
 	{
-		Direction = direction(22.5 * Repeat * (pi / 180.0f)) * 50;
+
+		Direction = direction(Angle * Repeat * (pi / 180.0f)) * 50;
+		LifeTime = 3.0f + Repeat / 10.0f;
+
+		float BetweenTime = (Amount / 2.0f) / 10.0f;
+
+		if(Repeat > Amount / 2)
+			LifeTime = 3.0f + BetweenTime - (Amount - Repeat) / 10.0f;
 
 		new CCustomProjectile(
 			GameWorld(),
@@ -2735,9 +2742,9 @@ void CCharacter::CreatePowerupCircle(vec2 Pos, int ClientId, int Type)
 			false, // freeze
 			false, // unfreeze
 			Type, // type
-			6.0f, // Lifetime
-			1.0f, // Accel
-			2.00f // Speed
+			LifeTime, // Lifetime
+			0.98f, // Accel
+			4.00f // Speed
 		);
 
 		int Sound = Type + 24;
@@ -2754,9 +2761,9 @@ void CCharacter::VoteAction(const CNetMsg_Cl_Vote *pMsg, int ClientId)
 	bool F3 = pMsg->m_Vote == 1;
 	bool F4 = pMsg->m_Vote == -1;
 
-	if(F3 && (VoteActionDelayF3 < Server()->Tick() || NoCooldown))
+	if(F3 && (VoteActionDelay[0] < Server()->Tick() || NoCooldown))
 	{
-		VoteActionDelayF3 = Server()->Tick() + Server()->TickSpeed() * g_Config.m_SvAbilityCooldown;
+		VoteActionDelay[0] = Server()->Tick() + Server()->TickSpeed() * g_Config.m_SvAbilityCooldown;
 
 		// Heart "Explosion"
 		if(GetActiveWeapon() == WEAPON_HEART_GUN || m_pPlayer->m_Ability == TYPE_HEART)
@@ -2796,13 +2803,13 @@ void CCharacter::VoteAction(const CNetMsg_Cl_Vote *pMsg, int ClientId)
 				m_pTelekinesisEntity = 0;
 
 			float FireDelay = FoxNetGetFireDelay(Core()->m_ActiveWeapon);
-			VoteActionDelayF3 = Server()->Tick() + FireDelay * Server()->TickSpeed() / 1000;
+			VoteActionDelay[0] = Server()->Tick() + FireDelay * Server()->TickSpeed() / 1000;
 		}
 	}
 
-	if(F4 && (VoteActionDelayF4 < Server()->Tick() || NoCooldown))
+	if(F4 && (VoteActionDelay[1] < Server()->Tick() || NoCooldown))
 	{
-		VoteActionDelayF4 = Server()->Tick() + Server()->TickSpeed() * (g_Config.m_SvAbilityCooldown + 3.0f);
+		VoteActionDelay[1] = Server()->Tick() + Server()->TickSpeed() * (g_Config.m_SvAbilityCooldown + 3.0f);
 
 		if(GetActiveWeapon() == WEAPON_HEART_GUN || m_pPlayer->m_Ability == TYPE_HEART)
 			CreatePowerupCircle(GetCursorPos(m_pPlayer->GetCid()), ClientId, POWERUP_HEALTH);
@@ -2871,26 +2878,6 @@ void CCharacter::HeadItem(int Type, int ClientId)
 	m_HeadItem = Type;
 	if(m_HeadItem)
 		new CHeadItem(GameWorld(), m_Pos, ClientId, Type);
-}
-
-void CCharacter::AbilityIndF3(bool Set, int ClientId, vec2 Offset, int Type)
-{
-	if(ClientId < 0)
-		return;
-
-	m_AbilityIndF3 = Set;
-	if(m_AbilityIndF3)
-		new CAbilityIndF3(GameWorld(), Offset, ClientId, Type);
-}
-
-void CCharacter::AbilityIndF4(bool Set, int ClientId, vec2 Offset, int Type)
-{
-	if(ClientId < 0)
-		return;
-
-	m_AbilityIndF4 = Set;
-	if(m_AbilityIndF4)
-		new CAbilityIndF4(GameWorld(), Offset, ClientId, Type);
 }
 
 void CCharacter::SetTelekinesisImmunity(bool Active)
@@ -3004,52 +2991,14 @@ void CCharacter::UpdateAbilityInd()
 	if(!g_Config.m_SvAbilityIndicator)
 		return;
 
-	if(m_pPlayer->m_Ability == TYPE_TELEKINESIS)
+	for(int Ability = 0; Ability < 2; Ability++)
 	{
-		if(m_pPlayer->m_Ability > 0 && VoteActionDelayF3 > Server()->Tick() && !m_NeedsUpdate[0])
-		{
-			AbilityIndF3(false, m_pPlayer->GetCid());
-			m_NeedsUpdate[0] = true;
-		}
-		else if(m_NeedsUpdate[0] && m_pPlayer->m_Ability > 0)
-		{
-			AbilityIndF3(true, m_pPlayer->GetCid());
+		if(m_pPlayer->m_Ability == TYPE_TELEKINESIS)
+			Ability = 0;
 
-			m_NeedsUpdate[0] = false;
-		}
-		else if(m_AbilityIndF3 && !m_pPlayer->m_Ability)
-			AbilityIndF3(false, m_pPlayer->GetCid());
-
-		if(m_AbilityIndF4)
-			AbilityIndF4(false, m_pPlayer->GetCid());
-	}
-	else
-	{
-		if(m_pPlayer->m_Ability > 0 && VoteActionDelayF3 > Server()->Tick() && !m_NeedsUpdate[0])
-		{
-			AbilityIndF3(false, m_pPlayer->GetCid());
-			m_NeedsUpdate[0] = true;
-		}
-		else if(m_NeedsUpdate[0] && m_pPlayer->m_Ability > 0)
-		{
-			AbilityIndF3(true, m_pPlayer->GetCid(), vec2(-25.0f, 0.0f), 0);
-
-			m_NeedsUpdate[0] = false;
-		}
-		else if(m_AbilityIndF3 && !m_pPlayer->m_Ability)
-			AbilityIndF3(false, m_pPlayer->GetCid());
-
-		if(m_pPlayer->m_Ability > 0 && VoteActionDelayF4 > Server()->Tick())
-		{
-			AbilityIndF4(false, m_pPlayer->GetCid());
-			m_NeedsUpdate[1] = true;
-		}
-		else if(m_NeedsUpdate[1] && m_pPlayer->m_Ability > 0)
-		{
-			AbilityIndF4(true, m_pPlayer->GetCid(), vec2(25.0f, 0.0f), 1);
-			m_NeedsUpdate[1] = false;
-		}
-		else if(m_AbilityIndF4 && !m_pPlayer->m_Ability)
-			AbilityIndF4(false, m_pPlayer->GetCid());
+		if(m_pPlayer->m_Ability > 0 && VoteActionDelay[Ability] > Server()->Tick() && !m_NeedsUpdate[Ability])
+			m_NeedsUpdate[Ability] = true;
+		else if(m_NeedsUpdate[Ability] && m_pPlayer->m_Ability > 0)
+			m_NeedsUpdate[Ability] = false;
 	}
 }
