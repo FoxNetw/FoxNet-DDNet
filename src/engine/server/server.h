@@ -424,9 +424,7 @@ public:
 	int Run();
 
 	// FoxNet
-#if !defined(CONF_PLATFORM_ANDROID)
-	static void ConRestartServer(IConsole::IResult *pResult, void *pUserData);
-#endif
+	void Ban(int ClientId, int Seconds, const char *pReason, bool VerbatimReason) override;
 	static void ConClientInfo(IConsole::IResult *pResult, void *pUser);
 
 	static void ConKick(IConsole::IResult *pResult, void *pUser);

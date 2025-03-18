@@ -486,6 +486,11 @@ void CServer::Ban(int ClientId, int Seconds, const char *pReason, bool VerbatimR
 	m_NetServer.NetBan()->BanAddr(ClientAddr(ClientId), Seconds, pReason, VerbatimReason);
 }
 
+void CServer::Ban(int ClientId, int Seconds, const char *pReason, bool VerbatimReason)
+{
+	m_NetServer.NetBan()->BanAddr(ClientAddr(ClientId), Seconds, pReason, VerbatimReason);
+}
+
 void CServer::ReconnectClient(int ClientId)
 {
 	dbg_assert(0 <= ClientId && ClientId < MAX_CLIENTS, "invalid client id");
@@ -4143,9 +4148,6 @@ void CServer::RegisterCommands()
 #endif
 	// FoxNet
 
-#if !defined(CONF_PLATFORM_ANDROID)
-	Console()->Register("restart_server", "", CFGFLAG_SERVER, ConRestartServer, this, "Restarts the Server (testing purposes)");
-#endif
 	Console()->Register("client_infos", "", CFGFLAG_SERVER, ConClientInfo, this, "Prints information about what clients players are using");
 
 	// register console commands in sub parts
@@ -4335,25 +4337,6 @@ void CServer::SetLoggers(std::shared_ptr<ILogger> &&pFileLogger, std::shared_ptr
 	m_pFileLogger = pFileLogger;
 	m_pStdoutLogger = pStdoutLogger;
 }
-
-// FoxNet
-#if !defined(CONF_PLATFORM_ANDROID) // Too lazy to add this to android
-void CServer::ConRestartServer(IConsole::IResult *pResult, void *pUserData)
-{
-	CServer *pSelf = (CServer *)pUserData;
-
-	char aRestartBinaryPath[IO_MAX_PATH_LENGTH];
-#if defined(CONF_FAMILY_WINDOWS)
-	pSelf->Storage()->GetBinaryPath("DDNet-Server.exe", aRestartBinaryPath, sizeof(aRestartBinaryPath));
-#else
-	pSelf->Storage()->GetBinaryPath("DDNet-Server", aRestartBinaryPath, sizeof(aRestartBinaryPath));
-#endif
-
-	pSelf->m_RunServer = STOPPING;
-	str_copy(pSelf->m_aShutdownReason, "Restarting Server");
-	shell_execute(aRestartBinaryPath, EShellExecuteWindowState::FOREGROUND);
-}
-#endif
 
 void CServer::ConClientInfo(IConsole::IResult *pResult, void *pUser)
 {
