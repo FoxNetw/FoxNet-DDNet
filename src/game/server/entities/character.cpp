@@ -2754,6 +2754,9 @@ void CCharacter::CreatePowerupCircle(vec2 Pos, int ClientId, int Type)
 
 void CCharacter::VoteAction(const CNetMsg_Cl_Vote *pMsg, int ClientId)
 {
+	if(!m_pPlayer->m_Ability)
+		return;
+
 	bool NoCooldown = Server()->GetAuthedState(ClientId) && g_Config.m_SvNoAuthCooldown;
 
 	bool F3 = pMsg->m_Vote == 1;
