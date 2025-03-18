@@ -5400,15 +5400,18 @@ bool CGameContext::BanCheckMessages(int ClientId, const char *pMsg)
 		}
 	}
 
+	char InfoMsg[256] = "";
 	if(FoundStrings.size() > 0)
 	{
-		char aBuf[512];
-		str_format(aBuf, sizeof(aBuf), "Name: %s | Strings Found: ", ClientName);
 		for(const auto &str : FoundStrings)
 		{
-			str_append(aBuf, str.c_str());
-			str_append(aBuf, ", ");
+			str_append(InfoMsg, str.c_str());
+			if(&str != &FoundStrings.back())
+				str_append(InfoMsg, ", ");
 		}
+
+		char aBuf[512];
+		str_format(aBuf, sizeof(aBuf), "Name: %s | Strings Found: %s", ClientName, InfoMsg);
 		dbg_msg("FoxNet", aBuf);
 	}
 
@@ -5442,10 +5445,13 @@ bool CGameContext::BanCheckMessages(int ClientId, const char *pMsg)
 
 	if(count >= 2)
 	{
+		char Message[256] = "";
+		str_format(Message, sizeof(Message), "Banned Strings Found (%s)", InfoMsg);
+
 		if(BanAmount == 120)
 			Server()->Ban(ClientId, BanAmount * 60, "Refrain from using Fancy Alphabets", "Banned for 120 minutes");
 		else if(BanAmount == 800)
-			Server()->Ban(ClientId, BanAmount * 60, "Don't Talk about Cheats or advertise", "Banned for 800 minutes");
+			Server()->Ban(ClientId, BanAmount * 60, Message, "Banned for 800 minutes");
 		else if(BanAmount == 1000)
 			Server()->Ban(ClientId, BanAmount * 60, "Krx Message", "Banned for 1000 minutes");
 		else if(BanAmount == 1200)
