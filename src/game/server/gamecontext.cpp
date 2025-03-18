@@ -5176,7 +5176,7 @@ void CGameContext::FoxNetTick()
 	if(g_Config.m_SvBanSyncing)
 		BanSync();
 
-	static int64_t TypeSwitchDelay = Server()->Tick() + Server()->TickSpeed() * 10.0f;
+	static int64_t TypeSwitchDelay = Server()->Tick() + Server()->TickSpeed() * 20.0f;
 	static bool Switcher = false;
 	static bool Set = false;
 
@@ -5187,7 +5187,7 @@ void CGameContext::FoxNetTick()
 			m_pController->m_pGameType = Switcher ? "FoxNetwork": g_Config.m_SvGameTypeName;
 
 			Server()->UpdateServerInfo(true);
-			TypeSwitchDelay = Server()->Tick() + Server()->TickSpeed() * 10.0f;
+			TypeSwitchDelay = Server()->Tick() + Server()->TickSpeed() * 20.0f;
 
 			Switcher = !Switcher;
 		}
