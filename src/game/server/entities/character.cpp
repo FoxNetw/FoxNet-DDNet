@@ -2913,7 +2913,6 @@ void CCharacter::SetInvisible(bool Active)
 vec2 CCharacter::GetCursorPos(int Clientid)
 {
 	vec2 Target = vec2(Core()->m_Input.m_TargetX, Core()->m_Input.m_TargetY);
-
 	return GameServer()->m_apPlayers[Clientid]->m_CameraInfo.ConvertTargetToWorld(GetPos(), Target);
 }
 
@@ -2975,7 +2974,7 @@ void CCharacter::UpdateWeaponIndicator()
 		}
 		else
 		{
-			if(GetActiveWeapon() >= NUM_WEAPONS) //|| m_IsPortalBlocker || m_NumGrogsHolding)
+			if(GetActiveWeapon() >= NUM_WEAPONS)
 				str_format(aBuf, sizeof(aBuf), "> %s%s", pName, aAmmo);
 		}
 	}
