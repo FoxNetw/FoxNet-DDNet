@@ -5316,6 +5316,7 @@ void CGameContext::BanSync()
 		{
 			if(!ExecBans)
 			{
+				Server()->QuietBan(true);
 				ExecBans = true;
 				Console()->ExecuteLine("exec \"Bans.cfg\"", -1);
 
@@ -5330,7 +5331,8 @@ void CGameContext::BanSync()
 			// Info Message
 			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", "Couldn't find \"Bans.cfg\", disabling component ");
 			g_Config.m_SvBanSyncing = 0;
-			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", "fs_ban_syncing set to 0");
+			if(g_Config.m_SvBanSyncing == 0)
+				Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", "fs_ban_syncing set to 0");
 		}
 
 		if(ExecSaveDelay < Server()->Tick() && ExecBans)
@@ -5341,6 +5343,7 @@ void CGameContext::BanSync()
 
 			// Info Message
 			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", "Saved Bans");
+			Server()->QuietBan(false);
 		}
 	}
 }

@@ -486,11 +486,6 @@ void CServer::Ban(int ClientId, int Seconds, const char *pReason, bool VerbatimR
 	m_NetServer.NetBan()->BanAddr(ClientAddr(ClientId), Seconds, pReason, VerbatimReason);
 }
 
-void CServer::Ban(int ClientId, int Seconds, const char *pReason, bool VerbatimReason)
-{
-	m_NetServer.NetBan()->BanAddr(ClientAddr(ClientId), Seconds, pReason, VerbatimReason);
-}
-
 void CServer::ReconnectClient(int ClientId)
 {
 	dbg_assert(0 <= ClientId && ClientId < MAX_CLIENTS, "invalid client id");
@@ -4338,6 +4333,12 @@ void CServer::SetLoggers(std::shared_ptr<ILogger> &&pFileLogger, std::shared_ptr
 	m_pStdoutLogger = pStdoutLogger;
 }
 
+void CServer::QuietBan(bool Quiet)
+{
+	m_NetServer.NetBan()->m_QuietBan = Quiet;
+}
+
+// FoxNet
 void CServer::ConClientInfo(IConsole::IResult *pResult, void *pUser)
 {
 	char aBuf[1024] = "No Clients Ingame";

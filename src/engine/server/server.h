@@ -424,7 +424,7 @@ public:
 	int Run();
 
 	// FoxNet
-	void Ban(int ClientId, int Seconds, const char *pReason, bool VerbatimReason) override;
+	void QuietBan(bool Quiet) override;
 	static void ConClientInfo(IConsole::IResult *pResult, void *pUser);
 
 	static void ConKick(IConsole::IResult *pResult, void *pUser);

@@ -162,6 +162,9 @@ protected:
 	NETADDR m_LocalhostIpV4, m_LocalhostIpV6;
 
 public:
+	// FoxNet
+	bool m_QuietBan;
+
 	enum
 	{
 		MSGTYPE_PLAYER = 0,

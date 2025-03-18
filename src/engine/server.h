@@ -293,6 +293,7 @@ public:
 	virtual bool IsSixup(int ClientId) const = 0;
 	
 	// FoxNet
+	virtual void QuietBan(bool Quiet) = 0;
 	virtual void UpdateServerInfo(bool Resend = false) = 0;
 };
 
