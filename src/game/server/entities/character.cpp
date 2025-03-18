@@ -2720,16 +2720,23 @@ void CCharacter::CreatePowerupCircle(vec2 Pos, int ClientId, int Type)
 	int Amount = 32;
 	float Angle = 360.0f / Amount;
 
+	float Random = random_float(0.0f, 2.0f);
+
 	for(int Repeat = 1; Repeat < Amount + 1; Repeat++)
 	{
-
+		float BetweenTime = (Amount / 2.0f) / 10.0f;
 		Direction = direction(Angle * Repeat * (pi / 180.0f)) * 50;
 		LifeTime = 3.0f + Repeat / 10.0f;
 
-		float BetweenTime = (Amount / 2.0f) / 10.0f;
+		if(Random > 1.0f)
+			LifeTime = 3.0f + BetweenTime - Repeat / 10.0f;
 
-		if(Repeat > Amount / 2)
+		if(Repeat > Amount / 2) // this creates a little effect when its starts to dissapear
+		{
 			LifeTime = 3.0f + BetweenTime - (Amount - Repeat) / 10.0f;
+			if(Random > 1.0f)
+				LifeTime = 3.0f + (Amount - Repeat) / 10.0f;
+		}
 
 		new CCustomProjectile(
 			GameWorld(),
@@ -2807,6 +2814,7 @@ void CCharacter::VoteAction(const CNetMsg_Cl_Vote *pMsg, int ClientId)
 			float FireDelay = FoxNetGetFireDelay(Core()->m_ActiveWeapon);
 			VoteActionDelay[0] = Server()->Tick() + FireDelay * Server()->TickSpeed() / 1000;
 		}
+
 	}
 
 	if(F4 && (VoteActionDelay[1] < Server()->Tick() || NoCooldown))
