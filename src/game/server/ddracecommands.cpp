@@ -1689,7 +1689,7 @@ void CGameContext::DisallowedNeedles(const char *Needle, bool Remove)
 	// Wonky wonky code :c
 
 	char aBuf[512];
-	str_copy(aBuf, "");
+	str_format(aBuf, sizeof(aBuf), "couldn't find \"%s\"", Needle);
 
 	AutoBanNeedles Entry(Needle, "");
 	str_copy(Entry.m_disallowedStrings, Needle);
@@ -1701,10 +1701,19 @@ void CGameContext::DisallowedNeedles(const char *Needle, bool Remove)
 			auto it = std::find(m_disallowedStrings.begin(), m_disallowedStrings.end(), Entry);
 			if(it != m_disallowedStrings.end())
 			{
-				m_disallowedStrings.erase(it);
-				str_format(aBuf, sizeof(aBuf), "Removed \"%s\" from disallowed words", Needle);
-				Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
+				for(auto it2 = m_disallowedStrings.begin(); it2 != m_disallowedStrings.end();)
+				{
+					bool IsDuplicate = !str_comp(it2->String(), Needle);
+
+					if(IsDuplicate)
+						it2 = m_disallowedStrings.erase(it2);
+					else
+						++it2;
+					if(IsDuplicate)
+						str_format(aBuf, sizeof(aBuf), "Removed \"%s\" from disallowed words", Needle);
+				}
 			}
+			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
 		}
 		else
 		{
@@ -1739,7 +1748,7 @@ void CGameContext::DisallowedNames(const char *Needle, bool Remove)
 	// Wonky wonky code but copied
 
 	char aBuf[512];
-	str_copy(aBuf, "");
+	str_format(aBuf, sizeof(aBuf), "couldn't find \"%s\"", Needle);
 
 	AutoBanNeedles Entry("", Needle);
 	str_copy(Entry.m_disallowedNames, Needle);
@@ -1751,10 +1760,19 @@ void CGameContext::DisallowedNames(const char *Needle, bool Remove)
 			auto it = std::find(m_disallowedStrings.begin(), m_disallowedStrings.end(), Entry);
 			if(it != m_disallowedStrings.end())
 			{
-				m_disallowedStrings.erase(it);
-				str_format(aBuf, sizeof(aBuf), "Removed \"%s\" from disallowed names", Needle);
-				Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
+				for(auto it2 = m_disallowedStrings.begin(); it2 != m_disallowedStrings.end();)
+				{
+					bool IsDuplicate = !str_comp(it2->Names(), Needle);
+
+					if(IsDuplicate)
+						it2 = m_disallowedStrings.erase(it2);
+					else
+						++it2;
+					if(IsDuplicate)
+						str_format(aBuf, sizeof(aBuf), "Removed \"%s\" from disallowed names", Needle);
+				}
 			}
+			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
 		}
 		else
 		{
@@ -1795,5 +1813,6 @@ void CGameContext::ConSetAbility(IConsole::IResult *pResult, void *pUserData)
 	char aBuf[128];
 	str_format(aBuf, sizeof(aBuf), "Ability set to %s", pSelf->GetAbilityName(pResult->GetInteger(1)));
 	pSelf->SendChatTarget(Victim, aBuf);
-	pSelf->SendChatTarget(Victim, "Use f3 (Vote Yes) to use it");
+	pSelf->SendChatTarget(Victim, "Use f3 (Vote Yes) to use ability 1");
+	pSelf->SendChatTarget(Victim, "If there is one, Use f4 (Vote No) to use ability 2");
 }

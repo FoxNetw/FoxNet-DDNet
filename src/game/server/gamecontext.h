@@ -73,15 +73,13 @@ private:
 class AutoBanNeedles
 {
 public:
-	char m_disallowedStrings[10] = "";
-	char m_disallowedNames[10] = "";
+	char m_disallowedStrings[16] = "";
+	char m_disallowedNames[16] = "";
 
-	AutoBanNeedles(const char *pAutoBannedNeedles, const char *pAutoBannedNames)
+	AutoBanNeedles(const char *BannedStrings, const char *BannedNames)
 	{
-		if(!str_comp(m_disallowedStrings, ""))
-			str_copy(m_disallowedStrings, pAutoBannedNeedles);
-		if(!str_comp(m_disallowedNames, ""))
-			str_copy(m_disallowedNames, pAutoBannedNames);
+		str_copy(m_disallowedStrings, BannedStrings);
+		str_copy(m_disallowedNames, BannedNames);
 	}
 
 	const char *String() const { return m_disallowedStrings; }
@@ -90,6 +88,10 @@ public:
 	bool operator==(const AutoBanNeedles &Other) const
 	{
 		return !str_comp(String(), Other.String()) || !str_comp(Names(), Other.Names());
+	
+		bool MessageMatch = !str_comp(String(), Other.String()) && str_comp(String(), "") != 0;
+		bool NameMatch = !str_comp(Names(), Other.Names()) && str_comp(Names(), "") != 0;
+		return MessageMatch || NameMatch;
 	}
 };
 
