@@ -15,7 +15,6 @@
 #include <game/mapitems.h>
 
 #include <engine/shared/config.h>
-#include "gamecore.h"
 
 vec2 ClampVel(int MoveRestriction, vec2 Vel)
 {
@@ -372,7 +371,7 @@ int CCollision::GetQuadIndex(int x, int y, QuadData *pOutQuad, int *StartNum) co
 }
 
 // TODO: rewrite this smarter!
-int CCollision::IntersectLine(vec2 Pos0, vec2 Pos1, vec2 *pOutCollision, vec2 *pOutBeforeCollision) const
+int CCollision::IntersectLine(vec2 Pos0, vec2 Pos1, vec2 *pOutCollision, vec2 *pOutBeforeCollision, QuadData *pOutQuad) const
 {
 	float Distance = distance(Pos0, Pos1);
 	int End(Distance + 1);
@@ -385,7 +384,7 @@ int CCollision::IntersectLine(vec2 Pos0, vec2 Pos1, vec2 *pOutCollision, vec2 *p
 		int ix = round_to_int(Pos.x);
 		int iy = round_to_int(Pos.y);
 
-		if(CheckPoint(ix, iy))
+		if(CheckPoint(ix, iy, pOutQuad))
 		{
 			if(pOutCollision)
 				*pOutCollision = Pos;
@@ -403,7 +402,7 @@ int CCollision::IntersectLine(vec2 Pos0, vec2 Pos1, vec2 *pOutCollision, vec2 *p
 	return 0;
 }
 
-int CCollision::IntersectLineTeleHook(vec2 Pos0, vec2 Pos1, vec2 *pOutCollision, vec2 *pOutBeforeCollision, int *pTeleNr) const
+int CCollision::IntersectLineTeleHook(vec2 Pos0, vec2 Pos1, vec2 *pOutCollision, vec2 *pOutBeforeCollision, int *pTeleNr, QuadData *pOutQuad) const
 {
 	float Distance = distance(Pos0, Pos1);
 	int End(Distance + 1);
@@ -436,7 +435,7 @@ int CCollision::IntersectLineTeleHook(vec2 Pos0, vec2 Pos1, vec2 *pOutCollision,
 		}
 
 		int hit = 0;
-		if(CheckPoint(ix, iy))
+		if(CheckPoint(ix, iy, pOutQuad))
 		{
 			if(!IsThrough(ix, iy, dx, dy, Pos0, Pos1))
 				hit = GetCollisionAt(ix, iy);
@@ -463,7 +462,7 @@ int CCollision::IntersectLineTeleHook(vec2 Pos0, vec2 Pos1, vec2 *pOutCollision,
 	return 0;
 }
 
-int CCollision::IntersectLineTeleWeapon(vec2 Pos0, vec2 Pos1, vec2 *pOutCollision, vec2 *pOutBeforeCollision, int *pTeleNr) const
+int CCollision::IntersectLineTeleWeapon(vec2 Pos0, vec2 Pos1, vec2 *pOutCollision, vec2 *pOutBeforeCollision, int *pTeleNr, QuadData *pOutQuad) const
 {
 	float Distance = distance(Pos0, Pos1);
 	int End(Distance + 1);
@@ -493,7 +492,7 @@ int CCollision::IntersectLineTeleWeapon(vec2 Pos0, vec2 Pos1, vec2 *pOutCollisio
 			return TILE_TELEINWEAPON;
 		}
 
-		if(CheckPoint(ix, iy))
+		if(CheckPoint(ix, iy, pOutQuad))
 		{
 			if(pOutCollision)
 				*pOutCollision = Pos;
@@ -645,6 +644,46 @@ int CCollision::IsSolid(int x, int y) const
 {
 	int index = GetTile(x, y);
 	return index == TILE_SOLID || index == TILE_NOHOOK;
+}
+
+int CCollision::IsSolidQuad(int x, int y, QuadData *pOutQuad, int *StartNum) const
+{
+	CQuad *pQuad = nullptr;
+	vec2 Pos(0, 0);
+	float Angle = 0.f;
+	int Num;
+	if(StartNum)
+		Num = *StartNum;
+	else
+		Num = 0;
+	while(true)
+	{
+		Num = GetQuadAt(x, y, &pQuad, Num, &Pos, &Angle);
+		Num++;
+		if(!pQuad)
+			break;
+		if(pQuad->m_ColorEnvOffset == TILE_SOLID || pQuad->m_ColorEnvOffset == TILE_NOHOOK)
+		{
+			if(pOutQuad)
+			{
+				pOutQuad->m_pQuad = pQuad;
+				pOutQuad->m_Pos = Pos;
+				pOutQuad->m_Angle = Angle;
+			}
+			if(StartNum)
+				*StartNum = Num;
+			return true;
+		}
+	}
+	if(pOutQuad)
+	{
+		pOutQuad->m_pQuad = pQuad;
+		pOutQuad->m_Pos = Pos;
+		pOutQuad->m_Angle = Angle;
+	}
+	if(StartNum)
+		*StartNum = Num;
+	return false;
 }
 
 bool CCollision::IsThrough(int x, int y, int OffsetX, int OffsetY, vec2 Pos0, vec2 Pos1) const
@@ -1243,7 +1282,7 @@ int CCollision::IntersectNoLaserNoWalls(vec2 Pos0, vec2 Pos1, vec2 *pOutCollisio
 	return 0;
 }
 
-int CCollision::IntersectAir(vec2 Pos0, vec2 Pos1, vec2 *pOutCollision, vec2 *pOutBeforeCollision) const
+int CCollision::IntersectAir(vec2 Pos0, vec2 Pos1, vec2 *pOutCollision, vec2 *pOutBeforeCollision, QuadData *pOutQuad) const
 {
 	float d = distance(Pos0, Pos1);
 	vec2 Last = Pos0;
@@ -1252,7 +1291,7 @@ int CCollision::IntersectAir(vec2 Pos0, vec2 Pos1, vec2 *pOutCollision, vec2 *pO
 	{
 		float a = (float)i / d;
 		vec2 Pos = mix(Pos0, Pos1, a);
-		if(IsSolid(round_to_int(Pos.x), round_to_int(Pos.y)) || (!GetTile(round_to_int(Pos.x), round_to_int(Pos.y)) && !GetFrontTile(round_to_int(Pos.x), round_to_int(Pos.y))))
+		if(IsSolid(round_to_int(Pos.x), round_to_int(Pos.y)) || IsSolidQuad(round_to_int(Pos.x), round_to_int(Pos.y), pOutQuad) || (!GetTile(round_to_int(Pos.x), round_to_int(Pos.y)) && !GetFrontTile(round_to_int(Pos.x), round_to_int(Pos.y)) && !GetQuadIndex(round_to_int(Pos.x), round_to_int(Pos.y))))
 		{
 			if(pOutCollision)
 				*pOutCollision = Pos;
@@ -1632,3 +1671,139 @@ int CCollision::GetCollisionAt(float x, float y) const
 		return GetQuadIndex(round_to_int(x), round_to_int(y));
 }
 
+bool CCollision::PushBoxOutsideQuads(vec2 *pInoutPos, vec2 Size, int *CollidedSides) const
+{
+	vec2 Pos = *pInoutPos;
+
+	QuadData QData1 = {nullptr, vec2(0.0f, 0.0f), 0.0f}; // corner 0
+	QuadData QData2 = {nullptr, vec2(0.0f, 0.0f), 0.0f}; // corner 1
+	QuadData QData3 = {nullptr, vec2(0.0f, 0.0f), 0.0f}; // corner 2
+	QuadData QData4 = {nullptr, vec2(0.0f, 0.0f), 0.0f}; // corner 3
+
+	vec2 Corner1 = Pos - Size;
+	vec2 Corner2 = Pos + vec2(Size.x, -Size.y);
+	vec2 Corner3 = Pos + vec2(-Size.x, Size.y);
+	vec2 Corner4 = Pos + Size;
+
+	GetQuadAt(Corner1, &QData1);
+
+	if(QData1.m_pQuad && (QData1.m_pQuad->m_ColorEnvOffset == TILE_SOLID || QData1.m_pQuad->m_ColorEnvOffset == TILE_NOHOOK))
+	{
+		vec2 Pos1, Pos2;
+		IntersectLine(Corner2, Corner1, nullptr, &Pos1);
+		IntersectLine(Corner3, Corner1, nullptr, &Pos2);
+
+		float d1 = distance(Corner1, Pos1);
+		float d2 = distance(Corner1, Pos2);
+
+		if(d1 < d2)
+		{
+			Pos = Pos1 + Size; // left
+			if(CollidedSides)
+				*CollidedSides |= CANTMOVE_LEFT;
+		}
+		else
+		{
+			Pos = Pos2 + Size; // up
+			if(CollidedSides)
+				*CollidedSides |= CANTMOVE_UP;
+		}
+	}
+
+	Corner1 = Pos - Size;
+	Corner2 = Pos + vec2(Size.x, -Size.y);
+	Corner3 = Pos + vec2(-Size.x, Size.y);
+	Corner4 = Pos + Size;
+	GetQuadAt(Corner2, &QData2);
+
+	if(QData2.m_pQuad && (QData2.m_pQuad->m_ColorEnvOffset == TILE_SOLID || QData2.m_pQuad->m_ColorEnvOffset == TILE_NOHOOK))
+	{
+		vec2 Pos1, Pos2;
+
+		IntersectLine(Corner1, Corner2, nullptr, &Pos1);
+		IntersectLine(Corner4, Corner2, nullptr, &Pos2);
+
+		float d1 = distance(Corner2, Pos1);
+		float d2 = distance(Corner2, Pos2);
+
+		if(d1 < d2)
+		{
+			Pos = Pos1 - vec2(Size.x, -Size.y); // right
+			if(CollidedSides)
+				*CollidedSides |= CANTMOVE_RIGHT;
+		}
+		else
+		{
+			Pos = Pos2 + vec2(-Size.x, Size.y); // up
+			if(CollidedSides)
+				*CollidedSides |= CANTMOVE_UP;
+		}
+	}
+
+	Corner1 = Pos - Size;
+	Corner2 = Pos + vec2(Size.x, -Size.y);
+	Corner3 = Pos + vec2(-Size.x, Size.y);
+	Corner4 = Pos + Size;
+	GetQuadAt(Corner3, &QData3);
+
+	if(QData3.m_pQuad && (QData3.m_pQuad->m_ColorEnvOffset == TILE_SOLID || QData3.m_pQuad->m_ColorEnvOffset == TILE_NOHOOK))
+	{
+		vec2 Pos1, Pos2;
+
+		IntersectLine(Corner1, Corner3, &Pos1, nullptr);
+		IntersectLine(Corner4, Corner3, nullptr, &Pos2);
+
+		float d1 = distance(Corner3, Pos1);
+		float d2 = distance(Corner3, Pos2);
+
+		if(d1 < d2)
+		{
+			Pos = Pos1 - vec2(-Size.x, Size.y); // down
+			if(CollidedSides)
+				*CollidedSides |= CANTMOVE_DOWN;
+		}
+		else
+		{
+			Pos = Pos2 + vec2(Size.x, -Size.y); // left
+			if(CollidedSides)
+				*CollidedSides |= CANTMOVE_LEFT;
+		}
+	}
+
+	Corner1 = Pos - Size;
+	Corner2 = Pos + vec2(Size.x, -Size.y);
+	Corner3 = Pos + vec2(-Size.x, Size.y);
+	Corner4 = Pos + Size;
+	GetQuadAt(Corner4, &QData4);
+
+	if(QData4.m_pQuad && (QData4.m_pQuad->m_ColorEnvOffset == TILE_SOLID || QData4.m_pQuad->m_ColorEnvOffset == TILE_NOHOOK))
+	{
+		vec2 Pos1, Pos2;
+
+		IntersectLine(Corner2, Corner4, &Pos1, nullptr);
+		IntersectLine(Corner3, Corner4, &Pos2, nullptr);
+
+		float d1 = distance(Corner4, Pos1);
+		float d2 = distance(Corner4, Pos2);
+
+		if(d1 < d2)
+		{
+			Pos = Pos1 - Size; // down
+			if(CollidedSides)
+				*CollidedSides |= CANTMOVE_DOWN;
+		}
+		else
+		{
+			Pos = Pos2 - Size; // right
+			if(CollidedSides)
+				*CollidedSides |= CANTMOVE_RIGHT;
+		}
+	}
+	if(Pos != *pInoutPos)
+	{
+		*pInoutPos = Pos;
+		return true;
+	}
+
+	return false;
+}

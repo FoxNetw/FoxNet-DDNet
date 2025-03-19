@@ -575,11 +575,10 @@ void CCharacter::FireWeapon()
 				Sound, // SoundImpact
 				MouseTarget // InitDir
 			);
-
 			if(g_Config.m_SvConfettiGun)
 				GameServer()->CreateBirthdayEffect(m_Pos, TeamMask());
 			else
-				GameServer()->CreateSound(m_Pos, SOUND_GUN_FIRE, TeamMask()); // NOLINT(clang-analyzer-unix.Malloc)
+			GameServer()->CreateSound(m_Pos, SOUND_GUN_FIRE, TeamMask()); // NOLINT(clang-analyzer-unix.Malloc)
 		}
 	}
 	break;
@@ -660,7 +659,7 @@ void CCharacter::FireWeapon()
 					{
 						IsTelekinesed = true;
 						break;
-					}
+	}
 				if(!IsTelekinesed)
 					m_pTelekinesisEntity = pEntity;
 			}
@@ -695,23 +694,6 @@ void CCharacter::FireWeapon()
 		m_ReloadTimer = FireDelay * Server()->TickSpeed() / 1000;
 	}
 }
-
-float CCharacter::FoxNetGetFireDelay(int Weapon)
-{
-	switch(Weapon)
-	{
-	case WEAPON_HAMMER: return (float)Tuning()->m_HammerFireDelay;
-	case WEAPON_GUN: return (float)Tuning()->m_GunFireDelay;
-	case WEAPON_SHOTGUN: return (float)Tuning()->m_ShotgunFireDelay;
-	case WEAPON_GRENADE: return (float)Tuning()->m_GrenadeFireDelay;
-	case WEAPON_LASER: return (float)Tuning()->m_LaserFireDelay;
-	case WEAPON_NINJA: return (float)Tuning()->m_NinjaFireDelay;
-	case WEAPON_HEART_GUN: return (float)Tuning()->m_HeartgunFireDelay;
-	case WEAPON_TELEKINESIS: return (float)Tuning()->m_TelekinesisFireDelay;
-	default: dbg_assert(false, "invalid weapon"); return 0.0f; // this value should not be reached
-	}
-}
-
 
 void CCharacter::HandleWeapons()
 {
@@ -996,7 +978,7 @@ void CCharacter::TickDeferred()
 		m_Core.Write(&Current);
 
 		// only allow dead reckoning for a top of 3 seconds
-		if(m_Core.m_Reset || m_ReckoningTick + Server()->TickSpeed() * 3 < Server()->Tick() || mem_comp(&Predicted, &Current, sizeof(CNetObj_Character)) != 0)
+		if(g_Config.m_SvInstantCoreUpdate || m_Core.m_HookedQuad.m_pQuad || m_Core.m_QuadCollided || m_Core.m_Reset || m_ReckoningTick + Server()->TickSpeed() * 3 < Server()->Tick() || mem_comp(&Predicted, &Current, sizeof(CNetObj_Character)) != 0)
 		{
 			m_ReckoningTick = Server()->Tick();
 			m_SendCore = m_Core;
@@ -1533,52 +1515,52 @@ void CCharacter::HandleSkippableTiles(int Index)
 
 		if(Type == TILE_SPEED_BOOST_OLD)
 		{
-			float TeeAngle, SpeederAngle, DiffAngle, SpeedLeft, TeeSpeed;
-			if(Force == 255 && MaxSpeed)
+		float TeeAngle, SpeederAngle, DiffAngle, SpeedLeft, TeeSpeed;
+		if(Force == 255 && MaxSpeed)
+		{
+			m_Core.m_Vel = Direction * (MaxSpeed / 5);
+		}
+		else
+		{
+			if(MaxSpeed > 0 && MaxSpeed < 5)
+				MaxSpeed = 5;
+			if(MaxSpeed > 0)
 			{
-				m_Core.m_Vel = Direction * (MaxSpeed / 5);
+				if(Direction.x > 0.0000001f)
+					SpeederAngle = -std::atan(Direction.y / Direction.x);
+				else if(Direction.x < 0.0000001f)
+					SpeederAngle = std::atan(Direction.y / Direction.x) + 2.0f * std::asin(1.0f);
+				else if(Direction.y > 0.0000001f)
+					SpeederAngle = std::asin(1.0f);
+				else
+					SpeederAngle = std::asin(-1.0f);
+
+				if(SpeederAngle < 0)
+					SpeederAngle = 4.0f * std::asin(1.0f) + SpeederAngle;
+
+				if(TempVel.x > 0.0000001f)
+					TeeAngle = -std::atan(TempVel.y / TempVel.x);
+				else if(TempVel.x < 0.0000001f)
+					TeeAngle = std::atan(TempVel.y / TempVel.x) + 2.0f * std::asin(1.0f);
+				else if(TempVel.y > 0.0000001f)
+					TeeAngle = std::asin(1.0f);
+				else
+					TeeAngle = std::asin(-1.0f);
+
+				if(TeeAngle < 0)
+					TeeAngle = 4.0f * std::asin(1.0f) + TeeAngle;
+
+				TeeSpeed = std::sqrt(std::pow(TempVel.x, 2) + std::pow(TempVel.y, 2));
+
+				DiffAngle = SpeederAngle - TeeAngle;
+				SpeedLeft = MaxSpeed / 5.0f - std::cos(DiffAngle) * TeeSpeed;
+				if(absolute((int)SpeedLeft) > Force && SpeedLeft > 0.0000001f)
+					TempVel += Direction * Force;
+				else if(absolute((int)SpeedLeft) > Force)
+					TempVel += Direction * -Force;
+				else
+					TempVel += Direction * SpeedLeft;
 			}
-			else
-			{
-				if(MaxSpeed > 0 && MaxSpeed < 5)
-					MaxSpeed = 5;
-				if(MaxSpeed > 0)
-				{
-					if(Direction.x > 0.0000001f)
-						SpeederAngle = -std::atan(Direction.y / Direction.x);
-					else if(Direction.x < 0.0000001f)
-						SpeederAngle = std::atan(Direction.y / Direction.x) + 2.0f * std::asin(1.0f);
-					else if(Direction.y > 0.0000001f)
-						SpeederAngle = std::asin(1.0f);
-					else
-						SpeederAngle = std::asin(-1.0f);
-
-					if(SpeederAngle < 0)
-						SpeederAngle = 4.0f * std::asin(1.0f) + SpeederAngle;
-
-					if(TempVel.x > 0.0000001f)
-						TeeAngle = -std::atan(TempVel.y / TempVel.x);
-					else if(TempVel.x < 0.0000001f)
-						TeeAngle = std::atan(TempVel.y / TempVel.x) + 2.0f * std::asin(1.0f);
-					else if(TempVel.y > 0.0000001f)
-						TeeAngle = std::asin(1.0f);
-					else
-						TeeAngle = std::asin(-1.0f);
-
-					if(TeeAngle < 0)
-						TeeAngle = 4.0f * std::asin(1.0f) + TeeAngle;
-
-					TeeSpeed = std::sqrt(std::pow(TempVel.x, 2) + std::pow(TempVel.y, 2));
-
-					DiffAngle = SpeederAngle - TeeAngle;
-					SpeedLeft = MaxSpeed / 5.0f - std::cos(DiffAngle) * TeeSpeed;
-					if(absolute((int)SpeedLeft) > Force && SpeedLeft > 0.0000001f)
-						TempVel += Direction * Force;
-					else if(absolute((int)SpeedLeft) > Force)
-						TempVel += Direction * -Force;
-					else
-						TempVel += Direction * SpeedLeft;
-				}
 				else
 					TempVel += Direction * Force;
 
@@ -1665,7 +1647,7 @@ void CCharacter::HandleTiles(int Index)
 	if(((m_TileIndex == TILE_FREEZE) || (m_TileFIndex == TILE_FREEZE)) && !m_Core.m_Super && !m_Core.m_Invincible && !m_Core.m_DeepFrozen)
 	{
 		if(!g_Config.m_SvDisableFreeze)
-			Freeze();
+		Freeze();
 	}
 	else if(((m_TileIndex == TILE_UNFREEZE) || (m_TileFIndex == TILE_UNFREEZE)) && !m_Core.m_DeepFrozen)
 		UnFreeze();
@@ -2130,6 +2112,7 @@ void CCharacter::HandleQuads()
 	CQuad *pQuad = nullptr;
 	int StartNum = 0;
 	int Number = 0;
+	int Delay = 0;
 	while(true)
 	{
 		StartNum = Collision()->GetQuadAt(m_Pos, &pQuad, StartNum);
@@ -2140,6 +2123,7 @@ void CCharacter::HandleQuads()
 		Number = pQuad->m_aColors[0].r;
 		if(Number == 0)
 			Number++;
+		Delay = pQuad->m_aColors[0].g;
 
 		// printf("QuadenvOffset: %d\n",pQuad->m_ColorEnvOffset);
 
@@ -2151,14 +2135,362 @@ void CCharacter::HandleQuads()
 		{
 			m_Core.m_DeepFrozen = true;
 		}
+		if(pQuad->m_ColorEnvOffset == TILE_LFREEZE)
+		{
+			m_Core.m_LiveFrozen = true;
+		}
 		if(pQuad->m_ColorEnvOffset == TILE_DUNFREEZE)
 		{
 			m_Core.m_DeepFrozen = false;
+		}
+		if(pQuad->m_ColorEnvOffset == TILE_LUNFREEZE)
+		{
+			m_Core.m_LiveFrozen = false;
 		}
 		if(pQuad->m_ColorEnvOffset == TILE_UNFREEZE)
 		{
 			UnFreeze();
 		}
+		if(pQuad->m_ColorEnvOffset == TILE_DEATH)
+		{
+			Die(m_pPlayer->GetCid(), WEAPON_WORLD);
+		}
+
+		// endless hook
+		if(pQuad->m_ColorEnvOffset == TILE_EHOOK_ENABLE)
+		{
+			SetEndlessHook(true);
+		}
+		else if(pQuad->m_ColorEnvOffset == TILE_EHOOK_DISABLE)
+		{
+			SetEndlessHook(false);
+		}
+
+		// hit others
+		if((pQuad->m_ColorEnvOffset == TILE_HIT_DISABLE) && (!m_Core.m_HammerHitDisabled || !m_Core.m_ShotgunHitDisabled || !m_Core.m_GrenadeHitDisabled || !m_Core.m_LaserHitDisabled))
+		{
+			GameServer()->SendChatTarget(GetPlayer()->GetCid(), "You can't hit others");
+			m_Core.m_HammerHitDisabled = true;
+			m_Core.m_ShotgunHitDisabled = true;
+			m_Core.m_GrenadeHitDisabled = true;
+			m_Core.m_LaserHitDisabled = true;
+		}
+		else if((pQuad->m_ColorEnvOffset == TILE_HIT_ENABLE) && (m_Core.m_HammerHitDisabled || m_Core.m_ShotgunHitDisabled || m_Core.m_GrenadeHitDisabled || m_Core.m_LaserHitDisabled))
+		{
+			GameServer()->SendChatTarget(GetPlayer()->GetCid(), "You can hit others");
+			m_Core.m_ShotgunHitDisabled = false;
+			m_Core.m_GrenadeHitDisabled = false;
+			m_Core.m_HammerHitDisabled = false;
+			m_Core.m_LaserHitDisabled = false;
+		}
+
+		// collide with others
+		if((pQuad->m_ColorEnvOffset == TILE_NPC_DISABLE) && !m_Core.m_CollisionDisabled)
+		{
+			GameServer()->SendChatTarget(GetPlayer()->GetCid(), "You can't collide with others");
+			m_Core.m_CollisionDisabled = true;
+		}
+		else if((pQuad->m_ColorEnvOffset == TILE_NPC_ENABLE) && m_Core.m_CollisionDisabled)
+		{
+			GameServer()->SendChatTarget(GetPlayer()->GetCid(), "You can collide with others");
+			m_Core.m_CollisionDisabled = false;
+		}
+
+		// hook others
+		if((pQuad->m_ColorEnvOffset == TILE_NPH_DISABLE) && !m_Core.m_HookHitDisabled)
+		{
+			GameServer()->SendChatTarget(GetPlayer()->GetCid(), "You can't hook others");
+			m_Core.m_HookHitDisabled = true;
+		}
+		else if((pQuad->m_ColorEnvOffset == TILE_NPH_ENABLE) && m_Core.m_HookHitDisabled)
+		{
+			GameServer()->SendChatTarget(GetPlayer()->GetCid(), "You can hook others");
+			m_Core.m_HookHitDisabled = false;
+		}
+
+		// unlimited air jumps
+		if((pQuad->m_ColorEnvOffset == TILE_UNLIMITED_JUMPS_ENABLE) && !m_Core.m_EndlessJump)
+		{
+			GameServer()->SendChatTarget(GetPlayer()->GetCid(), "You have unlimited air jumps");
+			m_Core.m_EndlessJump = true;
+		}
+		else if((pQuad->m_ColorEnvOffset == TILE_UNLIMITED_JUMPS_DISABLE) && m_Core.m_EndlessJump)
+		{
+			GameServer()->SendChatTarget(GetPlayer()->GetCid(), "You don't have unlimited air jumps");
+			m_Core.m_EndlessJump = false;
+		}
+
+		// walljump
+		if(pQuad->m_ColorEnvOffset == TILE_WALLJUMP)
+		{
+			if(m_Core.m_Vel.y > 0 && m_Core.m_Colliding && m_Core.m_LeftWall)
+			{
+				m_Core.m_LeftWall = false;
+				m_Core.m_JumpedTotal = m_Core.m_Jumps >= 2 ? m_Core.m_Jumps - 2 : 0;
+				m_Core.m_Jumped = 1;
+			}
+		}
+
+		// jetpack gun
+		if(((pQuad->m_ColorEnvOffset == TILE_JETPACK_ENABLE)) && !m_Core.m_Jetpack)
+		{
+			GameServer()->SendChatTarget(GetPlayer()->GetCid(), "You have a jetpack gun");
+			m_Core.m_Jetpack = true;
+		}
+		else if(((pQuad->m_ColorEnvOffset == TILE_JETPACK_DISABLE)) && m_Core.m_Jetpack)
+		{
+			GameServer()->SendChatTarget(GetPlayer()->GetCid(), "You lost your jetpack gun");
+			m_Core.m_Jetpack = false;
+		}
+
+		// Teleport gun
+		if((pQuad->m_ColorEnvOffset == TILE_TELE_GUN_ENABLE) && !m_Core.m_HasTelegunGun)
+		{
+			m_Core.m_HasTelegunGun = true;
+
+			GameServer()->SendChatTarget(GetPlayer()->GetCid(), "Teleport gun enabled");
+		}
+		else if((pQuad->m_ColorEnvOffset == TILE_TELE_GUN_DISABLE) && m_Core.m_HasTelegunGun)
+		{
+			m_Core.m_HasTelegunGun = false;
+
+			GameServer()->SendChatTarget(GetPlayer()->GetCid(), "Teleport gun disabled");
+		}
+
+		if((pQuad->m_ColorEnvOffset == TILE_TELE_GRENADE_ENABLE) && !m_Core.m_HasTelegunGrenade)
+		{
+			m_Core.m_HasTelegunGrenade = true;
+
+			GameServer()->SendChatTarget(GetPlayer()->GetCid(), "Teleport grenade enabled");
+		}
+		else if((pQuad->m_ColorEnvOffset == TILE_TELE_GRENADE_DISABLE) && m_Core.m_HasTelegunGrenade)
+		{
+			m_Core.m_HasTelegunGrenade = false;
+
+			GameServer()->SendChatTarget(GetPlayer()->GetCid(), "Teleport grenade disabled");
+		}
+
+		if((pQuad->m_ColorEnvOffset == TILE_TELE_LASER_ENABLE) && !m_Core.m_HasTelegunLaser)
+		{
+			m_Core.m_HasTelegunLaser = true;
+
+			GameServer()->SendChatTarget(GetPlayer()->GetCid(), "Teleport laser enabled");
+		}
+		else if((pQuad->m_ColorEnvOffset == TILE_TELE_LASER_DISABLE) && m_Core.m_HasTelegunLaser)
+		{
+			m_Core.m_HasTelegunLaser = false;
+
+			GameServer()->SendChatTarget(GetPlayer()->GetCid(), "Teleport laser disabled");
+		}
+		else if(pQuad->m_ColorEnvOffset == TILE_HIT_ENABLE && m_Core.m_HammerHitDisabled && Delay == WEAPON_HAMMER)
+		{
+			GameServer()->SendChatTarget(GetPlayer()->GetCid(), "You can hammer hit others");
+			m_Core.m_HammerHitDisabled = false;
+		}
+		else if(pQuad->m_ColorEnvOffset == TILE_HIT_DISABLE && !(m_Core.m_HammerHitDisabled) && Delay == WEAPON_HAMMER)
+		{
+			GameServer()->SendChatTarget(GetPlayer()->GetCid(), "You can't hammer hit others");
+			m_Core.m_HammerHitDisabled = true;
+		}
+		else if(pQuad->m_ColorEnvOffset == TILE_HIT_ENABLE && m_Core.m_ShotgunHitDisabled && Delay == WEAPON_SHOTGUN)
+		{
+			GameServer()->SendChatTarget(GetPlayer()->GetCid(), "You can shoot others with shotgun");
+			m_Core.m_ShotgunHitDisabled = false;
+		}
+		else if(pQuad->m_ColorEnvOffset == TILE_HIT_DISABLE && !(m_Core.m_ShotgunHitDisabled) && Delay == WEAPON_SHOTGUN)
+		{
+			GameServer()->SendChatTarget(GetPlayer()->GetCid(), "You can't shoot others with shotgun");
+			m_Core.m_ShotgunHitDisabled = true;
+		}
+		else if(pQuad->m_ColorEnvOffset == TILE_HIT_ENABLE && m_Core.m_GrenadeHitDisabled && Delay == WEAPON_GRENADE)
+		{
+			GameServer()->SendChatTarget(GetPlayer()->GetCid(), "You can shoot others with grenade");
+			m_Core.m_GrenadeHitDisabled = false;
+		}
+		else if(pQuad->m_ColorEnvOffset == TILE_HIT_DISABLE && !(m_Core.m_GrenadeHitDisabled) && Delay == WEAPON_GRENADE)
+		{
+			GameServer()->SendChatTarget(GetPlayer()->GetCid(), "You can't shoot others with grenade");
+			m_Core.m_GrenadeHitDisabled = true;
+		}
+		else if(pQuad->m_ColorEnvOffset == TILE_HIT_ENABLE && m_Core.m_LaserHitDisabled && Delay == WEAPON_LASER)
+		{
+			GameServer()->SendChatTarget(GetPlayer()->GetCid(), "You can shoot others with laser");
+			m_Core.m_LaserHitDisabled = false;
+		}
+		else if(pQuad->m_ColorEnvOffset == TILE_HIT_DISABLE && !(m_Core.m_LaserHitDisabled) && Delay == WEAPON_LASER)
+		{
+			GameServer()->SendChatTarget(GetPlayer()->GetCid(), "You can't shoot others with laser");
+			m_Core.m_LaserHitDisabled = true;
+		}
+		else if(pQuad->m_ColorEnvOffset == TILE_JUMP)
+		{
+			int NewJumps = Delay;
+			if(NewJumps == 255)
+			{
+				NewJumps = -1;
+			}
+
+			if(NewJumps != m_Core.m_Jumps)
+			{
+				char aBuf[256];
+				if(NewJumps == -1)
+					str_copy(aBuf, "You only have your ground jump now");
+				else if(NewJumps == 1)
+					str_format(aBuf, sizeof(aBuf), "You can jump %d time", NewJumps);
+				else
+					str_format(aBuf, sizeof(aBuf), "You can jump %d times", NewJumps);
+				GameServer()->SendChatTarget(GetPlayer()->GetCid(), aBuf);
+				m_Core.m_Jumps = NewJumps;
+			}
+		}
+
+		// handle switch tiles
+		if(pQuad->m_ColorEnvOffset == TILE_SWITCHOPEN && Team() != TEAM_SUPER && Number > 0)
+		{
+			Switchers()[Number].m_aStatus[Team()] = true;
+			Switchers()[Number].m_aEndTick[Team()] = 0;
+			Switchers()[Number].m_aType[Team()] = TILE_SWITCHOPEN;
+			Switchers()[Number].m_aLastUpdateTick[Team()] = Server()->Tick();
+		}
+		else if(pQuad->m_ColorEnvOffset == TILE_SWITCHTIMEDOPEN && Team() != TEAM_SUPER && Number > 0)
+		{
+			Switchers()[Number].m_aStatus[Team()] = true;
+			Switchers()[Number].m_aEndTick[Team()] = Server()->Tick() + 1 + Delay * Server()->TickSpeed();
+			Switchers()[Number].m_aType[Team()] = TILE_SWITCHTIMEDOPEN;
+			Switchers()[Number].m_aLastUpdateTick[Team()] = Server()->Tick();
+		}
+		else if(pQuad->m_ColorEnvOffset == TILE_SWITCHTIMEDCLOSE && Team() != TEAM_SUPER && Number > 0)
+		{
+			Switchers()[Number].m_aStatus[Team()] = false;
+			Switchers()[Number].m_aEndTick[Team()] = Server()->Tick() + 1 + Delay * Server()->TickSpeed();
+			Switchers()[Number].m_aType[Team()] = TILE_SWITCHTIMEDCLOSE;
+			Switchers()[Number].m_aLastUpdateTick[Team()] = Server()->Tick();
+		}
+		else if(pQuad->m_ColorEnvOffset == TILE_SWITCHCLOSE && Team() != TEAM_SUPER && Number > 0)
+		{
+			Switchers()[Number].m_aStatus[Team()] = false;
+			Switchers()[Number].m_aEndTick[Team()] = 0;
+			Switchers()[Number].m_aType[Team()] = TILE_SWITCHCLOSE;
+			Switchers()[Number].m_aLastUpdateTick[Team()] = Server()->Tick();
+		}
+
+		// Teleports
+		if(!g_Config.m_SvOldTeleportHook && !g_Config.m_SvOldTeleportWeapons && pQuad->m_ColorEnvOffset == TILE_TELEIN && !Collision()->TeleOuts(Number - 1).empty())
+		{
+			if(!(m_Core.m_Super || m_Core.m_Invincible))
+			{
+				int TeleOut = GameWorld()->m_Core.RandomOr0(Collision()->TeleOuts(Number - 1).size());
+				m_Core.m_Pos = Collision()->TeleOuts(Number - 1)[TeleOut];
+				if(!g_Config.m_SvTeleportHoldHook)
+				{
+					ResetHook();
+				}
+				if(g_Config.m_SvTeleportLoseWeapons)
+					ResetPickups();
+			}
+		}
+		if(pQuad->m_ColorEnvOffset == TILE_TELEINEVIL && !Collision()->TeleOuts(Number - 1).empty())
+		{
+			if(!(m_Core.m_Super || m_Core.m_Invincible))
+			{
+				int TeleOut = GameWorld()->m_Core.RandomOr0(Collision()->TeleOuts(Number - 1).size());
+				m_Core.m_Pos = Collision()->TeleOuts(Number - 1)[TeleOut];
+				if(!g_Config.m_SvOldTeleportHook && !g_Config.m_SvOldTeleportWeapons)
+				{
+					m_Core.m_Vel = vec2(0, 0);
+
+					if(!g_Config.m_SvTeleportHoldHook)
+					{
+						ResetHook();
+						GameWorld()->ReleaseHooked(GetPlayer()->GetCid());
+					}
+					if(g_Config.m_SvTeleportLoseWeapons)
+					{
+						ResetPickups();
+					}
+				}
+			}
+		}
+		if(pQuad->m_ColorEnvOffset == TILE_TELECHECKINEVIL)
+		{
+			if(!(m_Core.m_Super || m_Core.m_Invincible))
+			{
+				bool dontteletospawn = false;
+				// first check if there is a TeleCheckOut for the current recorded checkpoint, if not check previous checkpoints
+				for(int k = m_TeleCheckpoint - 1; k >= 0; k--)
+				{
+					if(!Collision()->TeleCheckOuts(k).empty())
+					{
+						int TeleOut = GameWorld()->m_Core.RandomOr0(Collision()->TeleCheckOuts(k).size());
+						m_Core.m_Pos = Collision()->TeleCheckOuts(k)[TeleOut];
+						m_Core.m_Vel = vec2(0, 0);
+
+						if(!g_Config.m_SvTeleportHoldHook)
+						{
+							ResetHook();
+							GameWorld()->ReleaseHooked(GetPlayer()->GetCid());
+						}
+
+						dontteletospawn = true;
+						break;
+					}
+				}
+				// if no checkpointout have been found (or if there no recorded checkpoint), teleport to start
+				if(!dontteletospawn)
+				{
+					vec2 SpawnPos;
+					if(GameServer()->m_pController->CanSpawn(m_pPlayer->GetTeam(), &SpawnPos, GameServer()->GetDDRaceTeam(GetPlayer()->GetCid())))
+					{
+						m_Core.m_Pos = SpawnPos;
+						m_Core.m_Vel = vec2(0, 0);
+
+						if(!g_Config.m_SvTeleportHoldHook)
+						{
+							ResetHook();
+							GameWorld()->ReleaseHooked(GetPlayer()->GetCid());
+						}
+					}
+				}
+			}
+		}
+		if(pQuad->m_ColorEnvOffset == TILE_TELECHECKIN)
+		{
+			if(!(m_Core.m_Super || m_Core.m_Invincible))
+			{
+				bool dontteletospawn = false;
+				// first check if there is a TeleCheckOut for the current recorded checkpoint, if not check previous checkpoints
+				for(int k = m_TeleCheckpoint - 1; k >= 0; k--)
+				{
+					if(!Collision()->TeleCheckOuts(k).empty())
+					{
+						int TeleOut = GameWorld()->m_Core.RandomOr0(Collision()->TeleCheckOuts(k).size());
+						m_Core.m_Pos = Collision()->TeleCheckOuts(k)[TeleOut];
+
+						if(!g_Config.m_SvTeleportHoldHook)
+						{
+							ResetHook();
+						}
+						dontteletospawn = true;
+						break;
+					}
+				}
+				// if no checkpointout have been found (or if there no recorded checkpoint), teleport to start
+				if(!dontteletospawn)
+				{
+					vec2 SpawnPos;
+					if(GameServer()->m_pController->CanSpawn(m_pPlayer->GetTeam(), &SpawnPos, GameServer()->GetDDRaceTeam(GetPlayer()->GetCid())))
+					{
+						m_Core.m_Pos = SpawnPos;
+
+						if(!g_Config.m_SvTeleportHoldHook)
+						{
+							ResetHook();
+						}
+					}
+				}
+			}
+		}
+		GameServer()->m_pController->HandleCharacterQuad(this, pQuad);
 	}
 }
 
@@ -2683,6 +3015,22 @@ void CCharacter::FoxNetTick()
 	}
 }
 
+float CCharacter::FoxNetGetFireDelay(int Weapon)
+{
+	switch(Weapon)
+	{
+	case WEAPON_HAMMER: return (float)Tuning()->m_HammerFireDelay;
+	case WEAPON_GUN: return (float)Tuning()->m_GunFireDelay;
+	case WEAPON_SHOTGUN: return (float)Tuning()->m_ShotgunFireDelay;
+	case WEAPON_GRENADE: return (float)Tuning()->m_GrenadeFireDelay;
+	case WEAPON_LASER: return (float)Tuning()->m_LaserFireDelay;
+	case WEAPON_NINJA: return (float)Tuning()->m_NinjaFireDelay;
+	case WEAPON_HEART_GUN: return (float)Tuning()->m_HeartgunFireDelay;
+	case WEAPON_TELEKINESIS: return (float)Tuning()->m_TelekinesisFireDelay;
+	default: dbg_assert(false, "invalid weapon"); return 0.0f; // this value should not be reached
+	}
+}
+
 void CCharacter::CreatePowerupExplosion(vec2 Pos, int ClientId, int Type)
 {
 	vec2 Direction;
@@ -2814,7 +3162,6 @@ void CCharacter::VoteAction(const CNetMsg_Cl_Vote *pMsg, int ClientId)
 			float FireDelay = FoxNetGetFireDelay(Core()->m_ActiveWeapon);
 			VoteActionDelay[0] = Server()->Tick() + FireDelay * Server()->TickSpeed() / 1000;
 		}
-
 	}
 
 	if(F4 && (VoteActionDelay[1] < Server()->Tick() || NoCooldown))

@@ -49,18 +49,18 @@ public:
 	void Unload();
 	void FillAntibot(CAntibotMapData *pMapData) const;
 
-	bool CheckPoint(float x, float y, QuadData *pOutQuad = nullptr, int *StartNum = nullptr) const { return IsSolid(round_to_int(x), round_to_int(y)); }
+	bool CheckPoint(float x, float y, QuadData *pOutQuad = nullptr, int *StartNum = nullptr) const { return IsSolid(round_to_int(x), round_to_int(y)) || IsSolidQuad(round_to_int(x), round_to_int(y), pOutQuad, StartNum); }
 	bool CheckPoint(vec2 Pos, QuadData *pOutQuad = nullptr, int *StartNum = nullptr) const { return CheckPoint(Pos.x, Pos.y, pOutQuad, StartNum); }
-
 	int GetCollisionAt(float x, float y) const;
 	int GetWidth() const { return m_Width; }
 	int GetHeight() const { return m_Height; }
-	int IntersectLine(vec2 Pos0, vec2 Pos1, vec2 *pOutCollision, vec2 *pOutBeforeCollision) const;
-	int IntersectLineTeleWeapon(vec2 Pos0, vec2 Pos1, vec2 *pOutCollision, vec2 *pOutBeforeCollision, int *pTeleNr = nullptr) const;
-	int IntersectLineTeleHook(vec2 Pos0, vec2 Pos1, vec2 *pOutCollision, vec2 *pOutBeforeCollision, int *pTeleNr = nullptr) const;
+	int IntersectLine(vec2 Pos0, vec2 Pos1, vec2 *pOutCollision, vec2 *pOutBeforeCollision, QuadData *pOutQuad = nullptr) const;
+	int IntersectLineTeleWeapon(vec2 Pos0, vec2 Pos1, vec2 *pOutCollision, vec2 *pOutBeforeCollision, int *pTeleNr = nullptr, QuadData *pOutQuad = nullptr) const;
+	int IntersectLineTeleHook(vec2 Pos0, vec2 Pos1, vec2 *pOutCollision, vec2 *pOutBeforeCollision, int *pTeleNr = nullptr, QuadData *pOutQuad = nullptr) const;
 	void MovePoint(vec2 *pInoutPos, vec2 *pInoutVel, float Elasticity, int *pBounces) const;
 	void MoveBox(vec2 *pInoutPos, vec2 *pInoutVel, vec2 Size, vec2 Elasticity, bool *pGrounded = nullptr) const;
 	bool TestBox(vec2 Pos, vec2 Size) const;
+	bool PushBoxOutsideQuads(vec2 *pInoutPos, vec2 Size, int *CollidedSides) const;
 
 	// DDRace
 	void SetCollisionAt(float x, float y, int Index);
@@ -69,7 +69,7 @@ public:
 	int GetFrontCollisionAt(float x, float y) const { return GetFrontTile(round_to_int(x), round_to_int(y)); }
 	int IntersectNoLaser(vec2 Pos0, vec2 Pos1, vec2 *pOutCollision, vec2 *pOutBeforeCollision) const;
 	int IntersectNoLaserNoWalls(vec2 Pos0, vec2 Pos1, vec2 *pOutCollision, vec2 *pOutBeforeCollision) const;
-	int IntersectAir(vec2 Pos0, vec2 Pos1, vec2 *pOutCollision, vec2 *pOutBeforeCollision) const;
+	int IntersectAir(vec2 Pos0, vec2 Pos1, vec2 *pOutCollision, vec2 *pOutBeforeCollision, QuadData *pOutQuad = nullptr) const;
 	int GetIndex(int x, int y) const;
 	int GetIndex(vec2 PrevPos, vec2 Pos) const;
 	int GetFrontIndex(int x, int y) const;
@@ -96,6 +96,7 @@ public:
 		int PosEnvOffset = 0;
 	};
 
+	int IsSolidQuad(int x, int y, QuadData *pOutQuad = nullptr, int *StartNum = nullptr) const;
 	int GetQuadIndex(int x, int y, QuadData *pOutQuad = nullptr, int *StartNum = nullptr) const;
 
 	int GetMoveRestrictions(CALLBACK_SWITCHACTIVE pfnSwitchActive, void *pUser, vec2 Pos, float Distance = 18.0f, int OverrideCenterTileIndex = -1) const;
@@ -190,10 +191,8 @@ private:
 	CSwitchTile *m_pSwitch;
 	CTuneTile *m_pTune;
 	CDoorTile *m_pDoor;
-
-public:
 	CMapItemLayerQuads *m_pQuadLayer;
-private:
+
 	// TILE_TELEIN
 	std::map<int, std::vector<vec2>> m_TeleIns;
 	// TILE_TELEOUT

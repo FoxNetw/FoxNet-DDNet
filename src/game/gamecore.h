@@ -9,14 +9,15 @@
 #include <set>
 #include <vector>
 
+#include "collision.h"
 #include <engine/shared/protocol.h>
 #include <game/generated/protocol.h>
-#include <game/teamscore.h>
 
 #include "prng.h"
 
 class CCollision;
 class CTeamsCore;
+struct CQuad;
 
 class CTuneParam
 {
@@ -45,7 +46,7 @@ class CTuningParams
 public:
 	CTuningParams()
 	{
-#define MACRO_TUNING_PARAM(Name, ScriptName, Value, Description) m_##Name.Set((int)((Value)*100.0f));
+#define MACRO_TUNING_PARAM(Name, ScriptName, Value, Description) m_##Name.Set((int)((Value) * 100.0f));
 #include "tuning.h"
 #undef MACRO_TUNING_PARAM
 	}
@@ -134,11 +135,11 @@ enum
 
 struct SSwitchers
 {
-	bool m_aStatus[NUM_DDRACE_TEAMS];
+	bool m_aStatus[MAX_CLIENTS];
 	bool m_Initial;
-	int m_aEndTick[NUM_DDRACE_TEAMS];
-	int m_aType[NUM_DDRACE_TEAMS];
-	int m_aLastUpdateTick[NUM_DDRACE_TEAMS];
+	int m_aEndTick[MAX_CLIENTS];
+	int m_aType[MAX_CLIENTS];
+	int m_aLastUpdateTick[MAX_CLIENTS];
 };
 
 class CWorldCore
@@ -183,12 +184,16 @@ public:
 	static constexpr vec2 PhysicalSizeVec2() { return vec2(28.0f, 28.0f); };
 	vec2 m_Pos;
 	vec2 m_Vel;
+	// QuadData m_StandingQuad;
 
 	vec2 m_HookPos;
 	vec2 m_HookDir;
 	vec2 m_HookTeleBase;
 	int m_HookTick;
 	int m_HookState;
+	QuadData m_HookedQuad;
+	vec2 m_QuadHookedPos;
+	bool m_QuadCollided;
 	std::set<int> m_AttachedPlayers;
 	int HookedPlayer() const { return m_HookedPlayer; }
 	void SetHookedPlayer(int HookedPlayer);
@@ -200,7 +205,7 @@ public:
 		int m_Ammo;
 		int m_Ammocost;
 		bool m_Got;
-	} m_aWeapons[NUM_OTHER_WEAPONS];
+	} m_aWeapons[NUM_WEAPONS];
 
 	// ninja
 	struct
@@ -275,6 +280,7 @@ public:
 private:
 	CTeamsCore *m_pTeams;
 	int m_MoveRestrictions;
+	int m_QuadRestrictions;
 	int m_HookedPlayer;
 	static bool IsSwitchActiveCb(int Number, void *pUser);
 };
