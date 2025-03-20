@@ -494,6 +494,21 @@ void CSaveHotReloadTee::Save(CCharacter *pChr, bool AddPenalty)
 	m_Super = pChr->m_Core.m_Super;
 	m_Invincible = pChr->m_Core.m_Invincible;
 	m_SavedTeleTee = pChr->m_pPlayer->m_LastTeleTee;
+
+	
+	m_Invisible = pChr->m_pPlayer->m_Invisible;
+	m_Rainbow = pChr->m_pPlayer->m_Rainbow;
+	m_Ability = pChr->m_pPlayer->m_Ability;
+	m_ExtraPing = pChr->m_pPlayer->m_ExtraPing;
+
+	m_SavedColor = pChr->m_pPlayer->m_SavedColor;
+	m_UsedCustomColor = pChr->m_pPlayer->m_UsedCustomColor;
+	m_SavedColorBody = pChr->m_pPlayer->m_SavedColorBody;
+	m_SavedColorFeet = pChr->m_pPlayer->m_SavedColorFeet;
+
+	m_AbilityIndicator = pChr->m_pPlayer->m_AbilityIndicator;
+	m_WeaponIndicator = pChr->m_pPlayer->m_WeaponIndicator;
+	m_SpecAfk = pChr->m_pPlayer->m_SpecAfk;
 }
 
 bool CSaveHotReloadTee::Load(CCharacter *pChr, int Team, bool IsSwap)
@@ -501,7 +516,21 @@ bool CSaveHotReloadTee::Load(CCharacter *pChr, int Team, bool IsSwap)
 	bool Result = m_SaveTee.Load(pChr, Team, IsSwap);
 	pChr->SetSuper(m_Super);
 	pChr->m_Core.m_Invincible = m_Invincible;
-	pChr->GetPlayer()->m_LastTeleTee = m_SavedTeleTee;
+	pChr->GetPlayer()->m_LastTeleTee = m_SavedTeleTee; 
+
+	pChr->GetPlayer()->m_Invisible = m_Invisible;
+	pChr->GetPlayer()->m_Rainbow = m_Rainbow;
+	pChr->GetPlayer()->m_Ability = m_Ability;
+	pChr->GetPlayer()->m_ExtraPing = m_ExtraPing;
+
+	pChr->GetPlayer()->m_SavedColor = m_SavedColor;
+	pChr->GetPlayer()->m_UsedCustomColor = m_UsedCustomColor;
+	pChr->GetPlayer()->m_SavedColorBody = m_SavedColorBody;
+	pChr->GetPlayer()->m_SavedColorFeet = m_SavedColorFeet;
+
+	pChr->GetPlayer()->m_AbilityIndicator = m_AbilityIndicator;
+	pChr->GetPlayer()->m_WeaponIndicator = m_WeaponIndicator;
+	pChr->GetPlayer()->m_SpecAfk = m_SpecAfk;
 
 	return Result;
 }

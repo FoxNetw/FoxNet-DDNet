@@ -164,6 +164,22 @@ private:
 	bool m_Super;
 	bool m_Invincible;
 	CSaveTee m_SavedTeleTee;
+
+	// FoxNet
+	bool m_Invisible;
+	bool m_Rainbow;
+	int m_Ability;
+	int m_ExtraPing;
+
+	// Saving Colors
+	bool m_SavedColor;
+	int m_UsedCustomColor;
+	int m_SavedColorBody;
+	int m_SavedColorFeet;
+
+	bool m_AbilityIndicator;
+	bool m_WeaponIndicator;
+	bool m_SpecAfk;
 };
 
 class CSaveTeam
