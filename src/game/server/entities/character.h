@@ -72,6 +72,8 @@ public:
 
 	int m_HeadItem;
 	void HeadItem(int Type = 1, int ClientId = -1);
+	
+	bool QuadFreeze();
 
 	// DDNet
 	void Reset() override;

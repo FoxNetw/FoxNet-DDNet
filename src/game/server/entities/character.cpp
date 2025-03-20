@@ -2129,7 +2129,10 @@ void CCharacter::HandleQuads()
 
 		if(pQuad->m_ColorEnvOffset == TILE_FREEZE)
 		{
-			Freeze();
+			if(g_Config.m_SvFastQuadFreeze)
+				QuadFreeze();
+			else
+				Freeze();
 		}
 		if(pQuad->m_ColorEnvOffset == TILE_DFREEZE)
 		{
@@ -3362,4 +3365,19 @@ void CCharacter::UpdateAbilityInd()
 		else if(m_NeedsUpdate[Ability] && m_pPlayer->m_Ability > 0)
 			m_NeedsUpdate[Ability] = false;
 	}
+}
+
+bool CCharacter::QuadFreeze()
+{
+	int Seconds = g_Config.m_SvFreezeDelay;
+	if(Seconds <= 0 || m_Core.m_Super || m_Core.m_Invincible || m_FreezeTime > Seconds * Server()->TickSpeed())
+		return false;
+	if(m_FreezeTime == 0 || m_Core.m_FreezeStart < Server()->Tick() - Server()->TickSpeed() / 64.0f)
+	{
+		m_Armor = 0;
+		m_FreezeTime = Seconds * Server()->TickSpeed();
+		m_Core.m_FreezeStart = Server()->Tick();
+		return true;
+	}
+	return false;
 }
