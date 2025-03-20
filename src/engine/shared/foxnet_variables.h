@@ -13,7 +13,6 @@ MACRO_CONFIG_INT(SvSendWelcome, fs_send_welcome, 1, 0, 1, CFGFLAG_SERVER | CFGFL
 MACRO_CONFIG_STR(SvWelcomeMessage, fs_welcome_message, 256, "< Welcome to the Server %s >", CFGFLAG_SERVER | CFGFLAG_GAME, "Welcome Message")
 
 MACRO_CONFIG_INT(SvInstantCoreUpdate, fs_instant_core_update, 0, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "Send a Welcome broadcast to players who joined")
-
 MACRO_CONFIG_INT(SvAbilityIndicator, fs_ability_indicator, 0, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "Enable Indicators for every player")
 MACRO_CONFIG_INT(SvCustomAbilities, fs_custom_abilities, 1, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "you can set a players a bility using set_ability, by using f3/f4 you can use them (vote yes/no)")
 MACRO_CONFIG_INT(SvResetAbilityOnKill, fs_reset_ability_on_kill, 0, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "Reset Players Ability if they kill")

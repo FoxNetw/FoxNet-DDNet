@@ -346,7 +346,7 @@ void CPlayer::Snap(int SnappingClient)
 	pClientInfo->m_ColorFeet = m_TeeInfos.m_ColorFeet;
 
 	int SnappingClientVersion = GameServer()->GetClientVersion(SnappingClient);
-	int Latency = SnappingClient == SERVER_DEMO_CLIENT ? m_Latency.m_Min : GameServer()->m_apPlayers[SnappingClient]->m_aCurLatency[m_ClientId];
+	int Latency = SnappingClient == SERVER_DEMO_CLIENT ? m_Latency.m_Min : GameServer()->m_apPlayers[SnappingClient]->m_aCurLatency[m_ClientId] + GameServer()->m_apPlayers[SnappingClient]->m_ExtraPing;
 
 	int Score;
 	// This is the time sent to the player while ingame (do not confuse to the one reported to the master server).

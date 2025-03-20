@@ -668,6 +668,8 @@ private: // FoxNet
 
 	static void ConSetAbility(IConsole::IResult *pResult, void *pUserData);
 
+	static void ConSetExtraPing(IConsole::IResult *pResult, void *pUserData);
+
 	void FoxNetTick();
 
 	void BanSync();

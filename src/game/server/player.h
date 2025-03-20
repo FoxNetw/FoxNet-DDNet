@@ -276,6 +276,7 @@ public:
 	bool m_Valentines;
 
 	int m_Ability = 0;
+	int m_ExtraPing;
 	bool m_Invisible;
 	bool m_Rainbow;
 };

@@ -59,10 +59,9 @@ public:
 	int NumDDraceHudRows();
 
 	void SetAbility(int Type);
-
 	void SetRainbow(bool Active);
-
 	void SetInvisible(bool Active);
+	void SetExtraPing(int Ping);
 
 	void SetExplosionGun(bool Active);
 	void SetTelekinesisImmunity(bool Active);

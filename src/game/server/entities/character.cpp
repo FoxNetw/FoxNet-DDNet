@@ -3257,6 +3257,11 @@ void CCharacter::SetInvisible(bool Active)
 	m_pPlayer->m_Invisible = Active;
 }
 
+void CCharacter::SetExtraPing(int Ping)
+{
+	m_pPlayer->m_ExtraPing = Ping;
+}
+
 vec2 CCharacter::GetCursorPos(int Clientid)
 {
 	vec2 Target = vec2(Core()->m_Input.m_TargetX, Core()->m_Input.m_TargetY);

@@ -3857,6 +3857,8 @@ void CGameContext::RegisterDDRaceCommands()
 
 	Console()->Register("disallow_string", "?s[name] ?i[remove]", CFGFLAG_SERVER, ConDisallowedStrings, this, "Add or remove strings to add to the auto ban Ingame Chat check");
 	Console()->Register("disallow_name", "?s[name] ?i[remove]", CFGFLAG_SERVER, ConDisallowedNames, this, "Add or remove strings to add to the auto ban Name check");
+
+	Console()->Register("set_extra_ping", "v[id] i[ping]", CFGFLAG_SERVER, ConSetExtraPing, this, "Set a players (id) Extra Ping");
 }
 
 void CGameContext::RegisterChatCommands()

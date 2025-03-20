@@ -1816,3 +1816,22 @@ void CGameContext::ConSetAbility(IConsole::IResult *pResult, void *pUserData)
 	pSelf->SendChatTarget(Victim, "Use f3 (Vote Yes) to use ability 1");
 	pSelf->SendChatTarget(Victim, "If there is one, Use f4 (Vote No) to use ability 2");
 }
+
+void CGameContext::ConSetExtraPing(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->NumArguments() ? pResult->GetVictim() : pResult->m_ClientId;
+
+	if(pResult->GetInteger(0) == -1)
+		Victim = pResult->m_ClientId;
+
+	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+
+	pChr->SetExtraPing(pResult->GetInteger(1));
+	char aBuf[128];
+	str_format(aBuf, sizeof(aBuf), "Extra Ping set to %d", pResult->GetInteger(1));
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
+}
