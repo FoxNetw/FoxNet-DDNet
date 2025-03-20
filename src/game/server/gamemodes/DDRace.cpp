@@ -1,4 +1,4 @@
-/* (c) Shereef Marzouk. See "licence DDRace.txt" and the readme.txt in the root of the distribution for more information. */
+﻿/* (c) Shereef Marzouk. See "licence DDRace.txt" and the readme.txt in the root of the distribution for more information. */
 /* Based on Race mod stuff and tweaked by GreYFoX@GTi and others to fit our DDRace needs. */
 #include "DDRace.h"
 
@@ -150,10 +150,24 @@ void CGameControllerDDRace::OnPlayerConnect(CPlayer *pPlayer)
 		{
 			char WelcomeText[256];
 			str_format(WelcomeText, sizeof(WelcomeText), g_Config.m_SvWelcomeMessage, Server()->ClientName(ClientId));
+			if(GameServer()->Collision()->Layers()->m_MovingTilesWarnin)
+				str_copy(WelcomeText, "<< WARNING: This Map contains Moving Tiles! >>", sizeof(WelcomeText));
+			else if(g_Config.m_SvAutoExplGun)
+				str_copy(WelcomeText, "<< Explosion gun is enabled! >>", sizeof(WelcomeText));
+
 			GameServer()->SendBroadcast(WelcomeText, ClientId);
-			if(g_Config.m_SvAutoExplGun)
-				GameServer()->SendBroadcast("\n << You currently have an Exploding Gun! >>", ClientId);
 		}
+	}
+	else if(GameServer()->Collision()->Layers()->m_MovingTilesWarnin)
+	{
+		GameServer()->SendChatTarget(ClientId, "╭──             << !SERVER WARNING! >>");	
+		GameServer()->SendChatTarget(ClientId, "│");
+		GameServer()->SendChatTarget(ClientId, "│ This Map Contains Moving Tiles!");
+		GameServer()->SendChatTarget(ClientId, "│");
+		GameServer()->SendChatTarget(ClientId, "│ If you use Entities you have to");
+		GameServer()->SendChatTarget(ClientId, "│ turn them off");
+		GameServer()->SendChatTarget(ClientId, "│");
+		GameServer()->SendChatTarget(ClientId, "╰───────────────────────");
 	}
 }
 

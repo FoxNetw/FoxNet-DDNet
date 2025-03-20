@@ -123,6 +123,7 @@ void CLayers::Init(IMap *pMap, bool GameOnly)
 				if(!str_comp_nocase("GameQuads", aBuf))
 				{
 					m_pQuadLayer = pTilemap;
+					m_MovingTilesWarnin = true;
 				}
 			}
 		}
