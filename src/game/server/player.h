@@ -249,6 +249,7 @@ public:
 	void SetAbilityIndicator(bool Set);
 
 	// Spec Afk Toggling for specific players
+	int m_IsAfkSpec;
 	bool m_SpecAfk = true;
 	void SetSpecAfk(bool Set);
 	void AfkSpectateTick();
@@ -261,8 +262,6 @@ public:
 	int m_RainbowSpeed = 6; // <- is the default
 	int m_RainbowColor;
 	void RainbowTick();
-
-	int m_IsAfkSpec;
 
 	bool m_SavedColor;
 	int m_UsedCustomColor;
@@ -277,6 +276,9 @@ public:
 
 	int m_Ability = 0;
 	int m_ExtraPing;
+	int m_EmoticonGun;
+
+	bool m_ConfettiGun;
 	bool m_Invisible;
 	bool m_Rainbow;
 };

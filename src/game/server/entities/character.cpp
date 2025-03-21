@@ -575,9 +575,6 @@ void CCharacter::FireWeapon()
 				Sound, // SoundImpact
 				MouseTarget // InitDir
 			);
-			if(g_Config.m_SvConfettiGun)
-				GameServer()->CreateBirthdayEffect(m_Pos, TeamMask());
-			else
 			GameServer()->CreateSound(m_Pos, SOUND_GUN_FIRE, TeamMask()); // NOLINT(clang-analyzer-unix.Malloc)
 		}
 	}
@@ -978,7 +975,7 @@ void CCharacter::TickDeferred()
 		m_Core.Write(&Current);
 
 		// only allow dead reckoning for a top of 3 seconds
-		if(g_Config.m_SvInstantCoreUpdate || m_Core.m_HookedQuad.m_pQuad || m_Core.m_QuadCollided || m_Core.m_Reset || m_ReckoningTick + Server()->TickSpeed() * 3 < Server()->Tick() || mem_comp(&Predicted, &Current, sizeof(CNetObj_Character)) != 0)
+		if(g_Config.m_SvInstantCoreUpdate || m_Core.m_Reset || m_ReckoningTick + Server()->TickSpeed() * 3 < Server()->Tick() || mem_comp(&Predicted, &Current, sizeof(CNetObj_Character)) != 0)
 		{
 			m_ReckoningTick = Server()->Tick();
 			m_SendCore = m_Core;
@@ -3260,9 +3257,19 @@ void CCharacter::SetInvisible(bool Active)
 	m_pPlayer->m_Invisible = Active;
 }
 
+void CCharacter::SetConfettiGun(bool Set)
+{
+	m_pPlayer->m_ConfettiGun = Set;
+}
+
 void CCharacter::SetExtraPing(int Ping)
 {
 	m_pPlayer->m_ExtraPing = Ping;
+}
+
+void CCharacter::SetEmoticonGun(int EmoteType)
+{
+	m_pPlayer->m_EmoticonGun = EmoteType;
 }
 
 vec2 CCharacter::GetCursorPos(int Clientid)

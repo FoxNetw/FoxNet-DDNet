@@ -192,9 +192,6 @@ public:
 	vec2 m_HookTeleBase;
 	int m_HookTick;
 	int m_HookState;
-	QuadData m_HookedQuad;
-	vec2 m_QuadHookedPos;
-	bool m_QuadCollided;
 	std::set<int> m_AttachedPlayers;
 	int HookedPlayer() const { return m_HookedPlayer; }
 	void SetHookedPlayer(int HookedPlayer);
@@ -281,7 +278,6 @@ public:
 private:
 	CTeamsCore *m_pTeams;
 	int m_MoveRestrictions;
-	int m_QuadRestrictions;
 	int m_HookedPlayer;
 	static bool IsSwitchActiveCb(int Number, void *pUser);
 };

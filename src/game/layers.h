@@ -34,7 +34,7 @@ public:
 	CMapItemLayerTilemap *TuneLayer() const { return m_pTuneLayer; }
 	CMapItemLayerQuads *QuadLayer() const { return m_pQuadLayer; }
 
-	bool m_MovingTilesWarnin = false;
+	bool m_MovingTilesWarning = false;
 
 private:
 	int m_GroupsNum;

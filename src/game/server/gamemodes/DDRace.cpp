@@ -150,7 +150,7 @@ void CGameControllerDDRace::OnPlayerConnect(CPlayer *pPlayer)
 		{
 			char WelcomeText[256];
 			str_format(WelcomeText, sizeof(WelcomeText), g_Config.m_SvWelcomeMessage, Server()->ClientName(ClientId));
-			if(GameServer()->Collision()->Layers()->m_MovingTilesWarnin)
+			if(GameServer()->Collision()->Layers()->m_MovingTilesWarning)
 				str_copy(WelcomeText, "<< WARNING: This Map contains Moving Tiles! >>", sizeof(WelcomeText));
 			else if(g_Config.m_SvAutoExplGun)
 				str_copy(WelcomeText, "<< Explosion gun is enabled! >>", sizeof(WelcomeText));
@@ -158,7 +158,7 @@ void CGameControllerDDRace::OnPlayerConnect(CPlayer *pPlayer)
 			GameServer()->SendBroadcast(WelcomeText, ClientId);
 		}
 	}
-	else if(GameServer()->Collision()->Layers()->m_MovingTilesWarnin)
+	else if(GameServer()->Collision()->Layers()->m_MovingTilesWarning)
 	{
 		GameServer()->SendChatTarget(ClientId, "╭──             << !SERVER WARNING! >>");	
 		GameServer()->SendChatTarget(ClientId, "│");

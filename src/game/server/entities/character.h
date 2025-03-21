@@ -59,12 +59,15 @@ public:
 	int NumDDraceHudRows();
 
 	void SetAbility(int Type);
+	void SetExtraPing(int Ping);
+	void SetEmoticonGun(int EmoteType);
+
 	void SetRainbow(bool Active);
 	void SetInvisible(bool Active);
-	void SetExtraPing(int Ping);
-
+	void SetConfettiGun(bool Active);
 	void SetExplosionGun(bool Active);
 	void SetTelekinesisImmunity(bool Active);
+
 
 	// Telekinesis
 	CEntity *m_pTelekinesisEntity;

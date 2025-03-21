@@ -2236,9 +2236,9 @@ void CGameContext::OnSayNetMessage(const CNetMsg_Cl_Say *pMsg, int ClientId, con
 
 				SendEveryonePing(ClientId, FullMsg, ReceivingIds);
 
-				Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", pMsg->m_pMessage);
 			}
 		}
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", pMsg->m_pMessage);
 		SendOriginalMessage = false;
 	}
 	if(pMsg->m_pMessage[0] == '/')
@@ -3859,6 +3859,8 @@ void CGameContext::RegisterDDRaceCommands()
 	Console()->Register("disallow_name", "?s[name] ?i[remove]", CFGFLAG_SERVER, ConDisallowedNames, this, "Add or remove strings to add to the auto ban Name check");
 
 	Console()->Register("set_extra_ping", "v[id] i[ping]", CFGFLAG_SERVER, ConSetExtraPing, this, "Set a players (id) Extra Ping");
+	Console()->Register("confetti_gun", "v[id]", CFGFLAG_SERVER, ConSetConfettiGun, this, "Set a players (id) Gun to shoot confetti");
+	Console()->Register("set_emote_gun", "v[id] i[type]", CFGFLAG_SERVER, ConSetEmoticonGun, this, "Set a players (id) Emoticon Gun");
 }
 
 void CGameContext::RegisterChatCommands()
@@ -5681,4 +5683,43 @@ void CGameContext::NeedleStoring(int Type)
 		Needles = m_disallowedStrings;
 	if(Type == 1)
 		m_disallowedStrings = Needles;
+}
+
+void CGameContext::SendEmote(int ClientId, int Type)
+{
+	int EmoteType = Type;
+	switch(Type)
+	{
+	case EMOTICON_EXCLAMATION:
+	case EMOTICON_GHOST:
+	case EMOTICON_QUESTION:
+	case EMOTICON_WTF:
+		EmoteType = EMOTE_SURPRISE;
+		break;
+	case EMOTICON_DOTDOT:
+	case EMOTICON_DROP:
+	case EMOTICON_ZZZ:
+		EmoteType = EMOTE_BLINK;
+		break;
+	case EMOTICON_EYES:
+	case EMOTICON_HEARTS:
+	case EMOTICON_MUSIC:
+		EmoteType = EMOTE_HAPPY;
+		break;
+	case EMOTICON_OOP:
+	case EMOTICON_SORRY:
+	case EMOTICON_SUSHI:
+		EmoteType = EMOTE_PAIN;
+		break;
+	case EMOTICON_DEVILTEE:
+	case EMOTICON_SPLATTEE:
+	case EMOTICON_ZOMG:
+		EmoteType = EMOTE_ANGRY;
+		break;
+	default:
+		break;
+	}
+
+	GetPlayerChar(ClientId)->SetEmote(EmoteType, Server()->Tick() + 2 * Server()->TickSpeed());
+	SendEmoticon(ClientId, Type, -1);
 }

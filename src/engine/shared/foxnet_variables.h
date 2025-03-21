@@ -42,8 +42,6 @@ MACRO_CONFIG_INT(SvAutoShotgun, fs_auto_shotgun, 0, 0, 1, CFGFLAG_SERVER | CFGFL
 
 MACRO_CONFIG_INT(SvAutoExplGun, fs_explgun, 0, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "enables the explosion gun for everyone")
 
-MACRO_CONFIG_INT(SvConfettiGun, fs_confettigun, 0, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "when shooting it displays confetti")
-
 MACRO_CONFIG_INT(SvDisableFreeze, fs_disable_freeze, 0, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "enables the 'better version' of the explosion gun")
 MACRO_CONFIG_INT(SvFakeGrenade, fs_fake_grenade, 0, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "Grenade doesnt explode")
 MACRO_CONFIG_INT(SvWhisperLog, fs_whisper_log, 1, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "Log Whispers to Remote Console (Rcon)")

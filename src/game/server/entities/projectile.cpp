@@ -2,6 +2,7 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include "projectile.h"
 #include "character.h"
+#include <game/server/player.h>
 
 #include <engine/shared/config.h>
 
@@ -239,7 +240,26 @@ void CProjectile::Tick()
 		}
 		else if(m_Type == WEAPON_GUN)
 		{
-			GameServer()->CreateDamageInd(CurPos, -std::atan2(m_Direction.x, m_Direction.y), 10, (m_Owner != -1) ? TeamMask : CClientMask().set());
+			vec2 ActualPos = CurPos;
+			int EmoteGun = GameServer()->GetPlayerChar(m_Owner)->GetPlayer()->m_EmoticonGun;
+
+			if(GameServer()->GetPlayerChar(m_Owner)->GetPlayer()->m_ConfettiGun)
+			{
+				GetNearestAirPos(NewPos, CurPos, &ActualPos);
+				GameServer()->CreateBirthdayEffect(ActualPos, TeamMask);
+			}
+
+			if(EmoteGun && pTargetChr)
+			{
+				GameServer()->SendEmote(pTargetChr->GetPlayer()->GetCid(), EmoteGun);
+			}
+			if(!EmoteGun ||	(!GameServer()->GetPlayerChar(m_Owner)->GetPlayer()->m_ConfettiGun && !pTargetChr))
+			GameServer()->CreateDamageInd(ActualPos, -std::atan2(m_Direction.x, m_Direction.y), 10, (m_Owner != -1) ? TeamMask : CClientMask().set());
+
+		
+
+
+
 			m_MarkedForDestroy = true;
 			return;
 		}

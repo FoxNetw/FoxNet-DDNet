@@ -667,8 +667,9 @@ private: // FoxNet
 	void DisallowedNames(const char *Needle, bool Remove = false);
 
 	static void ConSetAbility(IConsole::IResult *pResult, void *pUserData);
-
 	static void ConSetExtraPing(IConsole::IResult *pResult, void *pUserData);
+	static void ConSetConfettiGun(IConsole::IResult *pResult, void *pUserData);
+	static void ConSetEmoticonGun(IConsole::IResult *pResult, void *pUserData);
 
 	void FoxNetTick();
 
@@ -688,6 +689,8 @@ private: // FoxNet
 	void SendEveryonePing(int ChatterClientId, const char *pText, int ReceivingIds) const;
 
 public:
+	void SendEmote(int ClientId, int Type);
+
 	void NeedleStoring(int Type) override;
 
 	std::vector<AutoBanNeedles> m_disallowedStrings;

@@ -194,34 +194,12 @@ void CCharacterCore::Reset()
 
 void CCharacterCore::Tick(bool UseInput, bool DoDeferredTick)
 {
-	m_QuadCollided = false;
-
-	m_MoveRestrictions = m_pCollision->GetMoveRestrictions(UseInput ? IsSwitchActiveCb : 0, this, m_Pos);
-	m_QuadRestrictions = 0;
-	m_QuadCollided = m_pCollision->PushBoxOutsideQuads(&m_Pos, PhysicalSizeVec2(), &m_QuadRestrictions);
-	m_MoveRestrictions |= m_QuadRestrictions;
+	m_MoveRestrictions = m_pCollision->GetMoveRestrictions(UseInput ? IsSwitchActiveCb : nullptr, this, m_Pos);
 
 	m_TriggeredEvents = 0;
 
-	// QuadData StandingQuad2 = {nullptr, vec2(0,0), 0};
-	//  get ground state
-	const bool Grounded = (m_QuadRestrictions & CANTMOVE_DOWN) || m_pCollision->CheckPoint(m_Pos.x + PhysicalSize() / 2, m_Pos.y + PhysicalSize() / 2 + 5) || m_pCollision->CheckPoint(m_Pos.x - PhysicalSize() / 2, m_Pos.y + PhysicalSize() / 2 + 5);
-
-	/*if(!m_StandingQuad.m_pQuad)
-	{
-		if(StandingQuad2.m_pQuad)
-		{
-			m_StandingQuad.m_pQuad = StandingQuad2.m_pQuad;
-			m_StandingQuad.m_Pos = StandingQuad2.m_Pos;
-			m_StandingQuad.m_Angle = StandingQuad2.m_Angle;
-		}
-		else
-		{
-			m_StandingQuad.m_pQuad = nullptr;
-			m_StandingQuad.m_Pos = vec2(0,0);
-			m_StandingQuad.m_Angle = 0;
-		}
-	}*/
+	// get ground state
+	const bool Grounded = m_pCollision->CheckPoint(m_Pos.x + PhysicalSize() / 2, m_Pos.y + PhysicalSize() / 2 + 5) || m_pCollision->CheckPoint(m_Pos.x - PhysicalSize() / 2, m_Pos.y + PhysicalSize() / 2 + 5);
 
 	vec2 TargetDirection = normalize(vec2(m_Input.m_TargetX, m_Input.m_TargetY));
 
@@ -329,8 +307,6 @@ void CCharacterCore::Tick(bool UseInput, bool DoDeferredTick)
 	{
 		SetHookedPlayer(-1);
 		m_HookPos = m_Pos;
-		m_HookedQuad = {nullptr, vec2(0, 0), 0};
-		m_QuadHookedPos = vec2(0, 0);
 	}
 	else if(m_HookState >= HOOK_RETRACT_START && m_HookState < HOOK_RETRACT_END)
 	{
@@ -361,9 +337,9 @@ void CCharacterCore::Tick(bool UseInput, bool DoDeferredTick)
 		bool GoingToRetract = false;
 		bool GoingThroughTele = false;
 		int teleNr = 0;
-		int Hit = m_pCollision->IntersectLineTeleHook(m_HookPos, NewPos, &NewPos, 0, &teleNr, &m_HookedQuad);
+		int Hit = m_pCollision->IntersectLineTeleHook(m_HookPos, NewPos, &NewPos, nullptr, &teleNr);
 
-		if(Hit && !m_HookedQuad.m_pQuad)
+		if(Hit)
 		{
 			if(Hit == TILE_NOHOOK)
 				GoingToRetract = true;
@@ -373,20 +349,7 @@ void CCharacterCore::Tick(bool UseInput, bool DoDeferredTick)
 				GoingToHitGround = true;
 			m_Reset = true;
 		}
-		else if(m_HookedQuad.m_pQuad)
-		{
-			if(m_HookedQuad.m_pQuad->m_ColorEnvOffset == TILE_NOHOOK)
-			{
-				GoingToRetract = true;
-			}
-			else if(m_HookedQuad.m_pQuad->m_ColorEnvOffset == TILE_SOLID)
-			{
-				GoingToHitGround = true;
-				m_QuadHookedPos = NewPos - (m_HookedQuad.m_Pos + vec2(fx2f(m_HookedQuad.m_pQuad->m_aPoints[4].x), fx2f(m_HookedQuad.m_pQuad->m_aPoints[4].y)));
-			}
 
-			m_Reset = true;
-		}
 
 		// Check against other players first
 		if(!m_HookHitDisabled && m_pWorld && m_Tuning.m_PlayerHooking && (m_HookState == HOOK_FLYING || !m_NewHook))
@@ -449,16 +412,6 @@ void CCharacterCore::Tick(bool UseInput, bool DoDeferredTick)
 
 	if(m_HookState == HOOK_GRABBED)
 	{
-		if(m_HookedPlayer == -1 && m_HookedQuad.m_pQuad)
-		{
-			vec2 temppos;
-			float tempangle;
-			m_pCollision->GetAnimationTransform(m_pCollision->m_Time + (m_HookedQuad.m_pQuad->m_PosEnvOffset / 1000.0), m_HookedQuad.m_pQuad->m_PosEnv, (CLayers *)m_pCollision->Layers(), temppos, tempangle);
-			m_HookPos = temppos + vec2(fx2f(m_HookedQuad.m_pQuad->m_aPoints[4].x), fx2f(m_HookedQuad.m_pQuad->m_aPoints[4].y)) + m_QuadHookedPos;
-			if(tempangle - m_HookedQuad.m_Angle != 0)
-				m_pCollision->Rotate(temppos + vec2(fx2f(m_HookedQuad.m_pQuad->m_aPoints[4].x), fx2f(m_HookedQuad.m_pQuad->m_aPoints[4].y)), &m_HookPos, tempangle - m_HookedQuad.m_Angle);
-		}
-
 		if(m_HookedPlayer != -1 && m_pWorld)
 		{
 			CCharacterCore *pCharCore = m_pWorld->m_apCharacters[m_HookedPlayer];
@@ -602,9 +555,6 @@ void CCharacterCore::Move()
 
 	m_Vel.x = m_Vel.x * RampValue;
 
-	if((m_QuadRestrictions & CANTMOVE_DOWN) && m_Vel.y > 0.f)
-		m_Vel.y = 0;
-
 	vec2 NewPos = m_Pos;
 
 	vec2 OldVel = m_Vel;
@@ -613,8 +563,6 @@ void CCharacterCore::Move()
 		vec2(m_Tuning.m_GroundElasticityX,
 			m_Tuning.m_GroundElasticityY),
 		&Grounded);
-
-	Grounded = Grounded || (m_QuadRestrictions & CANTMOVE_DOWN);
 
 	if(Grounded)
 	{
