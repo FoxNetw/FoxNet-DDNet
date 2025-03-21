@@ -86,7 +86,7 @@ public:
 
 		m_pServer->RegisterCommands();
 
-		EXPECT_NE(m_pServer->LoadMap("coverage"), 0);
+		EXPECT_NE(m_pServer->LoadMap("Testing"), 0);
 
 		m_pServer->m_RunServer = CServer::RUNNING;
 
@@ -101,7 +101,7 @@ public:
 			}
 		}
 		m_pServer->m_pPersistentData = malloc(GameServer()->PersistentDataSize());
-		EXPECT_NE(m_pServer->LoadMap("coverage"), 0);
+		EXPECT_NE(m_pServer->LoadMap("Testing"), 0);
 
 		if(!pServer->m_Http.Init(std::chrono::seconds{2}))
 		{
