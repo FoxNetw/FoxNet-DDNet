@@ -32,3 +32,6 @@ If you wish to build it yourself you can read the instructions in the [DDNet Rea
 - Weapon Indicator for custom weapons (F-DDRace)
 - Automatic Bans if a player send a flagged message (fs_anti_ad_bot), using disallow_string and disallow_name you can add strings that the server will search for in message sent by players and names of players,
   if it finds two strings in one message or one string in the name it will ban the player for a few hours -> it also bans krx whisper messages automatically by default
+- added "abilities", using the command "set_ability" you can give yourself or another player the ability to do certain things,
+  for example, using "set ability -1 1" (-1 being yourself) you give yourself the heart ability, if you press f3 (vote yes) you shoot out heart everywhere, if you press f4 it spawns hearts at your cursor,
+  the hearts dont do anything, purely cosmetic
