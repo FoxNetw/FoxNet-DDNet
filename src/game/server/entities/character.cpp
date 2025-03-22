@@ -3358,7 +3358,7 @@ void CCharacter::UpdateWeaponIndicator()
 
 void CCharacter::UpdateAbilityInd()
 {
-	// I hate this code too dw but im lazy and it works
+	// This Code does nothing for now, but it's here for future use
 	if(!g_Config.m_SvAbilityIndicator)
 		return;
 
@@ -3366,6 +3366,7 @@ void CCharacter::UpdateAbilityInd()
 	{
 		if(m_pPlayer->m_Ability == TYPE_TELEKINESIS)
 			Ability = 0;
+
 
 		if(m_pPlayer->m_Ability > 0 && VoteActionDelay[Ability] > Server()->Tick() && !m_NeedsUpdate[Ability])
 			m_NeedsUpdate[Ability] = true;
