@@ -754,6 +754,12 @@ void CGameContext::ConTeleport(IConsole::IResult *pResult, void *pUserData)
 	int TeleTo = pResult->NumArguments() ? pResult->GetInteger(pResult->NumArguments() - 1) : pResult->m_ClientId;
 	int AuthLevel = pSelf->Server()->GetAuthedState(pResult->m_ClientId);
 
+	if(pResult->GetInteger(0) == -1)
+		Tele = pResult->m_ClientId;
+	if(pResult->GetInteger(pResult->NumArguments() - 1) == -1)
+		TeleTo = pResult->m_ClientId;
+
+
 	if(Tele != pResult->m_ClientId && AuthLevel < g_Config.m_SvTeleOthersAuthLevel)
 	{
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "tele", "you aren't allowed to tele others");
@@ -771,9 +777,9 @@ void CGameContext::ConTeleport(IConsole::IResult *pResult, void *pUserData)
 		{
 			vec2 Target = vec2(TeleChr->Core()->m_Input.m_TargetX, TeleChr->Core()->m_Input.m_TargetY);
 			Pos = TeleToChr->GetPlayer()->m_CameraInfo.ConvertTargetToWorld(TeleChr->GetPos(), Target);
+			if(TeleTo == Tele)
+				Pos = TeleToChr->GetPlayer()->GetCharacter()->GetCursorPos(Tele);
 		}
-		if(TeleTo == Tele)
-			Pos = TeleToChr->GetPlayer()->GetCharacter()->GetCursorPos(Tele);
 
 		pSelf->Teleport(TeleChr, Pos);
 		TeleChr->ResetJumps();
