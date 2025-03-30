@@ -1374,9 +1374,9 @@ void CGameContext::ConTelekinesisImmunity(IConsole::IResult *pResult, void *pUse
 	if(!pChr)
 		return;
 
-	pChr->SetTelekinesisImmunity(!pChr->Core()->m_TelekinesisImmunity);
+	pChr->SetTelekinesisImmunity(!pChr->GetPlayer()->m_TelekinesisImmunity);
 
-	if(pChr->Core()->m_TelekinesisImmunity)
+	if(pChr->GetPlayer()->m_TelekinesisImmunity)
 	{
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", "Immune to Telekinesis");
 		if(g_Config.m_SvCommandOutput)

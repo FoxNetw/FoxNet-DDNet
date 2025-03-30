@@ -647,7 +647,7 @@ void CCharacter::FireWeapon()
 
 			if((pChr && pChr->GetPlayer()->GetCid() != m_pPlayer->GetCid() && (pChr->m_pTelekinesisEntity != this || (pEntity && pEntity != pChr))))
 			{
-				if(pChr->Core()->m_TelekinesisImmunity)
+				if(pChr->GetPlayer()->m_TelekinesisImmunity)
 					break;
 
 				bool IsTelekinesed = false;
@@ -3005,6 +3005,9 @@ void CCharacter::FoxNetTick()
 	{
 		CCharacter *pChr = (CCharacter *)m_pTelekinesisEntity;
 
+		if(pChr->GetPlayer()->m_TelekinesisImmunity)
+			m_pTelekinesisEntity = 0;
+
 		if(GetActiveWeapon() == WEAPON_TELEKINESIS || m_pPlayer->m_Ability == TYPE_TELEKINESIS)
 		{
 			pChr->m_Core.m_Pos = GetCursorPos(m_pPlayer->GetCid());
@@ -3138,7 +3141,7 @@ void CCharacter::VoteAction(const CNetMsg_Cl_Vote *pMsg, int ClientId)
 
 				if((pChr && pChr->GetPlayer()->GetCid() != m_pPlayer->GetCid() && (pChr->m_pTelekinesisEntity != this || (pEntity && pEntity != pChr))))
 				{
-					if(!pChr->Core()->m_TelekinesisImmunity)
+					if(!pChr->GetPlayer()->m_TelekinesisImmunity)
 					{
 						bool IsTelekinesed = false;
 						for(int i = 0; i < MAX_CLIENTS; i++)
@@ -3239,7 +3242,7 @@ void CCharacter::HeadItem(int Type, int ClientId)
 
 void CCharacter::SetTelekinesisImmunity(bool Active)
 {
-	m_Core.m_TelekinesisImmunity = Active;
+	m_pPlayer->m_TelekinesisImmunity = Active;
 }
 
 void CCharacter::SetExplosionGun(bool Active)

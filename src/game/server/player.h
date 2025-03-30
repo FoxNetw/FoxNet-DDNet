@@ -281,6 +281,8 @@ public:
 	bool m_ConfettiGun;
 	bool m_Invisible;
 	bool m_Rainbow;
+
+	bool m_TelekinesisImmunity;
 };
 
 #endif

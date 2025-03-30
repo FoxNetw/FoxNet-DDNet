@@ -247,7 +247,6 @@ public:
 	bool m_LeftWall;
 
 	// FoxNet
-	bool m_TelekinesisImmunity;
 	bool m_ExplosionGun;
 
 	// DDNet Character
