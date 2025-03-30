@@ -2897,6 +2897,10 @@ void CGameContext::OnKillNetMessage(const CNetMsg_Cl_Kill *pMsg, int ClientId)
 		return;
 	}
 	CPlayer *pPlayer = m_apPlayers[ClientId];
+
+	if(pPlayer->m_KillLocked) // FoxNet
+		return;
+
 	if(pPlayer->m_LastKill && pPlayer->m_LastKill + Server()->TickSpeed() * g_Config.m_SvKillDelay > Server()->Tick())
 		return;
 	if(pPlayer->IsPaused())
@@ -3861,6 +3865,8 @@ void CGameContext::RegisterDDRaceCommands()
 	Console()->Register("set_extra_ping", "v[id] i[ping]", CFGFLAG_SERVER, ConSetExtraPing, this, "Set a players (id) Extra Ping");
 	Console()->Register("confetti_gun", "v[id]", CFGFLAG_SERVER, ConSetConfettiGun, this, "Set a players (id) Gun to shoot confetti");
 	Console()->Register("set_emote_gun", "v[id] i[type]", CFGFLAG_SERVER, ConSetEmoticonGun, this, "Set a players (id) Emoticon Gun");
+
+	Console()->Register("kill_lock", "v[id]", CFGFLAG_SERVER, ConSetKillLock, this, "Make a player (id) not be able to kill");
 }
 
 void CGameContext::RegisterChatCommands()
@@ -5179,30 +5185,6 @@ void CGameContext::FoxNetTick()
 
 	if(g_Config.m_SvBanSyncing)
 		BanSync();
-
-	static int64_t TypeSwitchDelay = Server()->Tick() + Server()->TickSpeed() * 20.0f;
-	static bool Switcher = false;
-	static bool Set = false;
-
-	if(str_comp(g_Config.m_SvGameTypeName, "FoxNetwork"))
-	{
-		if(TypeSwitchDelay < Server()->Tick())
-		{
-			m_pController->m_pGameType = Switcher ? "FoxNetwork": g_Config.m_SvGameTypeName;
-
-			Server()->UpdateServerInfo(true);
-			TypeSwitchDelay = Server()->Tick() + Server()->TickSpeed() * 20.0f;
-
-			Switcher = !Switcher;
-		}
-		Set = false;
-	}
-	else if(!Set)
-	{
-		m_pController->m_pGameType = "FoxNetwork";
-		Server()->UpdateServerInfo(true);
-		Set = true;
-	}
 }
 
 void CGameContext::ChangeSpeedMode()
@@ -5357,11 +5339,20 @@ void CGameContext::BanSync()
 
 bool CGameContext::BanCheckMessages(int ClientId, const char *pMsg)
 {	// Thx to Pointer31 for the blueprint
+	if(ClientId < 0)
+		return false;
+
+	bool FunnyPersonFound = false;
+
 	int count = 0; // amount of flagged strings (some strings may count more than others)
-
 	int BanAmount = 0;
-
 	const char *ClientName = Server()->ClientName(ClientId);
+
+	// 𝕕𝕠𝕟❜𝕥 𝕔𝕒𝕣𝕖 + 𝕕𝕚𝕕𝕟❜𝕥 𝕒𝕤𝕜 + 𝕔𝕣𝕪 𝕒𝕓𝕠𝕦𝕥 𝕚𝕥 + 𝕤𝕥𝕒𝕪 𝕞𝕒𝕕 + 𝕘𝕖𝕥 𝕣𝕖𝕒𝕝 + 𝕃 + 𝕥𝕣𝕚𝕘𝕘𝕖𝕣𝕖𝕕 + 𝕥𝕠𝕦𝕔𝕙
+	if(str_find("𝕕𝕠𝕟❜𝕥 𝕔𝕒𝕣𝕖", pMsg) && str_find("𝕕𝕚𝕕𝕟❜𝕥 𝕒𝕤𝕜", pMsg) &&
+		str_find("𝕔𝕣𝕪 𝕒𝕓𝕠𝕦𝕥 𝕚𝕥", pMsg) && str_find("𝕤𝕥𝕒𝕪 𝕞𝕒𝕕", pMsg) &&
+		str_find("𝕘𝕖𝕥 𝕣𝕖𝕒𝕝", pMsg) && str_find("𝕃", pMsg) && str_find("𝕥𝕣𝕚𝕘𝕘𝕖𝕣𝕖𝕕", pMsg)) // think thats long enough
+		FunnyPersonFound = true;
 
 	// fancy alphabet detection
 	int fancy_count = 0;
@@ -5382,7 +5373,7 @@ bool CGameContext::BanCheckMessages(int ClientId, const char *pMsg)
 
 	for(int i = 0; i < 130; i++)
 	{
-		if(str_find_nocase(pMsg, alphabet_fancy[i]) && !FoundFancyName)
+		if(str_find_nocase(pMsg, alphabet_fancy[i]) && !FoundFancyName && !FunnyPersonFound)
 			fancy_count++;
 	}
 	if(fancy_count > 3)
@@ -5392,7 +5383,6 @@ bool CGameContext::BanCheckMessages(int ClientId, const char *pMsg)
 	}
 	
 	// Maybe Remove things like these from it so it doesn't ban people who have these binds
-	// 𝕕𝕠𝕟❜𝕥 𝕔𝕒𝕣𝕖 + 𝕕𝕚𝕕𝕟❜𝕥 𝕒𝕤𝕜 + 𝕔𝕣𝕪 𝕒𝕓𝕠𝕦𝕥 𝕚𝕥 + 𝕤𝕥𝕒𝕪 𝕞𝕒𝕕 + 𝕘𝕖𝕥 𝕣𝕖𝕒𝕝 + 𝕃 + 𝕥𝕣𝕚𝕘𝕘𝕖𝕣𝕖𝕕 + 𝕥𝕠𝕦𝕔𝕙
 	
 	std::vector<std::string> FoundStrings;
 	FoundStrings.clear();

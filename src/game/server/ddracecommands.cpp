@@ -1851,7 +1851,7 @@ void CGameContext::ConSetConfettiGun(IConsole::IResult *pResult, void *pUserData
 
 	pChr->SetConfettiGun(!pChr->GetPlayer()->m_ConfettiGun);
 	char aBuf[128];
-	str_format(aBuf, sizeof(aBuf), "Set Confetti Gun to %s for player %s", pResult->GetInteger(1) ? "True" : "False", pSelf->Server()->ClientName(Victim));
+	str_format(aBuf, sizeof(aBuf), "Set Confetti Gun to %s for player %s", pChr->GetPlayer()->m_ConfettiGun ? "True" : "False", pSelf->Server()->ClientName(Victim));
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
 }
 
@@ -1871,5 +1871,24 @@ void CGameContext::ConSetEmoticonGun(IConsole::IResult *pResult, void *pUserData
 	pChr->SetEmoticonGun(pResult->GetInteger(1));
 	char aBuf[128];
 	str_format(aBuf, sizeof(aBuf), "Set Emote Gun to %d for player %s", pResult->GetInteger(1), pSelf->Server()->ClientName(Victim));
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
+}
+
+void CGameContext::ConSetKillLock(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->NumArguments() ? pResult->GetVictim() : pResult->m_ClientId;
+
+	if(pResult->GetInteger(0) == -1)
+		Victim = pResult->m_ClientId;
+
+	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+
+	pChr->GetPlayer()->m_KillLocked = !pChr->GetPlayer()->m_KillLocked;
+	char aBuf[128];
+	str_format(aBuf, sizeof(aBuf), "Set Kill Lock to %s for player %s", pChr->GetPlayer()->m_KillLocked ? "True" : "False", pSelf->Server()->ClientName(Victim));
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
 }

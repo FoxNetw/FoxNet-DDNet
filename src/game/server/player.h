@@ -273,11 +273,11 @@ public:
 	bool m_SpawnSoloShowOthers;
 
 	bool m_Valentines;
+	bool m_KillLocked;
 
 	int m_Ability = 0;
 	int m_ExtraPing;
 	int m_EmoticonGun;
-
 	bool m_ConfettiGun;
 	bool m_Invisible;
 	bool m_Rainbow;

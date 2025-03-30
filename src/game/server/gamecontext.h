@@ -670,6 +670,7 @@ private: // FoxNet
 	static void ConSetExtraPing(IConsole::IResult *pResult, void *pUserData);
 	static void ConSetConfettiGun(IConsole::IResult *pResult, void *pUserData);
 	static void ConSetEmoticonGun(IConsole::IResult *pResult, void *pUserData);
+	static void ConSetKillLock(IConsole::IResult *pResult, void *pUserData);
 
 	void FoxNetTick();
 
