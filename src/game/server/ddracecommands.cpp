@@ -760,22 +760,25 @@ void CGameContext::ConTeleport(IConsole::IResult *pResult, void *pUserData)
 		return;
 	}
 
-	CCharacter *pChr = pSelf->GetPlayerChar(Tele);
-	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientId];
+	CCharacter *TeleChr = pSelf->GetPlayerChar(Tele);
+	CCharacter *TeleToChr = pSelf->GetPlayerChar(TeleTo);
 
-	if(pChr && pPlayer && pSelf->GetPlayerChar(TeleTo))
+	if(TeleChr && TeleToChr)
 	{
 		// default to view pos when character is not available
-		vec2 Pos = pPlayer->m_ViewPos;
-		if(pResult->NumArguments() == 0 && !pPlayer->IsPaused() && pChr->IsAlive())
+		vec2 Pos = TeleToChr->GetPlayer()->m_ViewPos;
+		if(pResult->NumArguments() == 0 && !TeleToChr->GetPlayer()->IsPaused() && TeleChr->IsAlive())
 		{
-			vec2 Target = vec2(pChr->Core()->m_Input.m_TargetX, pChr->Core()->m_Input.m_TargetY);
-			Pos = pPlayer->m_CameraInfo.ConvertTargetToWorld(pChr->GetPos(), Target);
+			vec2 Target = vec2(TeleChr->Core()->m_Input.m_TargetX, TeleChr->Core()->m_Input.m_TargetY);
+			Pos = TeleToChr->GetPlayer()->m_CameraInfo.ConvertTargetToWorld(TeleChr->GetPos(), Target);
 		}
-		pSelf->Teleport(pChr, Pos);
-		pChr->ResetJumps();
-		pChr->UnFreeze();
-		pChr->SetVelocity(vec2(0, 0));
+		if(TeleTo == Tele)
+			Pos = TeleToChr->GetPlayer()->GetCharacter()->GetCursorPos(Tele);
+
+		pSelf->Teleport(TeleChr, Pos);
+		TeleChr->ResetJumps();
+		TeleChr->UnFreeze();
+		TeleChr->SetVelocity(vec2(0, 0));
 	}
 }
 
