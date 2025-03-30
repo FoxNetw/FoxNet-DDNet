@@ -128,7 +128,7 @@ void CGameControllerDDRace::OnPlayerConnect(CPlayer *pPlayer)
 	if(!Server()->ClientPrevIngame(ClientId))
 	{
 		IServer::CClientInfo Info;
-		char PlayerInfo[512] = "";
+		char PlayerInfo[512] = " (No Client Info)";
 		int StrLength = 0;
 		if(Server()->GetClientInfo(ClientId, &Info) && Info.m_GotDDNetVersion)
 		{
