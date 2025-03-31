@@ -432,10 +432,9 @@ TEST_F(TeeHistorian, Auth)
 		0x01,
 		0x40, // FINISH
 	};
-	m_TH.RecordAuthInitial(0, AUTHED_OWNER, "owner");
-	m_TH.RecordAuthInitial(1, AUTHED_ADMIN, "default_admin");
-	m_TH.RecordAuthLogin(2, AUTHED_MOD, "foobar");
-	m_TH.RecordAuthLogin(3, AUTHED_HELPER, "help");
+	m_TH.RecordAuthInitial(0, AUTHED_ADMIN, "default_admin");
+	m_TH.RecordAuthLogin(1, AUTHED_MOD, "foobar");
+	m_TH.RecordAuthLogin(2, AUTHED_HELPER, "help");
 	m_TH.RecordAuthLogout(1);
 	Finish();
 	Expect(EXPECTED, sizeof(EXPECTED));
