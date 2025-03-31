@@ -777,7 +777,7 @@ void CGameContext::ConTeleport(IConsole::IResult *pResult, void *pUserData)
 		{
 			vec2 Target = vec2(TeleChr->Core()->m_Input.m_TargetX, TeleChr->Core()->m_Input.m_TargetY);
 			Pos = TeleToChr->GetPlayer()->m_CameraInfo.ConvertTargetToWorld(TeleChr->GetPos(), Target);
-			if(TeleTo == Tele)
+			if(TeleTo == Tele) // If the player is teleporting himself to himself use cursor pos
 				Pos = TeleToChr->GetPlayer()->GetCharacter()->GetCursorPos(Tele);
 		}
 
@@ -1380,7 +1380,6 @@ void CGameContext::ConTelekinesisImmunity(IConsole::IResult *pResult, void *pUse
 	{
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", "Immune to Telekinesis");
 		if(g_Config.m_SvCommandOutput)
-
 			pSelf->SendBroadcast("<< You are Immunte to Telekinesis! >>", Victim);
 	}
 	else
@@ -1755,7 +1754,6 @@ void CGameContext::ConDisallowedNames(IConsole::IResult *pResult, void *pUserDat
 void CGameContext::DisallowedNames(const char *Needle, bool Remove)
 {
 	// Wonky wonky code but copied
-
 	char aBuf[512];
 	str_format(aBuf, sizeof(aBuf), "couldn't find \"%s\"", Needle);
 
