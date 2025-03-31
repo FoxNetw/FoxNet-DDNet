@@ -3835,42 +3835,43 @@ void CGameContext::RegisterDDRaceCommands()
 	Console()->Register("vote_no", "", CFGFLAG_SERVER, ConVoteNo, this, "Same as \"vote no\"");
 	Console()->Register("save_dry", "", CFGFLAG_SERVER, ConDrySave, this, "Dump the current savestring");
 	Console()->Register("dump_log", "?i[seconds]", CFGFLAG_SERVER, ConDumpLog, this, "Show logs of the last i seconds");
-// FoxNet
-Console()->Register("explosiongun", "?v[id]", CFGFLAG_SERVER, ConExplosionGun, this, "Gives you explosion gun");
-Console()->Register("headitem", "i[type] ?v[id]", CFGFLAG_SERVER, ConHeadItem, this, "Toggles an entity ontop of a player (id)");
 
-Console()->Register("telekinesis_immunity", "?v[id]", CFGFLAG_SERVER, ConTelekinesisImmunity, this, "Makes player (id) immunte to telekinesis");
-Console()->Register("telekinesis", "?v[id]", CFGFLAG_SERVER, ConTelekinesis, this, "Gives/Takes telekinses to player (id)");
+	// FoxNet
+	Console()->Register("explosiongun", "?v[id]", CFGFLAG_SERVER, ConExplosionGun, this, "Gives you explosion gun");
+	Console()->Register("headitem", "i[type] ?v[id]", CFGFLAG_SERVER, ConHeadItem, this, "Toggles an entity ontop of a player (id)");
 
-Console()->Register("heartgun", "?v[id]", CFGFLAG_SERVER, ConHeartGun, this, "Gives/Takes telekinses to player (id)");
+	Console()->Register("telekinesis_immunity", "?v[id]", CFGFLAG_SERVER, ConTelekinesisImmunity, this, "Makes player (id) immunte to telekinesis");
+	Console()->Register("telekinesis", "?v[id]", CFGFLAG_SERVER, ConTelekinesis, this, "Gives/Takes telekinses to player (id)");
 
-Console()->Register("playsound", "?v[id]", CFGFLAG_SERVER, ConPlaySoundGlobal, this, "Plays a Sound Globally (use \"sounds\" to see a list)");
-Console()->Register("sounds", "", CFGFLAG_SERVER, ConListSounds, this, "List Available Sounds");
+	Console()->Register("heartgun", "?v[id]", CFGFLAG_SERVER, ConHeartGun, this, "Gives/Takes telekinses to player (id)");
 
-Console()->Register("set_player_name", "v[id] s[name]", CFGFLAG_SERVER, ConSetPlayerName, this, "Set a players (id) Name");
-Console()->Register("set_player_clan", "v[id] s[clan]", CFGFLAG_SERVER, ConSetPlayerClan, this, "Set a players (id) Clan");
-Console()->Register("set_player_skin", "v[id] s[skin]", CFGFLAG_SERVER, ConSetPlayerSkin, this, "Set a players (id) Skin");
-Console()->Register("set_player_custom_color", "v[id] i[int]", CFGFLAG_SERVER, ConSetPlayerCustomColor, this, "Whether a player (id) uses custom color (1 = true | 0 = false)");
-Console()->Register("set_player_color_body", "v[id] i[color]", CFGFLAG_SERVER, ConSetPlayerColorBody, this, "Set a players (id) Body Color");
-Console()->Register("set_player_color_feet", "v[id] i[color]", CFGFLAG_SERVER, ConSetPlayerColorFeet, this, "Set a players (id) Feet Color");
-Console()->Register("set_player_afk", "v[id] ?i[afk]", CFGFLAG_SERVER, ConSetPlayerAfk, this, "Set a players (id) afk status");
+	Console()->Register("playsound", "?v[id]", CFGFLAG_SERVER, ConPlaySoundGlobal, this, "Plays a Sound Globally (use \"sounds\" to see a list)");
+	Console()->Register("sounds", "", CFGFLAG_SERVER, ConListSounds, this, "List Available Sounds");
 
-Console()->Register("set_ability", "v[id] i[ability]", CFGFLAG_SERVER, ConSetAbility, this, "Set a players (id) Ability");
+	Console()->Register("set_player_name", "v[id] s[name]", CFGFLAG_SERVER, ConSetPlayerName, this, "Set a players (id) Name");
+	Console()->Register("set_player_clan", "v[id] s[clan]", CFGFLAG_SERVER, ConSetPlayerClan, this, "Set a players (id) Clan");
+	Console()->Register("set_player_skin", "v[id] s[skin]", CFGFLAG_SERVER, ConSetPlayerSkin, this, "Set a players (id) Skin");
+	Console()->Register("set_player_custom_color", "v[id] i[int]", CFGFLAG_SERVER, ConSetPlayerCustomColor, this, "Whether a player (id) uses custom color (1 = true | 0 = false)");
+	Console()->Register("set_player_color_body", "v[id] i[color]", CFGFLAG_SERVER, ConSetPlayerColorBody, this, "Set a players (id) Body Color");
+	Console()->Register("set_player_color_feet", "v[id] i[color]", CFGFLAG_SERVER, ConSetPlayerColorFeet, this, "Set a players (id) Feet Color");
+	Console()->Register("set_player_afk", "v[id] ?i[afk]", CFGFLAG_SERVER, ConSetPlayerAfk, this, "Set a players (id) afk status");
 
-Console()->Register("invisible", "?v[id]", CFGFLAG_SERVER, ConInvisible, this, "Makes a players (id) Invisible");
-Console()->Register("rainbow", "?v[id]", CFGFLAG_SERVER, ConRainbow, this, "Makes a players (id) Rainbow");
-Console()->Register("rainbow_speed", "?v[id] ?i[speed]", CFGFLAG_SERVER, ConRainbowSpeed, this, "Makes a players (id) Rainbow");
+	Console()->Register("set_ability", "v[id] i[ability]", CFGFLAG_SERVER, ConSetAbility, this, "Set a players (id) Ability");
 
-Console()->Register("next_ban_sync", "", CFGFLAG_SERVER, ConNextBanSync, this, "When the next ban sync is happening");
+	Console()->Register("invisible", "?v[id]", CFGFLAG_SERVER, ConInvisible, this, "Makes a players (id) Invisible");
+	Console()->Register("rainbow", "?v[id]", CFGFLAG_SERVER, ConRainbow, this, "Makes a players (id) Rainbow");
+	Console()->Register("rainbow_speed", "?v[id] ?i[speed]", CFGFLAG_SERVER, ConRainbowSpeed, this, "Makes a players (id) Rainbow");
 
-Console()->Register("disallow_string", "?s[name] ?i[remove]", CFGFLAG_SERVER, ConDisallowedStrings, this, "Add or remove strings to add to the auto ban Ingame Chat check");
-Console()->Register("disallow_name", "?s[name] ?i[remove]", CFGFLAG_SERVER, ConDisallowedNames, this, "Add or remove strings to add to the auto ban Name check");
+	Console()->Register("next_ban_sync", "", CFGFLAG_SERVER, ConNextBanSync, this, "When the next ban sync is happening");
 
-Console()->Register("set_extra_ping", "v[id] i[ping]", CFGFLAG_SERVER, ConSetExtraPing, this, "Set a players (id) Extra Ping");
-Console()->Register("confetti_gun", "v[id]", CFGFLAG_SERVER, ConSetConfettiGun, this, "Set a players (id) Gun to shoot confetti");
-Console()->Register("set_emote_gun", "v[id] i[type]", CFGFLAG_SERVER, ConSetEmoticonGun, this, "Set a players (id) Emoticon Gun");
+	Console()->Register("disallow_string", "?s[name] ?i[remove]", CFGFLAG_SERVER, ConDisallowedStrings, this, "Add or remove strings to add to the auto ban Ingame Chat check");
+	Console()->Register("disallow_name", "?s[name] ?i[remove]", CFGFLAG_SERVER, ConDisallowedNames, this, "Add or remove strings to add to the auto ban Name check");
 
-Console()->Register("kill_lock", "v[id]", CFGFLAG_SERVER, ConSetKillLock, this, "Make a player (id) not be able to kill");
+	Console()->Register("set_extra_ping", "v[id] i[ping]", CFGFLAG_SERVER, ConSetExtraPing, this, "Set a players (id) Extra Ping");
+	Console()->Register("confetti_gun", "v[id]", CFGFLAG_SERVER, ConSetConfettiGun, this, "Set a players (id) Gun to shoot confetti");
+	Console()->Register("set_emote_gun", "v[id] i[type]", CFGFLAG_SERVER, ConSetEmoticonGun, this, "Set a players (id) Emoticon Gun");
+
+	Console()->Register("kill_lock", "v[id]", CFGFLAG_SERVER, ConSetKillLock, this, "Make a player (id) not be able to kill");
 }
 
 void CGameContext::RegisterChatCommands()
