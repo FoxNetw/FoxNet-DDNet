@@ -347,7 +347,6 @@ void CPlayer::Snap(int SnappingClient)
 
 	int SnappingClientVersion = GameServer()->GetClientVersion(SnappingClient);
 	int Latency = SnappingClient == SERVER_DEMO_CLIENT ? m_Latency.m_Min : GameServer()->m_apPlayers[SnappingClient]->m_aCurLatency[m_ClientId];
-	Latency += GameServer()->m_apPlayers[SnappingClient]->m_ExtraPing;
 
 	int Score;
 	// This is the time sent to the player while ingame (do not confuse to the one reported to the master server).
@@ -378,7 +377,7 @@ void CPlayer::Snap(int SnappingClient)
 		if(!pPlayerInfo)
 			return;
 
-		pPlayerInfo->m_Latency = Latency;
+		pPlayerInfo->m_Latency = Latency + GameServer()->m_apPlayers[SnappingClient]->m_ExtraPing;
 		pPlayerInfo->m_Score = Score;
 		pPlayerInfo->m_Local = (int)(m_ClientId == SnappingClient && (m_Paused != PAUSE_PAUSED || SnappingClientVersion >= VERSION_DDNET_OLD));
 		pPlayerInfo->m_ClientId = id;
@@ -403,7 +402,7 @@ void CPlayer::Snap(int SnappingClient)
 
 		// Times are in milliseconds for 0.7
 		pPlayerInfo->m_Score = m_Score.has_value() ? GameServer()->Score()->PlayerData(m_ClientId)->m_BestTime * 1000 : -1;
-		pPlayerInfo->m_Latency = Latency;
+		pPlayerInfo->m_Latency = Latency + GameServer()->m_apPlayers[SnappingClient]->m_ExtraPing;
 	}
 
 	if(m_ClientId == SnappingClient && (m_Team == TEAM_SPECTATORS || m_Paused))
