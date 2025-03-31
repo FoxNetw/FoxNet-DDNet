@@ -272,6 +272,9 @@ void ToggleSpecPause(IConsole::IResult *pResult, void *pUserData, int PauseType)
 	if(!pPlayer)
 		return;
 
+	if(pPlayer->m_IsAfkSpec > 0)
+		return;
+
 	int PauseState = pPlayer->IsPaused();
 	if(PauseState > 0)
 	{
@@ -347,9 +350,6 @@ void CGameContext::ConToggleSpec(IConsole::IResult *pResult, void *pUserData)
 	if(!pPlayer)
 		return;
 
-	if(pPlayer->m_IsAfkSpec == 0)
-		return;
-
 	int PauseType = g_Config.m_SvPauseable ? CPlayer::PAUSE_SPEC : CPlayer::PAUSE_PAUSED;
 
 	if(pPlayer->GetCharacter())
@@ -372,8 +372,7 @@ void CGameContext::ConTogglePause(IConsole::IResult *pResult, void *pUserData)
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientId];
 
-	if(pPlayer->m_IsAfkSpec == 0)
-		ToggleSpecPause(pResult, pUserData, CPlayer::PAUSE_PAUSED);
+	ToggleSpecPause(pResult, pUserData, CPlayer::PAUSE_PAUSED);
 }
 
 void CGameContext::ConTogglePauseVoted(IConsole::IResult *pResult, void *pUserData)
