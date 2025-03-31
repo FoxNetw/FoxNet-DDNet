@@ -201,7 +201,9 @@ public:
 
 		int ConsoleAccessLevel() const
 		{
-			return m_Authed == AUTHED_ADMIN ? IConsole::ACCESS_LEVEL_ADMIN : m_Authed == AUTHED_MOD ? IConsole::ACCESS_LEVEL_MOD : IConsole::ACCESS_LEVEL_HELPER;
+			return m_Authed == AUTHED_OWNER ? IConsole::ACCESS_LEVEL_OWNER : AUTHED_ADMIN ? IConsole::ACCESS_LEVEL_ADMIN :
+										 m_Authed == AUTHED_MOD ? IConsole::ACCESS_LEVEL_MOD :
+													  IConsole::ACCESS_LEVEL_HELPER;
 		}
 	};
 

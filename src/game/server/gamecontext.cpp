@@ -2021,10 +2021,10 @@ void *CGameContext::PreProcessMsg(int *pMsgId, CUnpacker *pUnpacker, int ClientI
 			if(pMsg7->m_Force)
 			{
 				str_format(s_aRawMsg, sizeof(s_aRawMsg), "force_vote \"%s\" \"%s\" \"%s\"", pMsg7->m_pType, pMsg7->m_pValue, pMsg7->m_pReason);
-				Console()->SetAccessLevel(Authed == AUTHED_ADMIN ? IConsole::ACCESS_LEVEL_ADMIN : Authed == AUTHED_MOD ? IConsole::ACCESS_LEVEL_MOD :
-																	 IConsole::ACCESS_LEVEL_HELPER);
+				Console()->SetAccessLevel(Authed == AUTHED_OWNER ? IConsole::ACCESS_LEVEL_OWNER : Authed == AUTHED_ADMIN ? IConsole::ACCESS_LEVEL_ADMIN :
+													  Authed == AUTHED_MOD ? IConsole::ACCESS_LEVEL_MOD : IConsole::ACCESS_LEVEL_HELPER);
 				Console()->ExecuteLine(s_aRawMsg, ClientId, false);
-				Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_ADMIN);
+				Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_OWNER);
 				return nullptr;
 			}
 
@@ -2272,8 +2272,8 @@ void CGameContext::OnSayNetMessage(const CNetMsg_Cl_Say *pMsg, int ClientId, con
 			Console()->SetFlagMask(CFGFLAG_CHAT);
 			int Authed = Server()->GetAuthedState(ClientId);
 			if(Authed)
-				Console()->SetAccessLevel(Authed == AUTHED_ADMIN ? IConsole::ACCESS_LEVEL_ADMIN : Authed == AUTHED_MOD ? IConsole::ACCESS_LEVEL_MOD :
-																	 IConsole::ACCESS_LEVEL_HELPER);
+				Console()->SetAccessLevel(Authed == AUTHED_OWNER ? IConsole::ACCESS_LEVEL_OWNER : Authed == AUTHED_ADMIN ? IConsole::ACCESS_LEVEL_ADMIN :
+													  Authed == AUTHED_MOD ? IConsole::ACCESS_LEVEL_MOD : IConsole::ACCESS_LEVEL_HELPER);
 			else
 				Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_USER);
 
@@ -2288,7 +2288,7 @@ void CGameContext::OnSayNetMessage(const CNetMsg_Cl_Say *pMsg, int ClientId, con
 			str_format(aBuf, sizeof(aBuf), "%d used %s", ClientId, pMsg->m_pMessage);
 			Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "chat-command", aBuf);
 
-			Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_ADMIN);
+			Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_OWNER);
 			Console()->SetFlagMask(CFGFLAG_SERVER);
 		}
 	}
@@ -2361,7 +2361,7 @@ void CGameContext::OnCallVoteNetMessage(const CNetMsg_Cl_CallVote *pMsg, int Cli
 
 		if(!pOption)
 		{
-			if(Authed != AUTHED_ADMIN) // allow admins to call any vote they want
+			if(Authed < AUTHED_ADMIN) // allow admins to call any vote they want
 			{
 				str_format(aChatmsg, sizeof(aChatmsg), "'%s' isn't an option on this server", pMsg->m_pValue);
 				SendChatTarget(ClientId, aChatmsg);
@@ -5712,4 +5712,16 @@ void CGameContext::SendEmote(int ClientId, int Type)
 
 	GetPlayerChar(ClientId)->SetEmote(EmoteType, Server()->Tick() + 2 * Server()->TickSpeed());
 	SendEmoticon(ClientId, Type, -1);
+}
+
+int CGameContext::GetVictim(IConsole::IResult *pResult, void *pUserData)
+{
+	int Victim = pResult->m_ClientId;
+	if(pResult->NumArguments() > 1)
+		Victim = pResult->GetVictim();
+	if(pResult->GetInteger(0) == -1)
+		Victim = pResult->m_ClientId;
+
+	return Victim;
+
 }

@@ -726,7 +726,7 @@ void CConsole::ConCommandStatus(IResult *pResult, void *pUser)
 
 	for(CCommand *pCommand = pConsole->m_pFirstCommand; pCommand; pCommand = pCommand->m_pNext)
 	{
-		if(pCommand->m_Flags & pConsole->m_FlagMask && pCommand->GetAccessLevel() >= clamp(pResult->GetInteger(0), (int)ACCESS_LEVEL_ADMIN, (int)ACCESS_LEVEL_USER))
+		if(pCommand->m_Flags & pConsole->m_FlagMask && pCommand->GetAccessLevel() >= clamp(pResult->GetInteger(0), (int)ACCESS_LEVEL_OWNER, (int)ACCESS_LEVEL_USER))
 		{
 			int Length = str_length(pCommand->m_pName);
 			if(Used + Length + 2 < (int)(sizeof(aBuf)))
@@ -777,7 +777,7 @@ void CConsole::TraverseChain(FCommandCallback *ppfnCallback, void **ppUserData)
 CConsole::CConsole(int FlagMask)
 {
 	m_FlagMask = FlagMask;
-	m_AccessLevel = ACCESS_LEVEL_ADMIN;
+	m_AccessLevel = ACCESS_LEVEL_OWNER;
 	m_pRecycleList = nullptr;
 	m_TempCommands.Reset();
 	m_StoreCommands = true;

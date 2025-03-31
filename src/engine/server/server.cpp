@@ -254,7 +254,7 @@ CServer::CServer()
 	m_aMapDownloadUrl[0] = '\0';
 
 	m_RconClientId = IServer::RCON_CID_SERV;
-	m_RconAuthLevel = AUTHED_ADMIN;
+	m_RconAuthLevel = AUTHED_OWNER;
 
 	m_ServerInfoFirstRequest = 0;
 	m_ServerInfoNumRequests = 0;
@@ -1382,7 +1382,7 @@ void CServer::SendRconLogLine(int ClientId, const CLogMessage *pMessage)
 	{
 		for(int i = 0; i < MAX_CLIENTS; i++)
 		{
-			if(m_aClients[i].m_State != CClient::STATE_EMPTY && m_aClients[i].m_Authed >= AUTHED_ADMIN)
+			if(m_aClients[i].m_State != CClient::STATE_EMPTY && m_aClients[i].m_Authed >= AUTHED_OWNER)
 				SendRconLine(i, m_aClients[i].m_ShowIps ? pLine : pLineWithoutIps);
 		}
 	}
@@ -1867,9 +1867,9 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 						CLogScope Scope(&Logger);
 						Console()->ExecuteLineFlag(pCmd, CFGFLAG_SERVER, ClientId);
 					}
-					Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_ADMIN);
+					Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_OWNER);
 					m_RconClientId = IServer::RCON_CID_SERV;
-					m_RconAuthLevel = AUTHED_ADMIN;
+					m_RconAuthLevel = AUTHED_OWNER;
 				}
 			}
 		}
@@ -1895,7 +1895,9 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 
 			if(!pName[0])
 			{
-				if(m_AuthManager.CheckKey((KeySlot = m_AuthManager.DefaultKey(AUTHED_ADMIN)), pPw))
+				if(m_AuthManager.CheckKey((KeySlot = m_AuthManager.DefaultKey(AUTHED_OWNER)), pPw))
+					AuthLevel = AUTHED_OWNER;
+				else if(m_AuthManager.CheckKey((KeySlot = m_AuthManager.DefaultKey(AUTHED_ADMIN)), pPw))
 					AuthLevel = AUTHED_ADMIN;
 				else if(m_AuthManager.CheckKey((KeySlot = m_AuthManager.DefaultKey(AUTHED_MOD)), pPw))
 					AuthLevel = AUTHED_MOD;
@@ -1943,13 +1945,19 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 					const char *pIdent = m_AuthManager.KeyIdent(KeySlot);
 					switch(AuthLevel)
 					{
-					case AUTHED_ADMIN:
+					case AUTHED_OWNER:
 					{
-						SendRconLine(ClientId, "Admin authentication successful. Full remote console access granted.");
-						str_format(aBuf, sizeof(aBuf), "ClientId=%d authed with key=%s (admin)", ClientId, pIdent);
+						SendRconLine(ClientId, "Owner authentication successful. Full remote console access granted.");
+						str_format(aBuf, sizeof(aBuf), "ClientId=%d authed with key=%s (owner)", ClientId, pIdent);
 
 						m_aClients[ClientId].m_AuthHidden = true;
 						m_aClients[ClientId].m_ShowIps = true;
+						break;
+					}
+					case AUTHED_ADMIN:
+					{
+						SendRconLine(ClientId, "Admin authentication successful. Almost Full remote console access granted.");
+						str_format(aBuf, sizeof(aBuf), "ClientId=%d authed with key=%s (admin)", ClientId, pIdent);
 						break;
 					}
 					case AUTHED_MOD:
@@ -3312,9 +3320,10 @@ void CServer::ConStatus(IConsole::IResult *pResult, void *pUser)
 			aAuthStr[0] = '\0';
 			if(pThis->m_aClients[i].m_AuthKey >= 0)
 			{
-				const char *pAuthStr = pThis->m_aClients[i].m_Authed == AUTHED_ADMIN ? "(Admin)" :
+				const char *pAuthStr = pThis->m_aClients[i].m_Authed == AUTHED_OWNER ? "(Owner)" : 
+												pThis->m_aClients[i].m_Authed == AUTHED_ADMIN ? "(Admin)" :
 												       pThis->m_aClients[i].m_Authed == AUTHED_MOD ? "(Mod)" :
-																		     pThis->m_aClients[i].m_Authed == AUTHED_HELPER ? "(Helper)" : "";
+																pThis->m_aClients[i].m_Authed == AUTHED_HELPER ? "(Helper)" : "";
 
 				str_format(aAuthStr, sizeof(aAuthStr), " key=%s %s", pThis->m_AuthManager.KeyIdent(pThis->m_aClients[i].m_AuthKey), pAuthStr);
 			}
@@ -3339,7 +3348,9 @@ void CServer::ConStatus(IConsole::IResult *pResult, void *pUser)
 static int GetAuthLevel(const char *pLevel)
 {
 	int Level = -1;
-	if(!str_comp_nocase(pLevel, "admin"))
+	if(!str_comp_nocase(pLevel, "owner"))
+		Level = AUTHED_OWNER;
+	else if(!str_comp_nocase(pLevel, "admin"))
 		Level = AUTHED_ADMIN;
 	else if(str_startswith(pLevel, "mod"))
 		Level = AUTHED_MOD;
@@ -3547,7 +3558,7 @@ void CServer::ConAuthRemove(IConsole::IResult *pResult, void *pUser)
 
 static void ListKeysCallback(const char *pIdent, int Level, void *pUser)
 {
-	static const char LSTRING[][10] = {"helper", "moderator", "admin"};
+	static const char LSTRING[][10] = {"helper", "moderator", "admin", "owner"};
 
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "%s %s", pIdent, LSTRING[Level - 1]);
@@ -3974,7 +3985,7 @@ void CServer::ConchainRconPasswordChangeGeneric(int Level, const char *pCurrent,
 void CServer::ConchainRconPasswordChange(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
 {
 	CServer *pThis = static_cast<CServer *>(pUserData);
-	pThis->ConchainRconPasswordChangeGeneric(AUTHED_ADMIN, pThis->Config()->m_SvRconPassword, pResult);
+	pThis->ConchainRconPasswordChangeGeneric(AUTHED_OWNER, pThis->Config()->m_SvRconPassword, pResult);
 	pfnCallback(pResult, pCallbackUserData);
 }
 

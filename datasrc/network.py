@@ -47,7 +47,7 @@ GunTypes = ["UNFREEZE", "EXPLOSIVE", "FREEZE", "EXPFREEZE"]
 Emoticons = ["OOP", "EXCLAMATION", "HEARTS", "DROP", "DOTDOT", "MUSIC", "SORRY", "GHOST", "SUSHI", "SPLATTEE", "DEVILTEE", "ZOMG", "ZZZ", "WTF", "EYES", "QUESTION"]
 
 Powerups = ["HEALTH", "ARMOR", "WEAPON", "NINJA", "ARMOR_SHOTGUN", "ARMOR_GRENADE", "ARMOR_NINJA", "ARMOR_LASER"]
-Authed = ["NO", "HELPER", "MOD", "ADMIN"]
+Authed = ["NO", "HELPER", "MOD", "ADMIN", "OWNER"]
 EntityClasses = ["PROJECTILE", "DOOR", "DRAGGER_WEAK", "DRAGGER_NORMAL", "DRAGGER_STRONG", "GUN_NORMAL", "GUN_EXPLOSIVE", "GUN_FREEZE", "GUN_UNFREEZE", "LIGHT", "PICKUP"]
 Teams = ["ALL", "SPECTATORS", "RED", "BLUE", "WHISPER_SEND", "WHISPER_RECV"]
 
@@ -264,7 +264,7 @@ Objects = [
 
 	NetObjectEx("DDNetPlayer", "player@netobj.ddnet.tw", [
 		NetIntAny("m_Flags"),
-		NetIntRange("m_AuthLevel", "AUTHED_NO", "AUTHED_ADMIN"),
+		NetIntRange("m_AuthLevel", "AUTHED_NO", "AUTHED_OWNER"),
 	]),
 
 	NetObjectEx("GameInfoEx", "gameinfo@netobj.ddnet.tw", [

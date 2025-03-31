@@ -38,7 +38,7 @@ void CAuthManager::Init()
 	if(m_vKeys.size() == NumDefaultKeys && !g_Config.m_SvRconPassword[0])
 	{
 		secure_random_password(g_Config.m_SvRconPassword, sizeof(g_Config.m_SvRconPassword), 6);
-		AddDefaultKey(AUTHED_ADMIN, g_Config.m_SvRconPassword);
+		AddDefaultKey(AUTHED_OWNER, g_Config.m_SvRconPassword);
 		m_Generated = true;
 	}
 }
@@ -101,9 +101,9 @@ bool CAuthManager::CheckKey(int Slot, const char *pPw) const
 
 int CAuthManager::DefaultKey(int AuthLevel) const
 {
-	if(AuthLevel < 0 || AuthLevel > AUTHED_ADMIN)
+	if(AuthLevel < 0 || AuthLevel > AUTHED_OWNER)
 		return 0;
-	return m_aDefault[AUTHED_ADMIN - AuthLevel];
+	return m_aDefault[AUTHED_OWNER - AuthLevel];
 }
 
 int CAuthManager::KeyLevel(int Slot) const
@@ -155,11 +155,11 @@ void CAuthManager::ListKeys(FListCallback pfnListCallback, void *pUser)
 
 void CAuthManager::AddDefaultKey(int Level, const char *pPw)
 {
-	if(Level < AUTHED_HELPER || Level > AUTHED_ADMIN)
+	if(Level < AUTHED_HELPER || Level > AUTHED_OWNER)
 		return;
 
 	static const char s_aaIdents[3][sizeof(HELPER_IDENT)] = {ADMIN_IDENT, MOD_IDENT, HELPER_IDENT};
-	int Index = AUTHED_ADMIN - Level;
+	int Index = AUTHED_OWNER - Level;
 	if(m_aDefault[Index] >= 0)
 		return; // already exists
 	m_aDefault[Index] = AddKey(s_aaIdents[Index], pPw, Level);

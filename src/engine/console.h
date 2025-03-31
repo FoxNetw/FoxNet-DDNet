@@ -25,7 +25,8 @@ public:
 		OUTPUT_LEVEL_ADDINFO,
 		OUTPUT_LEVEL_DEBUG,
 
-		ACCESS_LEVEL_ADMIN = 0,
+		ACCESS_LEVEL_OWNER = 0,
+		ACCESS_LEVEL_ADMIN,
 		ACCESS_LEVEL_MOD,
 		ACCESS_LEVEL_HELPER,
 		ACCESS_LEVEL_USER,
@@ -78,7 +79,7 @@ public:
 		int m_AccessLevel;
 
 	public:
-		CCommandInfo() { m_AccessLevel = ACCESS_LEVEL_ADMIN; }
+		CCommandInfo() { m_AccessLevel = ACCESS_LEVEL_ADMIN; } // Access level for everything will still be admin by default, some commands require you to be owner though
 		virtual ~CCommandInfo() {}
 		const char *m_pName;
 		const char *m_pHelp;
