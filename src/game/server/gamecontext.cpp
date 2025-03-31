@@ -5184,6 +5184,7 @@ void CGameContext::FoxNetTick()
 	static char OldName[32];
 	if(str_comp(g_Config.m_SvGameTypeName, OldName)) // Reload if config is changed
 	{
+		m_pController->m_pGameType = g_Config.m_SvGameTypeName;
 		Server()->UpdateServerInfo(true);
 		str_copy(OldName, g_Config.m_SvGameTypeName);
 	}
