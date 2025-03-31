@@ -369,9 +369,6 @@ void CGameContext::ConToggleSpecVoted(IConsole::IResult *pResult, void *pUserDat
 
 void CGameContext::ConTogglePause(IConsole::IResult *pResult, void *pUserData)
 {
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientId];
-
 	ToggleSpecPause(pResult, pUserData, CPlayer::PAUSE_PAUSED);
 }
 

@@ -1078,7 +1078,7 @@ void CPlayer::FoxNetTick()
 
 void CPlayer::AfkSpectateTick()
 {
-	if(g_Config.m_SvForcePauseAfk)
+	if(g_Config.m_SvForcePauseAfk > 0)
 	{
 		if(m_SpecAfk)
 		{
