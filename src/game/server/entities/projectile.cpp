@@ -250,15 +250,14 @@ void CProjectile::Tick()
 			}
 
 			if(EmoteGun && pTargetChr)
-			{
 				GameServer()->SendEmote(pTargetChr->GetPlayer()->GetCid(), EmoteGun);
-			}
-			if(!EmoteGun ||	(!GameServer()->GetPlayerChar(m_Owner)->GetPlayer()->m_ConfettiGun && !pTargetChr))
-			GameServer()->CreateDamageInd(ActualPos, -std::atan2(m_Direction.x, m_Direction.y), 10, (m_Owner != -1) ? TeamMask : CClientMask().set());
 
-		
+			bool CreateDamanimation = true;
+			if((EmoteGun && pTargetChr) || GameServer()->GetPlayerChar(m_Owner)->GetPlayer()->m_ConfettiGun)
+				CreateDamanimation = false;
 
-
+			if(CreateDamanimation)
+				GameServer()->CreateDamageInd(ActualPos, -std::atan2(m_Direction.x, m_Direction.y), 10, (m_Owner != -1) ? TeamMask : CClientMask().set());
 
 			m_MarkedForDestroy = true;
 			return;
