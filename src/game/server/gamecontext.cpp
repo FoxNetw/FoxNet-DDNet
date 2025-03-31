@@ -5713,15 +5713,3 @@ void CGameContext::SendEmote(int ClientId, int Type)
 	GetPlayerChar(ClientId)->SetEmote(EmoteType, Server()->Tick() + 2 * Server()->TickSpeed());
 	SendEmoticon(ClientId, Type, -1);
 }
-
-int CGameContext::GetVictim(IConsole::IResult *pResult, void *pUserData)
-{
-	int Victim = pResult->m_ClientId;
-	if(pResult->NumArguments() > 1)
-		Victim = pResult->GetVictim();
-	if(pResult->GetInteger(0) == -1)
-		Victim = pResult->m_ClientId;
-
-	return Victim;
-
-}
