@@ -2912,9 +2912,10 @@ void CGameContext::OnKillNetMessage(const CNetMsg_Cl_Kill *pMsg, int ClientId)
 		return;
 	}
 
-	if(pPlayer->m_SpecAfk > 0) // FoxNet
+	if(pPlayer->m_IsAfkSpec > 0) // FoxNet
 	{
-		pPlayer->m_SpecAfk = 0;
+		pPlayer->m_IsAfkSpec = 0;
+		pPlayer->SetInitialAfk(false);
 		pPlayer->SetAfk(false);
 	}
 
