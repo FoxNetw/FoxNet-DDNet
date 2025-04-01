@@ -1885,10 +1885,10 @@ void CGameContext::RandomMapVote()
 		MapVotes.push_back(pOption->m_aCommand);
 	}
 	std::random_device rd;
-	std::uniform_int_distribution<int> dist(0, MapVotes.size());
+	std::uniform_int_distribution<int> dist(0, (int)MapVotes.size());
 	int Random = dist(rd);
 
-	for(int Number = 0; Number < MapVotes.size(); Number++)
+	for(int Number = 0; Number < (int)MapVotes.size(); Number++)
 	{
 		if(m_NumVoteOptions <= 1)
 		{
@@ -1900,7 +1900,7 @@ void CGameContext::RandomMapVote()
 			Console()->ExecuteLine(MapVotes.at(Number));
 			break;
 		}
-		else if(Number == MapVotes.size())
+		else if(Number == (int)MapVotes.size())
 		{
 			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", "Random Vote Failed");
 			break;
