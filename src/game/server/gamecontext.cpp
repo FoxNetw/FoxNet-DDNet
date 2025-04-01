@@ -2907,13 +2907,22 @@ void CGameContext::OnKillNetMessage(const CNetMsg_Cl_Kill *pMsg, int ClientId)
 	CPlayer *pPlayer = m_apPlayers[ClientId];
 
 	if(pPlayer->m_KillLocked) // FoxNet
+	{
+		SendChatTarget(ClientId, "Your ability to Kill is currently revoked");
 		return;
+	}
+
+	if(pPlayer->m_SpecAfk > 0) // FoxNet
+	{
+		pPlayer->m_SpecAfk = 0;
+		pPlayer->SetAfk(false);
+	}
 
 	if(pPlayer->m_LastKill && pPlayer->m_LastKill + Server()->TickSpeed() * g_Config.m_SvKillDelay > Server()->Tick())
 		return;
 	if(pPlayer->IsPaused())
 		return;
-
+	
 	CCharacter *pChr = pPlayer->GetCharacter();
 	if(!pChr)
 		return;
