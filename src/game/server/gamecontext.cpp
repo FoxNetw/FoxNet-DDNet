@@ -2908,7 +2908,7 @@ void CGameContext::OnKillNetMessage(const CNetMsg_Cl_Kill *pMsg, int ClientId)
 
 	if(pPlayer->m_KillLocked) // FoxNet
 	{
-		SendChatTarget(ClientId, "Your ability to Kill is currently revoked");
+		SendChatTarget(ClientId, "Your ability to Kill is currently disabled");
 		return;
 	}
 
