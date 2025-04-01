@@ -45,3 +45,5 @@ MACRO_CONFIG_INT(SvAutoExplGun, fs_explgun, 0, 0, 1, CFGFLAG_SERVER | CFGFLAG_GA
 MACRO_CONFIG_INT(SvDisableFreeze, fs_disable_freeze, 0, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "enables the 'better version' of the explosion gun")
 MACRO_CONFIG_INT(SvFakeGrenade, fs_fake_grenade, 0, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "Grenade doesnt explode")
 MACRO_CONFIG_INT(SvWhisperLog, fs_whisper_log, 1, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "Log Whispers to Remote Console (Rcon)")
+
+MACRO_CONFIG_INT(SvRandomMapVoteOnStart, fs_random_map_vote_on_start, 1, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "Call a random map vote on server startup")

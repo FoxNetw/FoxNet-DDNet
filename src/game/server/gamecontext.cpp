@@ -3882,6 +3882,8 @@ void CGameContext::RegisterDDRaceCommands()
 	Console()->Register("set_emote_gun", "v[id] i[type]", CFGFLAG_SERVER, ConSetEmoticonGun, this, "Set a players (id) Emoticon Gun");
 
 	Console()->Register("kill_lock", "v[id]", CFGFLAG_SERVER, ConSetKillLock, this, "Make a player (id) not be able to kill");
+
+	Console()->Register("random_map_vote", "", CFGFLAG_SERVER, ConRandomMapVote, this, "Chooses a random map vote in the vote menu");
 }
 
 void CGameContext::RegisterChatCommands()

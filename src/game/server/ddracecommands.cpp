@@ -11,6 +11,8 @@
 #include <game/server/teams.h>
 
 #include <algorithm>
+#include <game/voting.h>
+#include <random>
 
 bool CheckClientId(int ClientId);
 
@@ -1863,4 +1865,45 @@ void CGameContext::ConSetKillLock(IConsole::IResult *pResult, void *pUserData)
 	char aBuf[128];
 	str_format(aBuf, sizeof(aBuf), "Set Kill Lock to %s for player %s", pChr->GetPlayer()->m_KillLocked ? "True" : "False", pSelf->Server()->ClientName(Victim));
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", aBuf);
+}
+
+void CGameContext::ConRandomMapVote(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	pSelf->RandomMapVote();
+}
+void CGameContext::RandomMapVote()
+{
+	int Count = 0;
+	std::vector<const char *> MapVotes;
+	MapVotes.clear();
+
+	for(CVoteOptionServer *pOption = m_pVoteOptionFirst; pOption; pOption = pOption->m_pNext, Count++)
+	{
+		if(!str_find(pOption->m_aCommand, "change_map"))
+			continue;
+		MapVotes.push_back(pOption->m_aCommand);
+	}
+	std::random_device rd;
+	std::uniform_int_distribution<int> dist(0, MapVotes.size());
+	int Random = dist(rd);
+
+	for(int Number = 0; Number < MapVotes.size(); Number++)
+	{
+		if(m_NumVoteOptions <= 1)
+		{
+			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", "No Votes to Randomize");
+			break;
+		}
+		else if(Number == Random && Random > 0 && str_find(MapVotes.at(Number), "change_map"))
+		{
+			Console()->ExecuteLine(MapVotes.at(Number));
+			break;
+		}
+		else if(Number == MapVotes.size())
+		{
+			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", "Random Vote Failed");
+			break;
+		}
+	}
 }

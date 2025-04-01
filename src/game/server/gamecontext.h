@@ -670,6 +670,9 @@ private: // FoxNet
 	static void ConSetEmoticonGun(IConsole::IResult *pResult, void *pUserData);
 	static void ConSetKillLock(IConsole::IResult *pResult, void *pUserData);
 
+	static void ConRandomMapVote(IConsole::IResult *pResult, void *pUserData);
+	void RandomMapVote();
+
 	void FoxNetTick();
 
 	void BanSync();
