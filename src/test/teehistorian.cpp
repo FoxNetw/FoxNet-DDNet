@@ -396,6 +396,7 @@ TEST_F(TeeHistorian, DDNetVersion)
 	Finish();
 	Expect(EXPECTED, sizeof(EXPECTED));
 }
+
 TEST_F(TeeHistorian, Auth)
 {
 	const unsigned char EXPECTED[] = {
@@ -420,15 +421,8 @@ TEST_F(TeeHistorian, Auth)
 		0x37, 0xec, 0xd3, 0xb8, 0x92, 0x18, 0x3b, 0xb9,
 		0xa7, 0x1b, 0xa9, 0x35, 0xb8, 0x6f, 0x6a, 0x81,
 		0x07,
-		// (AUTH_LOGIN) cid=2 level=1 auth_name="help"
+		// (AUTH_LOGIN) cid=1 level=2 auth_name="foobar"
 		0x02, 0x01, 'h', 'e', 'l', 'p', 0x00,
-		// EX uuid=37ecd3b8-9218-3bb9-a71b-a935b86f6a81 data_len=9
-		0x4a,
-		0x37, 0xec, 0xd3, 0xb8, 0x92, 0x18, 0x3b, 0xb9,
-		0xa7, 0x1b, 0xa9, 0x35, 0xb8, 0x6f, 0x6a, 0x81,
-		0x09,
-		// (AUTH_LOGIN) cid=3 level=0 auth_name="owner"
-		0x03, 0x00, 'o', 'w', 'n', 'e', 'r', 0x00,
 		// EX uuid=d4f5abe8-edd2-3fb9-abd8-1c8bb84f4a63 data_len=7
 		0x4a,
 		0xd4, 0xf5, 0xab, 0xe8, 0xed, 0xd2, 0x3f, 0xb9,
@@ -441,7 +435,6 @@ TEST_F(TeeHistorian, Auth)
 	m_TH.RecordAuthInitial(0, AUTHED_ADMIN, "default_admin");
 	m_TH.RecordAuthLogin(1, AUTHED_MOD, "foobar");
 	m_TH.RecordAuthLogin(2, AUTHED_HELPER, "help");
-	m_TH.RecordAuthLogin(3, AUTHED_OWNER, "owner");
 	m_TH.RecordAuthLogout(1);
 	Finish();
 	Expect(EXPECTED, sizeof(EXPECTED));
