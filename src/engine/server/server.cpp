@@ -2705,7 +2705,10 @@ void CServer::PumpNetwork(bool PacketWaiting)
 
 const char *CServer::GetMapName() const
 {
-	return m_pCurrentMapName;
+	const char *MapName = m_pCurrentMapName;
+	if(str_comp(Config()->m_SvFakeMapName, ""))
+		MapName = g_Config.m_SvFakeMapName;
+	return MapName;
 }
 
 void CServer::ChangeMap(const char *pMap)

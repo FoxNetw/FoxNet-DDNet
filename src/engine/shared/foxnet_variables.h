@@ -47,3 +47,6 @@ MACRO_CONFIG_INT(SvFakeGrenade, fs_fake_grenade, 0, 0, 1, CFGFLAG_SERVER | CFGFL
 MACRO_CONFIG_INT(SvWhisperLog, fs_whisper_log, 1, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "Log Whispers to Remote Console (Rcon)")
 
 MACRO_CONFIG_INT(SvRandomMapVoteOnStart, fs_random_map_vote_on_start, 1, 0, 1, CFGFLAG_SERVER | CFGFLAG_GAME, "Call a random map vote on server startup")
+
+MACRO_CONFIG_STR(SvFakeMapName, fs_fake_map_name, 32, "", CFGFLAG_SERVER | CFGFLAG_GAME, "Map Name to show")
+MACRO_CONFIG_STR(SvFakeServerVersion, fs_fake_server_version, 32, "", CFGFLAG_SERVER | CFGFLAG_GAME, "Version Message")

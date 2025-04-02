@@ -18,6 +18,7 @@
 
 #include <memory>
 #include <string>
+#include <game/version.h>
 
 /*
 	Tick
@@ -360,6 +361,7 @@ public:
 
 	CUuid GameUuid() const override;
 	const char *GameType() const override;
+	char *m_Version = GAME_VERSION;
 	const char *Version() const override;
 	const char *NetVersion() const override;
 

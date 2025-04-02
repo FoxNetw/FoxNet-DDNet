@@ -4608,7 +4608,7 @@ bool CGameContext::IsClientPlayer(int ClientId) const
 
 CUuid CGameContext::GameUuid() const { return m_GameUuid; }
 const char *CGameContext::GameType() const { return m_pController && m_pController->m_pGameType ? m_pController->m_pGameType : ""; }
-const char *CGameContext::Version() const { return GAME_VERSION; }
+const char *CGameContext::Version() const { return m_Version; }
 const char *CGameContext::NetVersion() const { return GAME_NETVERSION; }
 
 IGameServer *CreateGameServer() { return new CGameContext; }
@@ -5193,12 +5193,36 @@ void CGameContext::FoxNetTick()
 		OldSpeed = g_Config.m_SvSpeed;
 	}
 
-	static char OldName[32];
-	if(str_comp(g_Config.m_SvGameTypeName, OldName)) // Reload if config is changed
 	{
-		m_pController->m_pGameType = g_Config.m_SvGameTypeName;
-		Server()->UpdateServerInfo(true);
-		str_copy(OldName, g_Config.m_SvGameTypeName);
+		static char OldName[32] = "FoxNetwork";
+		if(str_comp(g_Config.m_SvGameTypeName, OldName) != 0) // Reload if config is changed
+		{
+			m_pController->m_pGameType = g_Config.m_SvGameTypeName;
+			Server()->UpdateServerInfo(true);
+			str_copy(OldName, g_Config.m_SvGameTypeName);
+		}
+	}
+	{
+		static char OldName[32];
+		if(str_comp(g_Config.m_SvFakeMapName, "") != 0)
+		{
+			if(str_comp(g_Config.m_SvFakeMapName, OldName) != 0) // Reload if config is changed
+			{
+				Server()->UpdateServerInfo(true);
+				str_copy(OldName, g_Config.m_SvFakeMapName);
+			}
+		}
+	}
+	{
+		static char OldName[32];
+		if(str_comp(g_Config.m_SvFakeServerVersion, OldName) != 0) // Reload if config is changed
+		{
+			m_Version = GAME_VERSION;
+			if(str_comp(g_Config.m_SvFakeServerVersion, "") != 0)
+				m_Version = g_Config.m_SvFakeServerVersion;
+			Server()->UpdateServerInfo(true);
+			str_copy(OldName, g_Config.m_SvFakeServerVersion);
+		}
 	}
 
 	if(g_Config.m_SvBanSyncing)
@@ -5300,13 +5324,7 @@ void CGameContext::ChangeSpeedMode()
 		Tuning()->m_HammerStrength = 0.30f;
 	}
 
-	for(int i = 0; i < MAX_CLIENTS; i++)
-	{
-		if(m_apPlayers[i])
-		{
-			SendTuningParams(i);
-		}
-	}
+	SendTuningParams(-1);
 
 	// Info Message
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", "Speed Tunings Have Changed");
