@@ -3307,6 +3307,12 @@ vec2 CCharacter::GetCursorPos(int Clientid)
 	return GameServer()->m_apPlayers[Clientid]->m_CameraInfo.ConvertTargetToWorld(GetPos(), Target);
 }
 
+vec2 CCharacter::GetCursorPos()
+{
+	vec2 Target = vec2(Core()->m_Input.m_TargetX, Core()->m_Input.m_TargetY);
+	return GetPlayer()->m_CameraInfo.ConvertTargetToWorld(GetPos(), Target);
+}
+
 int CCharacter::NumDDraceHudRows()
 {
 	if(Server()->IsSixup(m_pPlayer->GetCid()) || GameServer()->GetClientVersion(m_pPlayer->GetCid()) < VERSION_DDNET_NEW_HUD)
@@ -3344,7 +3350,7 @@ void CCharacter::SendBroadcastHud(const char *pMessage)
 
 bool CCharacter::IsWeaponIndicator()
 {
-	// 2 seconds of showing weapon indicator instead of money broadcast
+	// 2 seconds of showing weapon indicator instead
 	return m_LastWeaponIndTick > Server()->Tick() - Server()->TickSpeed() * 2;
 }
 
@@ -3396,7 +3402,6 @@ void CCharacter::UpdateAbilityInd()
 		if(m_pPlayer->m_Ability == TYPE_TELEKINESIS)
 			Ability = 0;
 
-
 		if(m_pPlayer->m_Ability > 0 && VoteActionDelay[Ability] > Server()->Tick() && !m_NeedsUpdate[Ability])
 			m_NeedsUpdate[Ability] = true;
 		else if(m_NeedsUpdate[Ability] && m_pPlayer->m_Ability > 0)
@@ -3404,7 +3409,7 @@ void CCharacter::UpdateAbilityInd()
 	}
 }
 
-bool CCharacter::QuadFreeze()
+bool CCharacter::QuadFreeze() // Basically, makes your freeze bar full all the time if your inside a freeze quad
 {
 	int Seconds = g_Config.m_SvFreezeDelay;
 	if(Seconds <= 0 || m_Core.m_Super || m_Core.m_Invincible || m_FreezeTime > Seconds * Server()->TickSpeed())

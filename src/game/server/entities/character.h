@@ -72,6 +72,7 @@ public:
 	// Telekinesis
 	CEntity *m_pTelekinesisEntity;
 	vec2 GetCursorPos(int ClientId);
+	vec2 GetCursorPos();
 
 	int m_HeadItem;
 	void HeadItem(int Type = 1, int ClientId = -1);
