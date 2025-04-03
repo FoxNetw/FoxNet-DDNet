@@ -361,7 +361,7 @@ public:
 
 	CUuid GameUuid() const override;
 	const char *GameType() const override;
-	char *m_Version = GAME_VERSION;
+	const char *m_Version = GAME_VERSION;
 	const char *Version() const override;
 	const char *NetVersion() const override;
 
