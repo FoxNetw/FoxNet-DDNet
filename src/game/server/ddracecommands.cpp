@@ -1566,7 +1566,7 @@ void CGameContext::ConSetPlayerAfk(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	int Victim = pResult->m_ClientId;
-	if(pResult->NumArguments() > 1)
+	if(pResult->NumArguments() > 0)
 		Victim = pResult->GetVictim();
 	if(pResult->GetInteger(0) == -1)
 		Victim = pResult->m_ClientId;
