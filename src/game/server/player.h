@@ -276,7 +276,7 @@ public:
 	bool m_KillLocked;
 
 	int m_Ability = 0;
-	int m_ExtraPing;
+	int m_ExtraPing = 0;
 	int m_EmoticonGun;
 	bool m_ConfettiGun;
 	bool m_Invisible;

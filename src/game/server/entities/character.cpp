@@ -3213,7 +3213,8 @@ void CCharacter::FoxNetSpawn()
 {
 	if(g_Config.m_SvResetAbilityOnKill)
 		m_pPlayer->m_Ability = 0;
-
+	
+	m_pPlayer->m_KillLocked = false;
 	m_pPlayer->m_Rainbow = false;
 	m_pPlayer->m_Invisible = false;
 }
