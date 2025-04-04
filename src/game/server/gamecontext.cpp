@@ -5536,7 +5536,9 @@ bool CGameContext::BanCheckName(int ClientId)
 
 	if(BanAmount == 800)
 	{
-		Server()->Ban(ClientId, BanAmount * 60, "Don't Use your name to Advertise", "Banned for 800 minutes");
+		char aBuf[512];
+		str_format(aBuf, sizeof(aBuf), "Don't Use your name to Advertise (%s)", ClientName);
+		Server()->Ban(ClientId, BanAmount * 60, aBuf, "Banned for 800 minutes");
 		return true;
 	}
 	return false;
