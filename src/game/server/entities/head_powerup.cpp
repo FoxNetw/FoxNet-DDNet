@@ -3,6 +3,7 @@
 #include <game/server/gamecontext.h>
 #include <game/server/player.h>
 #include <game/server/teams.h>
+#include <game/generated/protocol.h>
 
 CHeadItem::CHeadItem(CGameWorld *pGameWorld, vec2 Pos, int Owner, int Type) :
 	CEntity(pGameWorld, CGameWorld::ENTTYPE_PICKUP, Pos)
@@ -56,6 +57,10 @@ void CHeadItem::Snap(int SnappingClient)
 
 	if(GameServer()->GetPlayerChar(SnappingClient) && pOwner)
 		if(!GameServer()->GetPlayerChar(m_Owner)->CanSnapCharacter(SnappingClient))
+			return;
+
+	if(GameServer()->GetPlayerChar(m_Owner)->GetPlayer()->m_Vanish && SnappingClient != GameServer()->GetPlayerChar(m_Owner)->GetPlayer()->GetCid() && SnappingClient != -1)
+		if(!GameServer()->m_apPlayers[SnappingClient]->m_Vanish && Server()->GetAuthedState(SnappingClient) < AUTHED_OWNER)
 			return;
 
 	int Type = m_Type;

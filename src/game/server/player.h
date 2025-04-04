@@ -283,6 +283,8 @@ public:
 	bool m_Rainbow;
 
 	bool m_TelekinesisImmunity;
+
+	bool m_Vanish;
 };
 
 #endif

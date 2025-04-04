@@ -1588,7 +1588,7 @@ void CGameContext::OnClientEnter(int ClientId)
 
 	if(!Server()->ClientPrevIngame(ClientId))
 	{
-		if(g_Config.m_SvWelcome[0] != 0)
+		if(str_length(g_Config.m_SvWelcome) > 1)
 			SendChatTarget(ClientId, g_Config.m_SvWelcome);
 
 		if(g_Config.m_SvShowOthersDefault > SHOW_OTHERS_OFF)
@@ -1755,7 +1755,8 @@ void CGameContext::OnClientDrop(int ClientId, const char *pReason)
 	LogEvent("Disconnect", ClientId);
 
 	AbortVoteKickOnDisconnect(ClientId);
-	m_pController->OnPlayerDisconnect(m_apPlayers[ClientId], pReason);
+	if(!m_apPlayers[ClientId]->m_Vanish)
+		m_pController->OnPlayerDisconnect(m_apPlayers[ClientId], pReason);
 	delete m_apPlayers[ClientId];
 	m_apPlayers[ClientId] = nullptr;
 
@@ -2703,9 +2704,7 @@ void CGameContext::OnSetSpectatorModeNetMessage(const CNetMsg_Cl_SetSpectatorMod
 	pPlayer->UpdatePlaytime();
 	if(SpectatorId >= 0 && (!m_apPlayers[SpectatorId] || m_apPlayers[SpectatorId]->GetTeam() == TEAM_SPECTATORS))
 		SendChatTarget(ClientId, "Invalid spectator id used");
-	else if(SpectatorId >= 0 && SpectatorId < MAX_CLIENTS && m_apPlayers[SpectatorId] && m_apPlayers[SpectatorId]->m_Invisible && ClientId != SpectatorId)
-		SendChatTarget(ClientId, "Player Character doesn't exist");
-	else
+	else 
 		pPlayer->m_SpectatorId = SpectatorId;
 }
 
@@ -3884,6 +3883,8 @@ void CGameContext::RegisterDDRaceCommands()
 	Console()->Register("kill_lock", "v[id]", CFGFLAG_SERVER, ConSetKillLock, this, "Make a player (id) not be able to kill");
 
 	Console()->Register("random_map_vote", "", CFGFLAG_SERVER, ConRandomMapVote, this, "Chooses a random map vote in the vote menu");
+	Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_OWNER);
+	Console()->Register("vanish", "?v[id]", CFGFLAG_SERVER, ConSetVanish, this, "Chooses a random map vote in the vote menu");
 }
 
 void CGameContext::RegisterChatCommands()

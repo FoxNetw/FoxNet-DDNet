@@ -1872,6 +1872,7 @@ void CGameContext::ConRandomMapVote(IConsole::IResult *pResult, void *pUserData)
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	pSelf->RandomMapVote();
 }
+
 void CGameContext::RandomMapVote()
 {
 	int Count = 0;
@@ -1906,4 +1907,50 @@ void CGameContext::RandomMapVote()
 			break;
 		}
 	}
+}
+
+void CGameContext::ConSetVanish(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->NumArguments() ? pResult->GetVictim() : pResult->m_ClientId;
+
+	if(pSelf->Server()->GetAuthedState(pResult->m_ClientId) != AUTHED_OWNER)
+	{
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", "Work in Progress!");
+		return;
+	}
+
+	if(pResult->GetInteger(0) == -1)
+		Victim = pResult->m_ClientId;
+
+	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+
+	IServer::CClientInfo Info;
+	char PlayerInfo[512] = " (No Client Info)";
+	int StrLength = 0;
+
+	char aBuf[128];
+
+	if(pChr->GetPlayer()->m_Vanish)
+	{
+		if(pChr->Server()->GetClientInfo(Victim, &Info) && Info.m_GotDDNetVersion)
+		{
+			StrLength = str_length(Info.m_pDDNetVersionStr);
+			if(str_find_nocase(Info.m_pDDNetVersionStr, " ("))
+				StrLength = StrLength - str_length(str_find_nocase(Info.m_pDDNetVersionStr, " ("));
+
+			str_format(PlayerInfo, StrLength + 3, " (%s)", Info.m_pDDNetVersionStr);
+			str_append(PlayerInfo, ")", sizeof(PlayerInfo));
+		}
+		str_format(aBuf, sizeof(aBuf), "'%s' entered and joined the %s%s", pSelf->Server()->ClientName(Victim), pSelf->m_pController->GetTeamName(pChr->GetPlayer()->GetTeam()), PlayerInfo);
+	}
+	else
+		str_format(aBuf, sizeof(aBuf), "'%s' has left the game", pSelf->Server()->ClientName(Victim));
+
+	pSelf->SendChat(-1, TEAM_ALL, aBuf, -1, CGameContext::FLAG_SIX);
+
+	pChr->GetPlayer()->m_Vanish = !pChr->GetPlayer()->m_Vanish;
 }

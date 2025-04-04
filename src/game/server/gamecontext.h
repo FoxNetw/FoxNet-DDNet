@@ -672,6 +672,9 @@ private: // FoxNet
 	static void ConSetEmoticonGun(IConsole::IResult *pResult, void *pUserData);
 	static void ConSetKillLock(IConsole::IResult *pResult, void *pUserData);
 
+	// This Commands is Owner Only hardcoded
+	static void ConSetVanish(IConsole::IResult *pResult, void *pUserData);
+
 	static void ConRandomMapVote(IConsole::IResult *pResult, void *pUserData);
 	void RandomMapVote();
 

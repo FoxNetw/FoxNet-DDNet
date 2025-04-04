@@ -337,6 +337,10 @@ void CPlayer::Snap(int SnappingClient)
 	if(!pClientInfo)
 		return;
 
+	if(m_Vanish && SnappingClient != GetCid() && SnappingClient >= 0)
+		if(!GameServer()->m_apPlayers[SnappingClient]->m_Vanish && Server()->GetAuthedState(SnappingClient) < AUTHED_OWNER)
+			return;
+
 	StrToInts(&pClientInfo->m_Name0, 4, Server()->ClientName(m_ClientId));
 	StrToInts(&pClientInfo->m_Clan0, 3, Server()->ClientClan(m_ClientId));
 	pClientInfo->m_Country = Server()->ClientCountry(m_ClientId);
@@ -387,6 +391,8 @@ void CPlayer::Snap(int SnappingClient)
 			// In older versions the SPECTATORS TEAM was also used if the own player is in PAUSE_PAUSED or if any player is in PAUSE_SPEC.
 			pPlayerInfo->m_Team = (m_Paused != PAUSE_PAUSED || m_ClientId != SnappingClient) && m_Paused < PAUSE_SPEC ? m_Team : TEAM_SPECTATORS;
 		}
+		//if(m_Vanish && SnappingClient != GetCid() && SnappingClient >= 0)
+			//pPlayerInfo->m_ClientId = -1;
 	}
 	else
 	{

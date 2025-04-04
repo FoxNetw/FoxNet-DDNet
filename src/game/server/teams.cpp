@@ -816,7 +816,7 @@ void CGameTeams::OnFinish(CPlayer *Player, int TimeTicks, const char *pTimestamp
 	}
 
 	if(CallSaveScore)
-		if(g_Config.m_SvNamelessScore || !str_startswith(Server()->ClientName(ClientId), "nameless tee"))
+		if(g_Config.m_SvNamelessScore || !str_startswith(Server()->ClientName(ClientId), ""))
 			GameServer()->Score()->SaveScore(ClientId, TimeTicks, pTimestamp,
 				GetCurrentTimeCp(Player), Player->m_NotEligibleForFinish);
 

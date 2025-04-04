@@ -1309,6 +1309,10 @@ void CCharacter::Snap(int SnappingClient)
 	if(m_pPlayer->m_Invisible && SnappingClient != m_pPlayer->GetCid() && SnappingClient != -1)
 		if(!Server()->GetAuthedState(SnappingClient) || Server()->Tick() % 150 == 0)
 			return;
+	// vanish
+	if(m_pPlayer->m_Vanish && SnappingClient != m_pPlayer->GetCid() && SnappingClient != -1)
+		if(!GameServer()->m_apPlayers[SnappingClient]->m_Vanish && Server()->GetAuthedState(SnappingClient) < AUTHED_OWNER)
+			return;
 
 	SnapCharacter(SnappingClient, Id);
 
