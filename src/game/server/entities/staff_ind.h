@@ -24,9 +24,9 @@ class CStaffInd : public CEntity
 public:
 	CStaffInd(CGameWorld *pGameWorld, vec2 Pos, int Owner);
 
-	virtual void Reset();
-	virtual void Tick();
-	virtual void Snap(int SnappingClient);
+	virtual void Reset() override;
+	virtual void Tick() override;
+	virtual void Snap(int SnappingClient) override;
 };
 
 #endif // GAME_SERVER_ENTITIES_SPECIAL_STAFF_IND_H

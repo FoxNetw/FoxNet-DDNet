@@ -698,12 +698,14 @@ private: // FoxNet
 	* ClientId: The Id of the player
 	* pMsg: The message to check
 	*/
-	bool BanCheckMessages(int ClientId, const char *pLine);
+	bool BanCheckMessages(int ClientId, const char *pMsg);
 	bool BanCheckName(int ClientId);
 
 	void SendEveryonePing(int ChatterClientId, const char *pText, int ReceivingIds) const;
 
 public:
+	vec2 RoundPos(vec2 Pos);
+
 	void SendEmote(int ClientId, int Type);
 
 	void NeedleStoring(int Type) override;
@@ -715,7 +717,6 @@ public:
 	const char *GetAbilityName(int Type);
 	const char *GetWeaponName(int Weapon);
 	int GetWeaponType(int Weapon);
-
 };
 
 #endif

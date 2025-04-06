@@ -11,8 +11,8 @@ class CMeteor : public CStableProjectile
 public:
 	CMeteor(CGameWorld *pGameWorld, vec2 Pos, int Owner);
 	
-	virtual void Reset();
-	virtual void Tick();
+	virtual void Reset() override;
+	virtual void Tick() override;
 };
 
 #endif

@@ -22,9 +22,9 @@ class CStableProjectile : public CEntity
 public:
 	CStableProjectile(CGameWorld *pGameWorld, int Type, int Owner, vec2 Pos, bool HideOnSpec = false, bool OnlyShowOwner = false);
 
-	virtual void Reset();
-	virtual void TickDeferred();
-	virtual void Snap(int SnappingClient);
+	virtual void Reset() override;
+	virtual void TickDeferred() override;
+	virtual void Snap(int SnappingClient) override;
 
 	void SetPos(vec2 Pos) { m_Pos = Pos; };
 };

@@ -751,6 +751,25 @@ void CCharacter::SetEmote(int Emote, int Tick)
 
 void CCharacter::OnPredictedInput(CNetObj_PlayerInput *pNewInput)
 {
+	int ResetInput = 0;
+	if(m_Snake.Active())
+	{
+		m_Snake.OnInput(pNewInput);
+		ResetInput = true;
+	}
+
+	if(ResetInput)
+	{
+		pNewInput->m_Direction = 0;
+		pNewInput->m_Jump = 0;
+		pNewInput->m_Hook = 0;
+		if(ResetInput & 2)
+		{
+			pNewInput->m_TargetX = m_Input.m_TargetX;
+			pNewInput->m_TargetY = m_Input.m_TargetY;
+		}
+	}
+
 	// check for changes
 	if(mem_comp(&m_SavedInput, pNewInput, sizeof(CNetObj_PlayerInput)) != 0)
 		m_LastAction = Server()->Tick();
@@ -1063,7 +1082,9 @@ void CCharacter::Die(int Killer, int Weapon, bool SendKillMsg)
 	// unset skin specific stuff
 	if(m_pPlayer->m_SavedColor)
 		m_pPlayer->RestoreColor();
-
+	m_Snake.OnPlayerDeath();
+	m_pPlayer->m_ShowName = true;
+	
 	// unset anyones telekinesis on us
 	if(Server()->GetAuthedState(m_pPlayer->GetCid()) > AUTHED_NO)
 		GameServer()->UnsetTelekinesis(this);
@@ -1379,13 +1400,20 @@ void CCharacter::Snap(int SnappingClient)
 		pDDNetCharacter->m_Flags |= CHARACTERFLAG_MOVEMENTS_DISABLED;
 
 	pDDNetCharacter->m_FreezeEnd = m_Core.m_DeepFrozen ? -1 : m_FreezeTime == 0 ? 0 :
-										      Server()->Tick() + m_FreezeTime;
+									     Server()->Tick() + m_FreezeTime;
+	if(m_Snake.Active() || m_InSnake)
+	{
+		pDDNetCharacter->m_FreezeEnd = -1;
+		pDDNetCharacter->m_Flags |= CHARACTERFLAG_COLLISION_DISABLED;
+	}
+
 	pDDNetCharacter->m_Jumps = m_Core.m_Jumps;
 	pDDNetCharacter->m_TeleCheckpoint = m_TeleCheckpoint;
 	pDDNetCharacter->m_StrongWeakId = m_StrongWeakId;
 
 	// Display Information
 	pDDNetCharacter->m_JumpedTotal = m_Core.m_JumpedTotal;
+
 	pDDNetCharacter->m_NinjaActivationTick = m_Core.m_Ninja.m_ActivationTick;
 	pDDNetCharacter->m_FreezeStart = m_Core.m_FreezeStart;
 	if(m_Core.m_IsInFreeze)
@@ -3223,6 +3251,8 @@ void CCharacter::SetAbility(int Type)
 
 void CCharacter::FoxNetSpawn()
 {
+	m_Snake.Init(this);
+
 	if(g_Config.m_SvResetAbilityOnKill)
 		m_pPlayer->m_Ability = 0;
 	
@@ -3301,7 +3331,7 @@ void CCharacter::SetInvisible(bool Active)
 
 void CCharacter::SetSnake(bool Set)
 {
-	//m_Snake.SetActive(Set) ToDo: steal code
+	m_Snake.SetActive(Set);
 }
 
 void CCharacter::SetLovely(bool Active)

@@ -1653,7 +1653,7 @@ void CGameContext::ConSnake(IConsole::IResult *pResult, void *pUserData)
 	if(!pChr)
 		return;
 
-	//pChr->SetInvisible(!pChr->GetPlayer()->m_Invisible);
+	pChr->SetSnake(!pChr->GetPlayer()->m_Invisible);
 }
 
 void CGameContext::ConLovely(IConsole::IResult *pResult, void *pUserData)

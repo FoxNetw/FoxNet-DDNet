@@ -2750,6 +2750,8 @@ if(SERVER)
     score.h
     scoreworker.cpp
     scoreworker.h
+    snake.cpp
+    snake.h
     teams.cpp
     teams.h
     teehistorian.cpp

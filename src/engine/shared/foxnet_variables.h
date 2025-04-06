@@ -50,3 +50,9 @@ MACRO_CONFIG_INT(SvRandomMapVoteOnStart, fs_random_map_vote_on_start, 1, 0, 1, C
 
 MACRO_CONFIG_STR(SvFakeMapName, fs_fake_map_name, 32, "", CFGFLAG_SERVER | CFGFLAG_GAME, "Map Name to show")
 MACRO_CONFIG_STR(SvFakeServerVersion, fs_fake_server_version, 32, "", CFGFLAG_SERVER | CFGFLAG_GAME, "Version Message")
+
+// snake
+MACRO_CONFIG_INT(SvSnakeAutoMove, sv_snake_auto_move, 1, 0, 1, CFGFLAG_SERVER, "Whether snake keeps last input or can stand still if no inputs applied")
+MACRO_CONFIG_INT(SvSnakeSpeed, sv_snake_speed, 6, 1, 50, CFGFLAG_SERVER, "Snake blocks per second speed")
+MACRO_CONFIG_INT(SvSnakeDiagonal, sv_snake_diagonal, 0, 0, 1, CFGFLAG_SERVER, "Whether snake can move diagonally")
+MACRO_CONFIG_INT(SvSnakeSmooth, sv_snake_smooth, 1, 0, 1, CFGFLAG_SERVER, "Whether snake moves smoothly")

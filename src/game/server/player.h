@@ -288,6 +288,20 @@ public:
 	bool m_StaffInd;
 	bool m_Trail;
 
+	bool m_ShowName;
+	bool m_RemovedName;
+	
+	// fake information
+	void UpdateInformation(int ClientId = -1);
+	void SetName(const char *pName) { str_copy(m_CurrentInfo.m_aName, pName, sizeof(m_CurrentInfo.m_aName)); };
+	void SetClan(const char *pClan) { str_copy(m_CurrentInfo.m_aClan, pClan, sizeof(m_CurrentInfo.m_aClan)); };
+
+	struct
+	{
+		char m_aName[MAX_NAME_LENGTH];
+		char m_aClan[MAX_CLAN_LENGTH];
+	} m_CurrentInfo;
+
 	bool m_TelekinesisImmunity;
 
 	bool m_Vanish;

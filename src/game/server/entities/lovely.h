@@ -26,9 +26,9 @@ class CLovely : public CEntity
 public:
 	CLovely(CGameWorld *pGameWorld, vec2 Pos, int Owner);
 
-	virtual void Reset();
-	virtual void Tick();
-	virtual void Snap(int SnappingClient);
+	virtual void Reset() override;
+	virtual void Tick() override;
+	virtual void Snap(int SnappingClient) override;
 };
 
 #endif

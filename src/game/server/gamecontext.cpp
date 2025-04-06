@@ -3882,7 +3882,7 @@ void CGameContext::RegisterDDRaceCommands()
 
 	Console()->Register("random_map_vote", "", CFGFLAG_SERVER, ConRandomMapVote, this, "Chooses a random map vote in the vote menu");
 	Console()->Register("vanish", "?v[id]", CFGFLAG_SERVER, ConSetVanish, this, "Completely hide from everyone on the server");
-
+	
 	// Cosmetics
 	Console()->Register("c_rainbow", "?v[id]", CFGFLAG_SERVER, ConRainbow, this, "Makes a players (id) Rainbow");
 	Console()->Register("c_rainbow_speed", "?v[id] ?i[speed]", CFGFLAG_SERVER, ConRainbowSpeed, this, "Makes a players (id) Rainbow");
@@ -5760,4 +5760,12 @@ void CGameContext::SendEmote(int ClientId, int Type)
 
 	GetPlayerChar(ClientId)->SetEmote(EmoteType, Server()->Tick() + 2 * Server()->TickSpeed());
 	SendEmoticon(ClientId, Type, -1);
+}
+
+vec2 CGameContext::RoundPos(vec2 Pos)
+{
+	Pos = vec2((int)Pos.x, (int)Pos.y);
+	Pos.x -= (int)Pos.x % 32 - 16;
+	Pos.y -= (int)Pos.y % 32 - 16;
+	return Pos;
 }

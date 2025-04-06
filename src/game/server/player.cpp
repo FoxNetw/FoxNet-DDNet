@@ -88,6 +88,7 @@ void CPlayer::Reset()
 
 	// FoxNet
 	m_Valentines = false;
+	m_ShowName = true;
 
 	if(g_Config.m_Events)
 	{
@@ -1080,6 +1081,53 @@ void CPlayer::FoxNetTick()
 {
 	RainbowTick();
 	AfkSpectateTick();
+
+	if(!m_RemovedName && !m_ShowName)
+	{
+		SetName(" ");
+		SetClan("");
+		UpdateInformation();
+		m_RemovedName = true;
+	}
+	if(m_RemovedName && m_ShowName)
+	{
+		SetName(Server()->ClientName(m_ClientId));
+		SetClan(Server()->ClientClan(m_ClientId));
+		UpdateInformation();
+		m_RemovedName = false;
+	}
+}
+
+void CPlayer::UpdateInformation(int ClientId)
+{
+	protocol7::CNetMsg_Sv_ClientDrop ClientDropMsg;
+	ClientDropMsg.m_ClientId = m_ClientId;
+	ClientDropMsg.m_pReason = "";
+	ClientDropMsg.m_Silent = 1;
+
+	protocol7::CNetMsg_Sv_ClientInfo NewClientInfoMsg;
+	NewClientInfoMsg.m_ClientId = ClientId;
+	NewClientInfoMsg.m_pName = Server()->ClientName(ClientId);
+	NewClientInfoMsg.m_pName = m_CurrentInfo.m_aName;
+	NewClientInfoMsg.m_pClan = m_CurrentInfo.m_aClan;
+	NewClientInfoMsg.m_Local = 0;
+	NewClientInfoMsg.m_Silent = true;
+	NewClientInfoMsg.m_Team = m_Team;
+	for(int p = 0; p < protocol7::NUM_SKINPARTS; p++)
+	{
+		NewClientInfoMsg.m_apSkinPartNames[p] = m_TeeInfos.m_apSkinPartNames[p];
+		NewClientInfoMsg.m_aSkinPartColors[p] = m_TeeInfos.m_aSkinPartColors[p];
+		NewClientInfoMsg.m_aUseCustomColors[p] = m_TeeInfos.m_aUseCustomColors[p];
+	}
+
+	for(int i = 0; i < Server()->MaxClients(); i++)
+	{
+		if(i != ClientId)
+		{
+			Server()->SendPackMsg(&ClientDropMsg, MSGFLAG_VITAL | MSGFLAG_NORECORD, i);
+			Server()->SendPackMsg(&NewClientInfoMsg, MSGFLAG_VITAL | MSGFLAG_NORECORD, i);
+		}
+	}
 }
 
 void CPlayer::AfkSpectateTick()
