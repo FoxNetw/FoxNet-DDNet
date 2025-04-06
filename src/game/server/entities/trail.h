@@ -26,9 +26,9 @@ class CTrail : public CEntity
 public:
 	CTrail(CGameWorld *pGameWorld, vec2 Pos, int Owner);
 	
-	void Clear();
-	virtual void Reset();
-	virtual void Tick();
+	void Clear() override;
+	virtual void Reset() override;
+	virtual void Tick() override;
 };
 
 #endif
