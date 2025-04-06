@@ -3868,8 +3868,6 @@ void CGameContext::RegisterDDRaceCommands()
 	Console()->Register("set_ability", "v[id] i[ability]", CFGFLAG_SERVER, ConSetAbility, this, "Set a players (id) Ability");
 
 	Console()->Register("invisible", "?v[id]", CFGFLAG_SERVER, ConInvisible, this, "Makes a players (id) Invisible");
-	Console()->Register("rainbow", "?v[id]", CFGFLAG_SERVER, ConRainbow, this, "Makes a players (id) Rainbow");
-	Console()->Register("rainbow_speed", "?v[id] ?i[speed]", CFGFLAG_SERVER, ConRainbowSpeed, this, "Makes a players (id) Rainbow");
 
 	Console()->Register("next_ban_sync", "", CFGFLAG_SERVER, ConNextBanSync, this, "When the next ban sync is happening");
 
@@ -3883,7 +3881,19 @@ void CGameContext::RegisterDDRaceCommands()
 	Console()->Register("kill_lock", "v[id]", CFGFLAG_SERVER, ConSetKillLock, this, "Make a player (id) not be able to kill");
 
 	Console()->Register("random_map_vote", "", CFGFLAG_SERVER, ConRandomMapVote, this, "Chooses a random map vote in the vote menu");
-	Console()->Register("vanish", "?v[id]", CFGFLAG_SERVER, ConSetVanish, this, "Chooses a random map vote in the vote menu");
+	Console()->Register("vanish", "?v[id]", CFGFLAG_SERVER, ConSetVanish, this, "Completely hide from everyone on the server");
+
+	// Cosmetics
+	Console()->Register("c_rainbow", "?v[id]", CFGFLAG_SERVER, ConRainbow, this, "Makes a players (id) Rainbow");
+	Console()->Register("c_rainbow_speed", "?v[id] ?i[speed]", CFGFLAG_SERVER, ConRainbowSpeed, this, "Makes a players (id) Rainbow");
+	Console()->Register("c_trail", "?v[id]", CFGFLAG_SERVER, ConTrail, this, "Gives a player (id) a Trail");
+	Console()->Register("c_snake", "?v[id]", CFGFLAG_SERVER, ConSnake, this, "Makes a player (id) a Snake");
+	Console()->Register("c_lovely", "?v[id]", CFGFLAG_SERVER, ConLovely, this, "Makes a player (id) Lovely");
+	Console()->Register("c_meteor", "?v[id]", CFGFLAG_SERVER, ConMeteors, this, "Gives a player (id) a Meteor");
+	Console()->Register("c_unmeteor", "?v[id]", CFGFLAG_SERVER, ConRemoveMeteors, this, "Removes a players (id) Meteors");
+	Console()->Register("c_staff_ind", "?v[id]", CFGFLAG_SERVER, ConStaffInd, this, "Gives a player (id) a Staff Indicator");
+	Console()->Register("c_epic_circle", "?v[id]", CFGFLAG_SERVER, ConEpicCircle, this, "Gives a player (id) an Epic Circle");
+	Console()->Register("c_rotating_ball", "?v[id]", CFGFLAG_SERVER, ConRotatingBall, this, "Gives a player (id) a Rotating Ball");
 }
 
 void CGameContext::RegisterChatCommands()

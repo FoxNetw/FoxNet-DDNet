@@ -2697,6 +2697,10 @@ if(SERVER)
     entities/dragger.h
     entities/dragger_beam.cpp
     entities/dragger_beam.h
+    entities/epic_circle.cpp
+    entities/epic_circle.h
+    entities/flyingpoint.cpp
+    entities/flyingpoint.h
     entities/gun.cpp
     entities/gun.h  
     entities/head_powerup.cpp
@@ -2705,12 +2709,24 @@ if(SERVER)
     entities/laser.h
     entities/light.cpp
     entities/light.h
+    entities/lovely.cpp
+    entities/lovely.h 
+    entities/meteor.cpp
+    entities/meteor.h
     entities/pickup.cpp
     entities/pickup.h
     entities/plasma.cpp
     entities/plasma.h
     entities/projectile.cpp
     entities/projectile.h
+    entities/rotating_ball.cpp
+    entities/rotating_ball.h  
+    entities/stable_projectile.cpp
+    entities/stable_projectile.h
+    entities/staff_ind.cpp
+    entities/staff_ind.h
+    entities/trail.cpp
+    entities/trail.h
     entity.cpp
     entity.h
     eventhandler.cpp

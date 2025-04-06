@@ -21,8 +21,16 @@
 #include <game/server/teams.h>
 
 // FoxNet
-#include <game/server/entities/head_powerup.h>
-#include <game/server/entities/custom_projectile.h>
+#include "head_powerup.h"
+#include "custom_projectile.h"
+#include "meteor.h"
+#include "trail.h"
+#include "lovely.h"
+#include "rotating_ball.h"
+#include "epic_circle.h"
+#include "staff_ind.h"
+#include "flyingpoint.h"
+
 #include <game/server/foxnet_types.h>
 
 MACRO_ALLOC_POOL_ID_IMPL(CCharacter, MAX_CLIENTS)
@@ -3289,6 +3297,71 @@ void CCharacter::SetRainbow(bool Active)
 void CCharacter::SetInvisible(bool Active)
 {
 	m_pPlayer->m_Invisible = Active;
+}
+
+void CCharacter::SetSnake(bool Set)
+{
+	//m_Snake.SetActive(Set) ToDo: steal code
+}
+
+void CCharacter::SetLovely(bool Active)
+{
+	m_pPlayer->m_Lovely = Active;
+	if(m_pPlayer->m_Lovely)
+		new CLovely(GameWorld(), m_Pos, m_pPlayer->GetCid());
+}
+
+void CCharacter::SetRotatingBall(bool Active)
+{
+	m_pPlayer->m_RotatingBall = Active;
+	if(m_pPlayer->m_RotatingBall)
+		new CRotatingBall(GameWorld(), m_Pos, m_pPlayer->GetCid());
+}
+
+void CCharacter::SetEpicCircle(bool Active)
+{
+	m_pPlayer->m_EpicCircle = Active;
+	if(m_pPlayer->m_EpicCircle)
+		new CEpicCircle(GameWorld(), m_Pos, m_pPlayer->GetCid());
+}
+
+void CCharacter::SetStaffInd(bool Active)
+{
+	m_pPlayer->m_StaffInd = Active;
+	if(m_pPlayer->m_StaffInd)
+		new CStaffInd(GameWorld(), m_Pos, m_pPlayer->GetCid());
+}
+
+void CCharacter::SetMeteors(bool Active)
+{
+	if(Active)
+	{
+		if(m_pPlayer->m_Meteors >= 50)
+		{
+			GameServer()->SendChatTarget(m_pPlayer->GetCid(), "You already have the maximum of 50 meteors");
+			return;
+		}
+
+		vec2 Direction = normalize(vec2(m_LatestInput.m_TargetX, m_LatestInput.m_TargetY));
+		vec2 ProjStartPos = m_Pos + Direction * GetProximityRadius() * 0.75f;
+
+		m_pPlayer->m_Meteors++;
+		new CMeteor(GameWorld(), ProjStartPos, m_pPlayer->GetCid());
+	}
+	else
+	{
+		if(!m_pPlayer->m_Meteors)
+			return;
+
+		m_pPlayer->m_Meteors = 0;
+	}
+}
+
+void CCharacter::SetTrail(bool Active)
+{
+	m_pPlayer->m_Trail = Active;
+	if(m_pPlayer->m_Trail)
+		new CTrail(GameWorld(), m_Pos, m_pPlayer->GetCid());
 }
 
 void CCharacter::SetConfettiGun(bool Set)

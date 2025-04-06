@@ -281,6 +281,12 @@ public:
 	bool m_ConfettiGun;
 	bool m_Invisible;
 	bool m_Rainbow;
+	bool m_EpicCircle;
+	bool m_Lovely;
+	int m_Meteors;
+	bool m_RotatingBall;
+	bool m_StaffInd;
+	bool m_Trail;
 
 	bool m_TelekinesisImmunity;
 

@@ -66,3 +66,8 @@ MACRO_TUNING_PARAM(GroundElasticityY, ground_elasticity_y, 0, "Ground/ceiling el
 // FoxNet
 MACRO_TUNING_PARAM(HeartgunFireDelay, heartgun_fire_delay, 90, "Delay of using Heart Gun")
 MACRO_TUNING_PARAM(TelekinesisFireDelay, telekinesis_fire_delay, 125, "Delay of using telekinesis")
+
+// Meteor
+MACRO_TUNING_PARAM(MeteorFriction, meteor_friction, 5000, "Meteor friction")
+MACRO_TUNING_PARAM(MeteorMaxAccel, meteor_max_accel, 2000, "Max meteor acceleration per player in pixel/tick^2")
+MACRO_TUNING_PARAM(MeteorAccelPreserve, meteor_accel_preserve, 100000, "How much acceleration is preserved with growing distance to the player")

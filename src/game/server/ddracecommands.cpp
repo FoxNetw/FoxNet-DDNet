@@ -1632,6 +1632,108 @@ void CGameContext::ConRainbowSpeed(IConsole::IResult *pResult, void *pUserData)
 	}
 }
 
+void CGameContext::ConTrail(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->NumArguments() ? pResult->GetVictim() : pResult->m_ClientId;
+	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+
+	pChr->SetTrail(!pChr->GetPlayer()->m_Trail);
+}
+
+void CGameContext::ConSnake(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->NumArguments() ? pResult->GetVictim() : pResult->m_ClientId;
+	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+
+	//pChr->SetInvisible(!pChr->GetPlayer()->m_Invisible);
+}
+
+void CGameContext::ConLovely(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->NumArguments() ? pResult->GetVictim() : pResult->m_ClientId;
+	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
+
+
+	if(!pChr)
+		return;
+
+	pChr->SetLovely(!pChr->GetPlayer()->m_Lovely);
+	static bool Set[MAX_CLIENTS];
+
+
+		pSelf->SendChatTarget(Victim, "If you are lagging, turn off antiping");
+		Set[Victim] = true;
+}
+
+void CGameContext::ConMeteors(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->NumArguments() ? pResult->GetVictim() : pResult->m_ClientId;
+	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+
+	pChr->SetMeteors(true);
+}
+
+void CGameContext::ConRemoveMeteors(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->NumArguments() ? pResult->GetVictim() : pResult->m_ClientId;
+	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+
+	pChr->SetMeteors(false);
+}
+
+void CGameContext::ConStaffInd(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->NumArguments() ? pResult->GetVictim() : pResult->m_ClientId;
+	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+
+	pChr->SetStaffInd(!pChr->GetPlayer()->m_StaffInd);
+}
+
+void CGameContext::ConEpicCircle(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->NumArguments() ? pResult->GetVictim() : pResult->m_ClientId;
+	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+
+	pChr->SetEpicCircle(!pChr->GetPlayer()->m_EpicCircle);
+}
+
+void CGameContext::ConRotatingBall(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->NumArguments() ? pResult->GetVictim() : pResult->m_ClientId;
+	CCharacter *pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+
+	pChr->SetRotatingBall(!pChr->GetPlayer()->m_RotatingBall);
+}
+
 void CGameContext::ConInvisible(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;

@@ -653,6 +653,14 @@ private: // FoxNet
 	static void ConInvisible(IConsole::IResult *pResult, void *pUserData);
 	static void ConRainbow(IConsole::IResult *pResult, void *pUserData);
 	static void ConRainbowSpeed(IConsole::IResult *pResult, void *pUserData);
+	static void ConTrail(IConsole::IResult *pResult, void *pUserData);
+	static void ConSnake(IConsole::IResult *pResult, void *pUserData);
+	static void ConLovely(IConsole::IResult *pResult, void *pUserData);
+	static void ConMeteors(IConsole::IResult *pResult, void *pUserData);
+	static void ConRemoveMeteors(IConsole::IResult *pResult, void *pUserData);
+	static void ConStaffInd(IConsole::IResult *pResult, void *pUserData);
+	static void ConEpicCircle(IConsole::IResult *pResult, void *pUserData);
+	static void ConRotatingBall(IConsole::IResult *pResult, void *pUserData);
 
 	static void ConWeaponIndicator(IConsole::IResult *pResult, void *pUserData);
 	static void ConAbilityIndicator(IConsole::IResult *pResult, void *pUserData);

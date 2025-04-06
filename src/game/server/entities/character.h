@@ -62,11 +62,19 @@ public:
 	void SetExtraPing(int Ping);
 	void SetEmoticonGun(int EmoteType);
 
+	void SetTrail(bool Active);
+	void SetSnake(bool Active);
+	void SetLovely(bool Active);
+	void SetMeteors(bool Active);
+	void SetStaffInd(bool Active);
+	void SetEpicCircle(bool Active);
 	void SetRainbow(bool Active);
+	void SetRotatingBall(bool Active);
 	void SetInvisible(bool Active);
 	void SetConfettiGun(bool Active);
 	void SetExplosionGun(bool Active);
 	void SetTelekinesisImmunity(bool Active);
+
 
 
 	// Telekinesis
@@ -78,6 +86,7 @@ public:
 	void HeadItem(int Type = 1, int ClientId = -1);
 	
 	bool QuadFreeze();
+	// FoxNet End
 
 	// DDNet
 	void Reset() override;
