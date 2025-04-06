@@ -27,8 +27,8 @@ public:
 	CTrail(CGameWorld *pGameWorld, vec2 Pos, int Owner);
 	
 	void Clear();
-	virtual void Reset();
-	virtual void Tick();
+	virtual void Reset() override;
+	virtual void Tick() override;
 };
 
 #endif

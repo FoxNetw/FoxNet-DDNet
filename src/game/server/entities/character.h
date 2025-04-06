@@ -5,6 +5,7 @@
 
 #include <game/server/entity.h>
 #include <game/server/save.h>
+#include <game/server/snake.h>
 
 class CGameTeams;
 class CGameWorld;
@@ -63,7 +64,6 @@ public:
 	void SetEmoticonGun(int EmoteType);
 
 	void SetTrail(bool Active);
-	void SetSnake(bool Active);
 	void SetLovely(bool Active);
 	void SetMeteors(bool Active);
 	void SetStaffInd(bool Active);
@@ -75,7 +75,9 @@ public:
 	void SetExplosionGun(bool Active);
 	void SetTelekinesisImmunity(bool Active);
 
-
+	CSnake m_Snake;
+	bool m_InSnake;
+	void SetSnake(bool Active);
 
 	// Telekinesis
 	CEntity *m_pTelekinesisEntity;
