@@ -3883,7 +3883,6 @@ void CGameContext::RegisterDDRaceCommands()
 	Console()->Register("kill_lock", "v[id]", CFGFLAG_SERVER, ConSetKillLock, this, "Make a player (id) not be able to kill");
 
 	Console()->Register("random_map_vote", "", CFGFLAG_SERVER, ConRandomMapVote, this, "Chooses a random map vote in the vote menu");
-	Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_OWNER);
 	Console()->Register("vanish", "?v[id]", CFGFLAG_SERVER, ConSetVanish, this, "Chooses a random map vote in the vote menu");
 }
 
