@@ -71,7 +71,7 @@ void CStaffInd::Snap(int SnappingClient)
 			return;
 
 	int Size = Server()->IsSixup(SnappingClient) ? sizeof(CNetObj_DDNetPickup) : 4 * 4;
-	CNetObj_DDNetPickup *pArmor = static_cast<CNetObj_DDNetPickup *>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, m_aIds[ARMOR], Size));
+	CNetObj_DDNetPickup *pArmor = static_cast<CNetObj_DDNetPickup *>(Server()->SnapNewItem(NETOBJTYPE_DDNETPICKUP, m_aIds[ARMOR], Size));
 	if (!pArmor)
 		return;
 
@@ -87,7 +87,7 @@ void CStaffInd::Snap(int SnappingClient)
 	}
 
 	// m_ID is created before m_aID is created, means that id is lower and we can simply use it to make the ball behind
-	CNetObj_DDNetLaser *pLaser = static_cast<CNetObj_DDNetLaser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_BallFirst ? m_aIds[BALL_FRONT] : m_aIds[BALL], sizeof(CNetObj_DDNetLaser)));
+	CNetObj_DDNetLaser *pLaser = static_cast<CNetObj_DDNetLaser *>(Server()->SnapNewItem(NETOBJTYPE_DDNETLASER, m_BallFirst ? m_aIds[BALL_FRONT] : m_aIds[BALL], sizeof(CNetObj_DDNetLaser)));
 	if(!pLaser)
 		return;
 
