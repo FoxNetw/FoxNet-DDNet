@@ -3065,6 +3065,11 @@ void CCharacter::FoxNetTick()
 {
 	UnsoloAfterSpawn();
 	UpdateAbilityInd();
+	if(m_Snake.Active() || m_InSnake) // This is just for Client prediction
+	{	
+		TuningList()[256].Set("gravity", 0); // anything > 255 isnt accessible by maps usually
+		GameServer()->SendTuningParams(m_pPlayer->GetCid(), 256);
+	}
 
 	// update telekinesis entitiy position
 	if(m_pTelekinesisEntity)
