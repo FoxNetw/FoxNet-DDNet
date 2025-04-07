@@ -1667,11 +1667,7 @@ void CGameContext::ConLovely(IConsole::IResult *pResult, void *pUserData)
 		return;
 
 	pChr->SetLovely(!pChr->GetPlayer()->m_Lovely);
-	static bool Set[MAX_CLIENTS];
-
-
-		pSelf->SendChatTarget(Victim, "If you are lagging, turn off antiping");
-		Set[Victim] = true;
+	pSelf->SendChatTarget(Victim, "If you are lagging, turn off antiping");
 }
 
 void CGameContext::ConMeteors(IConsole::IResult *pResult, void *pUserData)

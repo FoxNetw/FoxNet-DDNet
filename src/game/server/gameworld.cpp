@@ -235,14 +235,10 @@ void CGameWorld::Tick()
 				pEnt = m_pNextTraverseEntity;
 			}
 		}
-		int NumCharacters = 0;
+
 		// we need to do this between core tick and Move of all the players, because otherwise its getting jiggly for those whose coretick didnt happen yet
 		for(CCharacter *pChr = (CCharacter *)FindFirst(ENTTYPE_CHARACTER); pChr; pChr = (CCharacter *)pChr->TypeNext())
-		{
 			pChr->m_Snake.Tick();
-
-			NumCharacters++;
-		}
 
 		for(auto *pEnt : m_apFirstEntityTypes)
 			for(; pEnt;)
