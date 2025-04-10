@@ -704,6 +704,7 @@ private: // FoxNet
 	void SendEveryonePing(int ChatterClientId, const char *pText, int ReceivingIds) const;
 
 public:
+	void SnakeName(int ClientId);
 	vec2 RoundPos(vec2 Pos);
 
 	void SendEmote(int ClientId, int Type);

@@ -1076,64 +1076,17 @@ void CPlayer::CCameraInfo::Reset()
 	m_FollowFactor = 0.0f;
 }
 
-// FoxNet
-void CPlayer::FoxNetTick()
-{
-	RainbowTick();
-	AfkSpectateTick();
-
-	if(!m_RemovedName && !m_ShowName)
-	{
-		SetName(" ");
-		SetClan("");
-		UpdateInformation();
-		m_RemovedName = true;
-	}
-	if(m_RemovedName && m_ShowName)
-	{
-		SetName(Server()->ClientName(m_ClientId));
-		SetClan(Server()->ClientClan(m_ClientId));
-		UpdateInformation();
-		m_RemovedName = false;
-	}
-}
-
-void CPlayer::UpdateInformation(int ClientId)
-{
-	protocol7::CNetMsg_Sv_ClientDrop ClientDropMsg;
-	ClientDropMsg.m_ClientId = m_ClientId;
-	ClientDropMsg.m_pReason = "";
-	ClientDropMsg.m_Silent = 1;
-
-	protocol7::CNetMsg_Sv_ClientInfo NewClientInfoMsg;
-	NewClientInfoMsg.m_ClientId = ClientId;
-	NewClientInfoMsg.m_pName = Server()->ClientName(ClientId);
-	NewClientInfoMsg.m_pName = m_CurrentInfo.m_aName;
-	NewClientInfoMsg.m_pClan = m_CurrentInfo.m_aClan;
-	NewClientInfoMsg.m_Local = 0;
-	NewClientInfoMsg.m_Silent = true;
-	NewClientInfoMsg.m_Team = m_Team;
-	for(int p = 0; p < protocol7::NUM_SKINPARTS; p++)
-	{
-		NewClientInfoMsg.m_apSkinPartNames[p] = m_TeeInfos.m_apSkinPartNames[p];
-		NewClientInfoMsg.m_aSkinPartColors[p] = m_TeeInfos.m_aSkinPartColors[p];
-		NewClientInfoMsg.m_aUseCustomColors[p] = m_TeeInfos.m_aUseCustomColors[p];
-	}
-
-	for(int i = 0; i < Server()->MaxClients(); i++)
-	{
-		if(i != ClientId)
-		{
-			Server()->SendPackMsg(&ClientDropMsg, MSGFLAG_VITAL | MSGFLAG_NORECORD, i);
-			Server()->SendPackMsg(&NewClientInfoMsg, MSGFLAG_VITAL | MSGFLAG_NORECORD, i);
-		}
-	}
-}
-
 void CPlayer::AfkSpectateTick()
 {
 	if(g_Config.m_SvForcePauseAfk > 0)
 	{
+		if (m_Team == TEAM_SPECTATORS)
+		{
+			if(m_IsAfkSpec != 0)
+				m_IsAfkSpec = 0;
+			return;
+		}
+
 		if(m_SpecAfk)
 		{
 			if(m_IsAfkSpec == 1)
@@ -1154,6 +1107,11 @@ void CPlayer::AfkSpectateTick()
 				GetCharacter()->Pause(false);
 				m_IsAfkSpec = 0;
 			}
+		}
+		if(!m_SpecAfk && m_IsAfkSpec != 0)
+		{
+			GetCharacter()->Pause(false);
+			m_IsAfkSpec = 0;
 		}
 	}
 	
@@ -1252,4 +1210,33 @@ void CPlayer::SetAbilityIndicator(bool Set)
 		GameServer()->SendChatTarget(m_ClientId, "Ability indicator enabled");
 	else
 		GameServer()->SendChatTarget(m_ClientId, "Ability indicator disabled");
+}
+
+void CPlayer::RestoreInfo()
+{
+	Server()->SetClientName(m_ClientId, &m_pOldName);
+	Server()->SetClientClan(m_ClientId, &m_pOldClan);
+	m_RemovedName = false;
+}
+
+void CPlayer::SaveInfo()
+{
+	str_copy(&m_pOldName, Server()->ClientName(m_ClientId), sizeof(m_pOldName));
+	str_copy(&m_pOldClan, Server()->ClientClan(m_ClientId), sizeof(m_pOldClan));
+	m_RemovedName = true;
+}
+
+// FoxNet
+void CPlayer::FoxNetTick()
+{
+	RainbowTick();
+	AfkSpectateTick();
+
+	if(!m_RemovedName && !m_ShowName)
+	{
+		SaveInfo();
+		GameServer()->SnakeName(m_ClientId);
+	}
+	if(m_RemovedName && m_ShowName)
+		m_RemovedName = false;
 }

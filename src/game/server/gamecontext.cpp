@@ -2727,7 +2727,7 @@ void CGameContext::OnChangeInfoNetMessage(const CNetMsg_Cl_ChangeInfo *pMsg, int
 	}
 
 	// set infos
-	if(Server()->WouldClientNameChange(ClientId, pMsg->m_pName) && !ProcessSpamProtection(ClientId))
+	if(Server()->WouldClientNameChange(ClientId, pMsg->m_pName) && !ProcessSpamProtection(ClientId) && !pPlayer->m_ShowName)
 	{
 		char aOldName[MAX_NAME_LENGTH];
 		str_copy(aOldName, Server()->ClientName(ClientId), sizeof(aOldName));
@@ -2774,7 +2774,10 @@ void CGameContext::OnChangeInfoNetMessage(const CNetMsg_Cl_ChangeInfo *pMsg, int
 
 		protocol7::CNetMsg_Sv_ClientInfo Info;
 		Info.m_ClientId = ClientId;
-		Info.m_pName = Server()->ClientName(ClientId);
+		if(!pPlayer->m_RemovedName && !pPlayer->m_ShowName)
+			Info.m_pName = "";
+		if(pPlayer->m_RemovedName && pPlayer->m_ShowName)
+			Info.m_pName = Server()->ClientName(ClientId);
 		Info.m_Country = pMsg->m_Country;
 		Info.m_pClan = pMsg->m_pClan;
 		Info.m_Local = 0;
@@ -5193,52 +5196,6 @@ bool CGameContext::PracticeByDefault() const
 }
 
 // FoxNet
-
-void CGameContext::FoxNetTick()
-{
-	static int OldSpeed = g_Config.m_SvSpeed;
-	if(g_Config.m_SvSpeed != OldSpeed)
-	{
-		ChangeSpeedMode();
-		OldSpeed = g_Config.m_SvSpeed;
-	}
-
-	{
-		static char OldName[32] = "FoxNetwork";
-		if(str_comp(g_Config.m_SvGameTypeName, OldName) != 0) // Reload if config is changed
-		{
-			m_pController->m_pGameType = g_Config.m_SvGameTypeName;
-			Server()->UpdateServerInfo(true);
-			str_copy(OldName, g_Config.m_SvGameTypeName);
-		}
-	}
-	{
-		static char OldName[32];
-		if(str_comp(g_Config.m_SvFakeMapName, "") != 0)
-		{
-			if(str_comp(g_Config.m_SvFakeMapName, OldName) != 0) // Reload if config is changed
-			{
-				Server()->UpdateServerInfo(true);
-				str_copy(OldName, g_Config.m_SvFakeMapName);
-			}
-		}
-	}
-	{
-		static char OldName[32];
-		if(str_comp(g_Config.m_SvFakeServerVersion, OldName) != 0) // Reload if config is changed
-		{
-			m_Version = GAME_VERSION;
-			if(str_comp(g_Config.m_SvFakeServerVersion, "") != 0)
-				m_Version = g_Config.m_SvFakeServerVersion;
-			Server()->UpdateServerInfo(true);
-			str_copy(OldName, g_Config.m_SvFakeServerVersion);
-		}
-	}
-
-	if(g_Config.m_SvBanSyncing)
-		BanSync();
-}
-
 void CGameContext::ChangeSpeedMode()
 {
 	if(g_Config.m_SvSpeed == 1)
@@ -5338,6 +5295,19 @@ void CGameContext::ChangeSpeedMode()
 
 	// Info Message
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FoxNet", "Speed Tunings Have Changed");
+}
+
+void CGameContext::SnakeName(int ClientId)
+{
+	protocol7::CNetMsg_Sv_ClientInfo Info;
+	Info.m_pName = " ";
+	Info.m_pClan = "";
+
+	for(int i = 0; i < Server()->MaxClients(); i++)
+	{
+		if(i != ClientId)
+			Server()->SendPackMsg(&Info, MSGFLAG_VITAL | MSGFLAG_NORECORD, i);
+	}
 }
 
 void CGameContext::BanSync()
@@ -5768,4 +5738,48 @@ vec2 CGameContext::RoundPos(vec2 Pos)
 	Pos.x -= (int)Pos.x % 32 - 16;
 	Pos.y -= (int)Pos.y % 32 - 16;
 	return Pos;
+}
+void CGameContext::FoxNetTick()
+{
+	static int OldSpeed = g_Config.m_SvSpeed;
+	if(g_Config.m_SvSpeed != OldSpeed)
+	{
+		ChangeSpeedMode();
+		OldSpeed = g_Config.m_SvSpeed;
+	}
+
+	{
+		static char OldName[32] = "FoxNetwork";
+		if(str_comp(g_Config.m_SvGameTypeName, OldName) != 0) // Reload if config is changed
+		{
+			m_pController->m_pGameType = g_Config.m_SvGameTypeName;
+			Server()->UpdateServerInfo(true);
+			str_copy(OldName, g_Config.m_SvGameTypeName);
+		}
+	}
+	{
+		static char OldName[32];
+		if(str_comp(g_Config.m_SvFakeMapName, "") != 0)
+		{
+			if(str_comp(g_Config.m_SvFakeMapName, OldName) != 0) // Reload if config is changed
+			{
+				Server()->UpdateServerInfo(true);
+				str_copy(OldName, g_Config.m_SvFakeMapName);
+			}
+		}
+	}
+	{
+		static char OldName[32];
+		if(str_comp(g_Config.m_SvFakeServerVersion, OldName) != 0) // Reload if config is changed
+		{
+			m_Version = GAME_VERSION;
+			if(str_comp(g_Config.m_SvFakeServerVersion, "") != 0)
+				m_Version = g_Config.m_SvFakeServerVersion;
+			Server()->UpdateServerInfo(true);
+			str_copy(OldName, g_Config.m_SvFakeServerVersion);
+		}
+	}
+
+	if(g_Config.m_SvBanSyncing)
+		BanSync();
 }
