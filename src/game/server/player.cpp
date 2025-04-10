@@ -1238,5 +1238,8 @@ void CPlayer::FoxNetTick()
 		GameServer()->SnakeName(m_ClientId);
 	}
 	if(m_RemovedName && m_ShowName)
+	{
+		RestoreInfo();
 		m_RemovedName = false;
+	}
 }

@@ -288,8 +288,8 @@ public:
 	bool m_StaffInd;
 	bool m_Trail;
 
-	bool m_ShowName;
-	bool m_RemovedName;
+	bool m_ShowName = true;
+	bool m_RemovedName = false;
 
 	// Restoring Color
 	char m_pOldName;

@@ -2727,7 +2727,7 @@ void CGameContext::OnChangeInfoNetMessage(const CNetMsg_Cl_ChangeInfo *pMsg, int
 	}
 
 	// set infos
-	if(Server()->WouldClientNameChange(ClientId, pMsg->m_pName) && !ProcessSpamProtection(ClientId) && !pPlayer->m_ShowName)
+	if(Server()->WouldClientNameChange(ClientId, pMsg->m_pName) && !ProcessSpamProtection(ClientId))
 	{
 		char aOldName[MAX_NAME_LENGTH];
 		str_copy(aOldName, Server()->ClientName(ClientId), sizeof(aOldName));
