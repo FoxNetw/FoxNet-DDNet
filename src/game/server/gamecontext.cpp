@@ -3876,7 +3876,7 @@ void CGameContext::RegisterDDRaceCommands()
 
 	Console()->Register("set_extra_ping", "v[id] i[ping]", CFGFLAG_SERVER, ConSetExtraPing, this, "Set a players (id) Extra Ping");
 	Console()->Register("confetti_gun", "v[id]", CFGFLAG_SERVER, ConSetConfettiGun, this, "Set a players (id) Gun to shoot confetti");
-	Console()->Register("set_emote_gun", "v[id] i[type]", CFGFLAG_SERVER, ConSetEmoticonGun, this, "Set a players (id) Emoticon Gun");
+	Console()->Register("set_emote_gun", "v[id] i[type]", CFGFLAG_SERVER, ConSetEmoticonGun, this, "Set a players (id) Emoticon Gun to i[type] (1-12)");
 
 	Console()->Register("kill_lock", "v[id]", CFGFLAG_SERVER, ConSetKillLock, this, "Make a player (id) not be able to kill");
 
