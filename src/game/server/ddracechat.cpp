@@ -272,7 +272,7 @@ void ToggleSpecPause(IConsole::IResult *pResult, void *pUserData, int PauseType)
 	if(!pPlayer)
 		return;
 
-	if(pPlayer->m_IsAfkSpec > 0)
+	if(pPlayer->m_SpecAfkState > 0)
 		return;
 
 	int PauseState = pPlayer->IsPaused();
@@ -2486,7 +2486,7 @@ void CGameContext::ConSpecAfk(IConsole::IResult *pResult, void *pUserData)
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientId];
 	if(pPlayer)
-		pPlayer->SetSpecAfk(pResult->NumArguments() ? pResult->GetInteger(0) : !pPlayer->m_SpecAfk);
+		pPlayer->SetSpecAfk(pResult->NumArguments() ? pResult->GetInteger(0) : !pPlayer->m_SpecAfkEnabled);
 }
 
 void CGameContext::ConAbilityIndicator(IConsole::IResult *pResult, void *pUserData)

@@ -508,7 +508,7 @@ void CSaveHotReloadTee::Save(CCharacter *pChr, bool AddPenalty)
 
 	m_AbilityIndicator = pChr->m_pPlayer->m_AbilityIndicator;
 	m_WeaponIndicator = pChr->m_pPlayer->m_WeaponIndicator;
-	m_SpecAfk = pChr->m_pPlayer->m_SpecAfk;
+	m_SpecAfk = pChr->m_pPlayer->m_SpecAfkEnabled;
 }
 
 bool CSaveHotReloadTee::Load(CCharacter *pChr, int Team, bool IsSwap)
@@ -530,7 +530,7 @@ bool CSaveHotReloadTee::Load(CCharacter *pChr, int Team, bool IsSwap)
 
 	pChr->GetPlayer()->m_AbilityIndicator = m_AbilityIndicator;
 	pChr->GetPlayer()->m_WeaponIndicator = m_WeaponIndicator;
-	pChr->GetPlayer()->m_SpecAfk = m_SpecAfk;
+	pChr->GetPlayer()->m_SpecAfkEnabled = m_SpecAfk;
 
 	return Result;
 }

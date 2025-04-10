@@ -249,8 +249,8 @@ public:
 	void SetAbilityIndicator(bool Set);
 
 	// Spec Afk Toggling for specific players
-	int m_IsAfkSpec;
-	bool m_SpecAfk = true;
+	int m_SpecAfkState;
+	bool m_SpecAfkEnabled = true;
 	void SetSpecAfk(bool Set);
 	void AfkSpectateTick();
 	void SetPlayerAfk(bool Set);

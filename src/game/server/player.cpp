@@ -494,7 +494,7 @@ void CPlayer::Snap(int SnappingClient)
 		pDDNetPlayer->m_AuthLevel = AUTHED_NO;
 
 	pDDNetPlayer->m_Flags = 0;
-	if(m_Afk)
+	if(m_Afk || m_SpecAfkState > 0)
 		pDDNetPlayer->m_Flags |= EXPLAYERFLAG_AFK;
 	if(m_Paused == PAUSE_SPEC)
 		pDDNetPlayer->m_Flags |= EXPLAYERFLAG_SPEC;
@@ -1082,36 +1082,36 @@ void CPlayer::AfkSpectateTick()
 	{
 		if (m_Team == TEAM_SPECTATORS)
 		{
-			if(m_IsAfkSpec != 0)
-				m_IsAfkSpec = 0;
+			if(m_SpecAfkState != 0)
+				m_SpecAfkState = 0;
 			return;
 		}
 
-		if(m_SpecAfk)
+		if(m_SpecAfkEnabled)
 		{
-			if(m_IsAfkSpec == 1)
+			if(m_SpecAfkState == 1)
 			{
 				GetCharacter()->Pause(true);
-				m_IsAfkSpec = 2;
+				m_SpecAfkState = 2;
 				SetAfk(true);
 			}
 
-			if(IsAfk() && m_JoinTick + Server()->TickSpeed() * 60 < Server()->Tick() && m_IsAfkSpec == 0)
+			if(IsAfk() && m_JoinTick + Server()->TickSpeed() * 60 < Server()->Tick() && m_SpecAfkState == 0)
 			{
 				GameServer()->SendBroadcast(" << Anti-AFK block spectator mode >>", GetCid());
-				m_IsAfkSpec = 1;
+				m_SpecAfkState = 1;
 			}
-			if(!m_Afk && m_IsAfkSpec == 2)
+			if(!m_Afk && m_SpecAfkState == 2)
 			{
 				GameServer()->SendBroadcast(" << Anti-AFK block spectator mode >>", GetCid());
 				GetCharacter()->Pause(false);
-				m_IsAfkSpec = 0;
+				m_SpecAfkState = 0;
 			}
 		}
-		if(!m_SpecAfk && m_IsAfkSpec != 0)
+		if(!m_SpecAfkEnabled && m_SpecAfkState != 0)
 		{
 			GetCharacter()->Pause(false);
-			m_IsAfkSpec = 0;
+			m_SpecAfkState = 0;
 		}
 	}
 	
@@ -1172,9 +1172,9 @@ void CPlayer::SaveColor()
 
 void CPlayer::SetSpecAfk(bool Set)
 {
-	if(m_SpecAfk == Set)
+	if(m_SpecAfkEnabled == Set)
 		return;
-	m_SpecAfk = Set;
+	m_SpecAfkEnabled = Set;
 	if(Set)
 		GameServer()->SendChatTarget(m_ClientId, "Auto Spectator on Afk Enabled");
 	else
