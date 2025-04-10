@@ -2774,10 +2774,7 @@ void CGameContext::OnChangeInfoNetMessage(const CNetMsg_Cl_ChangeInfo *pMsg, int
 
 		protocol7::CNetMsg_Sv_ClientInfo Info;
 		Info.m_ClientId = ClientId;
-		if(!pPlayer->m_RemovedName && !pPlayer->m_ShowName)
-			Info.m_pName = "";
-		if(pPlayer->m_RemovedName && pPlayer->m_ShowName)
-			Info.m_pName = Server()->ClientName(ClientId);
+		Info.m_pName = Server()->ClientName(ClientId);
 		Info.m_Country = pMsg->m_Country;
 		Info.m_pClan = pMsg->m_pClan;
 		Info.m_Local = 0;
