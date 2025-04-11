@@ -575,6 +575,8 @@ void CPlayer::OnDisconnect()
 {
 	KillCharacter();
 
+	GameServer()->m_VotingMenu.Reset(m_ClientId);
+
 	m_Moderating = false;
 }
 
@@ -1140,17 +1142,19 @@ void CPlayer::RainbowTick()
 
 	// only send rainbow updates to people close to you, to reduce network traffic
 	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
 		if(GameServer()->m_apPlayers[i] && !m_pCharacter->NetworkClipped(i))
 		{
 			m_TeeInfos.m_UseCustomColor = 1;
 			m_TeeInfos.m_ColorBody = BaseColor + Color;
 		}
+	}
 }
 
 
 void CPlayer::RestoreColor()
 {
-	if(m_Rainbow)
+	if(m_Rainbow && m_SavedColor)
 	{
 		m_TeeInfos.m_UseCustomColor = m_UsedCustomColor;
 		m_TeeInfos.m_ColorBody = m_SavedColorBody;
@@ -1199,6 +1203,17 @@ void CPlayer::SetWeaponIndicator(bool Set)
 		GameServer()->SendChatTarget(m_ClientId, "Weapon indicator enabled");
 	else
 		GameServer()->SendChatTarget(m_ClientId, "Weapon indicator disabled");
+}
+
+void CPlayer::SetHideBroadcasts(bool Set)
+{
+	if(m_HideBroadcasts == Set)
+		return;
+	m_HideBroadcasts = Set;
+	if(Set)
+		GameServer()->SendChatTarget(m_ClientId, "Broadcasts enabled");
+	else
+		GameServer()->SendChatTarget(m_ClientId, "Broadcasts disabled");
 }
 
 void CPlayer::SetAbilityIndicator(bool Set)

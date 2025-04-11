@@ -36,6 +36,7 @@
 #include "score.h"
 #include <string.h>
 #include "foxnet_types.h"
+#include "votingmenu.h"
 
 // Not thread-safe!
 class CClientChatLogger : public ILogger
@@ -177,6 +178,7 @@ void CGameContext::Clear()
 	CVoteOptionServer *pVoteOptionLast = m_pVoteOptionLast;
 	int NumVoteOptions = m_NumVoteOptions;
 	CTuningParams Tuning = m_Tuning;
+	CVotingMenu VotingMenu = m_VotingMenu;
 
 	m_Resetting = true;
 	this->~CGameContext();
@@ -187,6 +189,7 @@ void CGameContext::Clear()
 	m_pVoteOptionLast = pVoteOptionLast;
 	m_NumVoteOptions = NumVoteOptions;
 	m_Tuning = Tuning;
+	m_VotingMenu = VotingMenu;
 }
 
 void CGameContext::TeeHistorianWrite(const void *pData, int DataSize, void *pUser)
@@ -1423,93 +1426,6 @@ const CVoteOptionServer *CGameContext::GetVoteOption(int Index) const
 		return nullptr;
 	return pCurrent;
 }
-
-void CGameContext::ProgressVoteOptions(int ClientId)
-{
-	CPlayer *pPl = m_apPlayers[ClientId];
-
-	if(pPl->m_SendVoteIndex == -1)
-		return; // we didn't start sending options yet
-
-	if(pPl->m_SendVoteIndex > m_NumVoteOptions)
-		return; // shouldn't happen / fail silently
-
-	int VotesLeft = m_NumVoteOptions - pPl->m_SendVoteIndex;
-	int NumVotesToSend = minimum(g_Config.m_SvSendVotesPerTick, VotesLeft);
-
-	if(!VotesLeft)
-	{
-		// player has up to date vote option list
-		return;
-	}
-
-	// build vote option list msg
-	int CurIndex = 0;
-
-	CNetMsg_Sv_VoteOptionListAdd OptionMsg;
-	OptionMsg.m_pDescription0 = "";
-	OptionMsg.m_pDescription1 = "";
-	OptionMsg.m_pDescription2 = "";
-	OptionMsg.m_pDescription3 = "";
-	OptionMsg.m_pDescription4 = "";
-	OptionMsg.m_pDescription5 = "";
-	OptionMsg.m_pDescription6 = "";
-	OptionMsg.m_pDescription7 = "";
-	OptionMsg.m_pDescription8 = "";
-	OptionMsg.m_pDescription9 = "";
-	OptionMsg.m_pDescription10 = "";
-	OptionMsg.m_pDescription11 = "";
-	OptionMsg.m_pDescription12 = "";
-	OptionMsg.m_pDescription13 = "";
-	OptionMsg.m_pDescription14 = "";
-
-	// get current vote option by index
-	const CVoteOptionServer *pCurrent = GetVoteOption(pPl->m_SendVoteIndex);
-
-	while(CurIndex < NumVotesToSend && pCurrent != nullptr)
-	{
-		switch(CurIndex)
-		{
-		case 0: OptionMsg.m_pDescription0 = pCurrent->m_aDescription; break;
-		case 1: OptionMsg.m_pDescription1 = pCurrent->m_aDescription; break;
-		case 2: OptionMsg.m_pDescription2 = pCurrent->m_aDescription; break;
-		case 3: OptionMsg.m_pDescription3 = pCurrent->m_aDescription; break;
-		case 4: OptionMsg.m_pDescription4 = pCurrent->m_aDescription; break;
-		case 5: OptionMsg.m_pDescription5 = pCurrent->m_aDescription; break;
-		case 6: OptionMsg.m_pDescription6 = pCurrent->m_aDescription; break;
-		case 7: OptionMsg.m_pDescription7 = pCurrent->m_aDescription; break;
-		case 8: OptionMsg.m_pDescription8 = pCurrent->m_aDescription; break;
-		case 9: OptionMsg.m_pDescription9 = pCurrent->m_aDescription; break;
-		case 10: OptionMsg.m_pDescription10 = pCurrent->m_aDescription; break;
-		case 11: OptionMsg.m_pDescription11 = pCurrent->m_aDescription; break;
-		case 12: OptionMsg.m_pDescription12 = pCurrent->m_aDescription; break;
-		case 13: OptionMsg.m_pDescription13 = pCurrent->m_aDescription; break;
-		case 14: OptionMsg.m_pDescription14 = pCurrent->m_aDescription; break;
-		}
-
-		CurIndex++;
-		pCurrent = pCurrent->m_pNext;
-	}
-
-	// send msg
-	if(pPl->m_SendVoteIndex == 0)
-	{
-		CNetMsg_Sv_VoteOptionGroupStart StartMsg;
-		Server()->SendPackMsg(&StartMsg, MSGFLAG_VITAL, ClientId);
-	}
-
-	OptionMsg.m_NumOptions = NumVotesToSend;
-	Server()->SendPackMsg(&OptionMsg, MSGFLAG_VITAL, ClientId);
-
-	pPl->m_SendVoteIndex += NumVotesToSend;
-
-	if(pPl->m_SendVoteIndex == m_NumVoteOptions)
-	{
-		CNetMsg_Sv_VoteOptionGroupEnd EndMsg;
-		Server()->SendPackMsg(&EndMsg, MSGFLAG_VITAL, ClientId);
-	}
-}
-
 void CGameContext::OnClientEnter(int ClientId)
 {
 	if(BanCheckName(ClientId))
@@ -2313,6 +2229,11 @@ void CGameContext::OnSayNetMessage(const CNetMsg_Cl_Say *pMsg, int ClientId, con
 
 void CGameContext::OnCallVoteNetMessage(const CNetMsg_Cl_CallVote *pMsg, int ClientId)
 {
+	if(m_VotingMenu.OnMessage(ClientId, pMsg))
+	{
+		return;
+	}
+
 	if(RateLimitPlayerVote(ClientId) || m_VoteCloseTime)
 		return;
 
@@ -2388,6 +2309,7 @@ void CGameContext::OnCallVoteNetMessage(const CNetMsg_Cl_CallVote *pMsg, int Cli
 	}
 	else if(str_comp_nocase(pMsg->m_pType, "kick") == 0)
 	{
+
 		if(!g_Config.m_SvVoteKick && !Authed) // allow admins to call kick votes even if they are forbidden
 		{
 			SendChatTarget(ClientId, "Server does not allow voting to kick players");
@@ -2974,8 +2896,11 @@ void CGameContext::OnStartInfoNetMessage(const CNetMsg_Cl_StartInfo *pMsg, int C
 	CNetMsg_Sv_VoteClearOptions ClearMsg;
 	Server()->SendPackMsg(&ClearMsg, MSGFLAG_VITAL, ClientId);
 
+	// Init before sending votes
+	m_VotingMenu.InitPlayer(ClientId);
+
 	// begin sending vote options
-	pPlayer->m_SendVoteIndex = 0;
+	StartResendingVotes(ClientId, true);
 
 	// send tuning parameters to client
 	SendTuningParams(ClientId, pPlayer->m_TuneZone);
@@ -3565,12 +3490,12 @@ void CGameContext::ConClearVotes(IConsole::IResult *pResult, void *pUserData)
 	pSelf->m_pVoteOptionLast = nullptr;
 	pSelf->m_NumVoteOptions = 0;
 
+	// Reset so the votes get added again
+	pSelf->m_VotingMenu.AddPlaceholderVotes();
+
 	// reset sending of vote options
-	for(auto &pPlayer : pSelf->m_apPlayers)
-	{
-		if(pPlayer)
-			pPlayer->m_SendVoteIndex = 0;
-	}
+	for(int i = 0; i < MAX_CLIENTS; i++)
+		pSelf->m_VotingMenu.SendPageVotes(i);
 }
 
 struct CMapNameItem
@@ -3778,6 +3703,8 @@ void CGameContext::OnConsoleInit()
 
 	RegisterDDRaceCommands();
 	RegisterChatCommands();
+
+	m_VotingMenu.Init(this);
 }
 
 void CGameContext::RegisterDDRaceCommands()
@@ -5779,4 +5706,74 @@ void CGameContext::FoxNetTick()
 
 	if(g_Config.m_SvBanSyncing)
 		BanSync();
+
+	m_VotingMenu.Tick();
+}
+
+void CGameContext::StartResendingVotes(int ClientID, bool ResendVotesPage = true)
+{
+	m_VotingMenu.SendPageVotes(ClientID, ResendVotesPage);
+}
+
+void CGameContext::ProgressVoteOptions(int ClientID)
+{
+	CPlayer *pPl = m_apPlayers[ClientID];
+
+	if(pPl->m_SendVoteIndex == -1)
+		return;
+
+	if(pPl->m_SendVoteIndex > m_NumVoteOptions)
+		return; // shouldn't happen / fail silently
+
+	int VotesLeft = m_NumVoteOptions - pPl->m_SendVoteIndex;
+	int NumVotesToSend = std::min(5, VotesLeft);
+
+	if(!VotesLeft)
+	{
+		// player has up to date vote option list
+		return;
+	}
+
+	// build vote option list msg
+	int CurIndex = 0;
+
+	// get current vote option by index
+	CVoteOptionServer *pCurrent = const_cast<CVoteOptionServer *>(GetVoteOption(pPl->m_SendVoteIndex));  
+
+	// pack and send vote list packet
+	CMsgPacker Msg(NETMSGTYPE_SV_VOTEOPTIONLISTADD);
+	Msg.AddInt(NumVotesToSend);
+
+	m_VotingMenu.OnProgressVoteOptions(ClientID, &Msg, &CurIndex, &pCurrent);
+
+	while(pCurrent && CurIndex < NumVotesToSend)
+	{
+		Msg.AddString(pCurrent->m_aDescription, VOTE_DESC_LENGTH);
+		pCurrent = pCurrent->m_pNext;
+		CurIndex++;
+	}
+
+	if(!Server()->IsSixup(ClientID))
+	{
+		while(CurIndex < CVotingMenu::MAX_VOTES_PER_PACKET)
+		{
+			Msg.AddString("", VOTE_DESC_LENGTH);
+			CurIndex++;
+		}
+	}
+
+	if(pPl->m_SendVoteIndex == 0)
+	{
+		CNetMsg_Sv_VoteOptionGroupStart StartMsg;
+		Server()->SendPackMsg(&StartMsg, MSGFLAG_VITAL, ClientID);
+	}
+
+	Server()->SendMsg(&Msg, MSGFLAG_VITAL, ClientID);
+
+	pPl->m_SendVoteIndex += NumVotesToSend;
+	if(pPl->m_SendVoteIndex == m_NumVoteOptions)
+	{
+		CNetMsg_Sv_VoteOptionGroupEnd EndMsg;
+		Server()->SendPackMsg(&EndMsg, MSGFLAG_VITAL, ClientID);
+	}
 }

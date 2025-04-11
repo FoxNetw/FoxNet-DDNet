@@ -1595,11 +1595,6 @@ void CGameContext::ConRainbow(IConsole::IResult *pResult, void *pUserData)
 
 	if(!pChr)
 		return;
-	
-	if(pChr->GetPlayer()->m_Rainbow)
-		pChr->GetPlayer()->RestoreColor();
-	else
-		pChr->GetPlayer()->SaveColor();
 
 	pChr->SetRainbow(!pChr->GetPlayer()->m_Rainbow);
 }

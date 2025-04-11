@@ -13,6 +13,29 @@
 #include <memory>
 #include <optional>
 
+enum Extra
+{
+	HOOK_NORMAL,
+	JETPACK,
+	RAINBOW,
+	ATOM,
+	TRAIL,
+	METEOR,
+	BLOODY,
+	STRONG_BLOODY,
+	HOOK_POWER,
+	ENDLESS_HOOK,
+	INFINITE_JUMPS,
+	INVISIBLE,
+	SNAKE,
+	LOVELY,
+	ROTATING_BALL,
+	EPIC_CIRCLE,
+	STAFF_IND,
+	SPARKLE,
+	NUM_EXTRAS
+};
+
 class CCharacter;
 class CGameContext;
 class IServer;
@@ -244,6 +267,9 @@ public:
 	bool m_WeaponIndicator;
 	void SetWeaponIndicator(bool Set);
 
+	bool m_HideBroadcasts;
+	void SetHideBroadcasts(bool Set);
+
 	// ability indicator
 	bool m_AbilityIndicator;
 	void SetAbilityIndicator(bool Set);
@@ -287,6 +313,11 @@ public:
 	bool m_RotatingBall;
 	bool m_StaffInd;
 	bool m_Trail;
+	bool m_Sparkle;
+	int m_HookPower;
+	bool m_Atom;
+	bool m_Bloody;
+	bool m_StrongBloody;
 
 	bool m_ShowName = true;
 	bool m_RemovedName = false;

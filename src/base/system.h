@@ -3050,4 +3050,6 @@ struct std::hash<NETADDR>
 	size_t operator()(const NETADDR &Addr) const noexcept;
 };
 
+const char *str_skip_voting_menu_prefixes(const char *pStr);
+
 #endif

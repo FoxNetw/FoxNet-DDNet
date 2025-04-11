@@ -295,6 +295,10 @@ public:
 	// FoxNet
 	virtual void QuietBan(bool Quiet) = 0;
 	virtual void UpdateServerInfo(bool Resend = false) = 0;
+	virtual int GetDummy(int ClientId) = 0;
+	virtual bool IsDummy(int ClientId1, int ClientId2) = 0;
+	virtual bool DummyControlOrCopyMoves(int ClientId) = 0;
+	virtual bool IsMain(int ClientID) = 0;
 };
 
 class IGameServer : public IInterface

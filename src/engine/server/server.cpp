@@ -1659,6 +1659,11 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 				m_aClients[ClientId].m_GotDDNetVersionPacket = true;
 				m_aClients[ClientId].m_State = CClient::STATE_AUTH;
 			}
+			m_aClients[ClientId].m_State = CClient::STATE_AUTH;
+
+			int Dummy = GetDummy(ClientId);
+			if(Dummy != -1)
+				m_aClients[ClientId].m_Main = false;
 		}
 		else if(Msg == NETMSG_INFO)
 		{
@@ -4378,4 +4383,58 @@ void CServer::ConClientInfo(IConsole::IResult *pResult, void *pUser)
 			}
 		}
 	}
+}
+
+int CServer::GetDummy(int ClientId)
+{
+	for(int i = 0; i < MAX_CLIENTS; i++)
+		if(IsDummy(ClientId, i))
+			return i;
+	return -1;
+}
+
+bool CServer::IsDummy(int ClientId1, int ClientId2)
+{
+	if(ClientId1 == ClientId1 || m_aClients[ClientId1].m_State == CClient::STATE_EMPTY || m_aClients[ClientId2].m_State == CClient::STATE_EMPTY || m_aClients[ClientId2].m_State == CClient::STATE_CONNECTING || m_aClients[ClientId2].m_State == CClient::STATE_DUMMY)
+		return false;
+	return net_addr_comp(m_NetServer.ClientAddr(ClientId1), m_NetServer.ClientAddr(ClientId2)) == 0 && m_aClients[ClientId1].m_ConnectionId == m_aClients[ClientId2].m_ConnectionId;
+}
+
+bool CServer::DummyControlOrCopyMoves(int ClientID)
+{
+	int Dummy = GetDummy(ClientID);
+	if(Dummy == -1)
+		return false;
+	// if both are not marked as idle, then we can assume copy moves is activated or dummy control is being used (to control dummy independently)
+	return !m_aClients[ClientID].m_IdleDummy && !m_aClients[Dummy].m_IdleDummy;
+}
+
+void CServer::CClient::ResetContent()
+{
+	m_State = CClient::STATE_EMPTY;
+	m_aName[0] = 0;
+	m_aClan[0] = 0;
+	m_Country = -1;
+	m_Authed = AUTHED_NO;
+	m_AuthKey = -1;
+	m_AuthTries = 0;
+	m_pRconCmdToSend = 0;
+	m_ShowIps = false;
+	m_DDNetVersion = VERSION_NONE;
+	m_GotDDNetVersionPacket = false;
+	m_DDNetVersionSettled = false;
+	m_Traffic = 0;
+	m_TrafficSince = 0;
+	m_Sixup = false;
+	m_DnsblState = CClient::DNSBL_STATE_NONE;
+	m_IdleDummy = false;
+	m_DummyHammer = false;
+	m_HammerflyMarked = false;
+	for(int i = 0; i < 5; i++)
+		m_aIdleDummyTrack[i] = 0;
+	m_CurrentIdleTrackPos = 0;
+
+	m_Main = true;
+
+	m_RedirectDropTime = 0;
 }

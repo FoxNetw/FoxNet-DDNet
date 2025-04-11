@@ -5203,3 +5203,33 @@ size_t std::hash<NETADDR>::operator()(const NETADDR &Addr) const noexcept
 {
 	return std::hash<std::string_view>{}(std::string_view((const char *)&Addr, sizeof(Addr)));
 }
+
+const char *str_skip_voting_menu_prefixes(const char *pStr)
+{
+	if(!pStr || !pStr[0])
+		return 0;
+
+	const char *pPrefixes[] = {"•", "☒", "☐", "│", "╭", "─", ">", "⇨"};
+	const char *pTemp = pStr;
+	while(1)
+	{
+		bool Break = true;
+		for(unsigned int p = 0; p < sizeof(pPrefixes) / sizeof(pPrefixes[0]); p++)
+		{
+			const char *pPrefix = str_utf8_find_nocase(pTemp, pPrefixes[p]);
+			if(pPrefix)
+			{
+				int NewCursor = str_utf8_forward(pPrefix, 0);
+				if(NewCursor != 0)
+				{
+					pTemp = pPrefix + NewCursor;
+					Break = false;
+					break;
+				}
+			}
+		}
+		if(Break)
+			break;
+	}
+	return str_skip_whitespaces_const(pTemp);
+}

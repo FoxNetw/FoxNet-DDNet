@@ -3328,6 +3328,8 @@ void CCharacter::SetExplosionGun(bool Active)
 
 void CCharacter::SetRainbow(bool Active)
 {
+	if(!Active)
+		GetPlayer()->RestoreColor();
 	m_pPlayer->m_Rainbow = Active;
 }
 

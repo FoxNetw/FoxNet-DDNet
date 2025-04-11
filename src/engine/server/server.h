@@ -114,6 +114,7 @@ public:
 			STATE_CONNECTING,
 			STATE_READY,
 			STATE_INGAME,
+			STATE_DUMMY,
 
 			SNAPRATE_INIT = 0,
 			SNAPRATE_FULL,
@@ -177,9 +178,21 @@ public:
 		void *m_pPersistentData;
 
 		void Reset();
+		void ResetContent();
+
+		// dummy
+		bool m_IdleDummy;
+		int m_LastIntendedTick;
+		bool m_DummyHammer;
+		bool m_Main;
+
+		bool m_HammerflyMarked;
+		int m_LastFire;
+
+		int m_aIdleDummyTrack[5];
+		int m_CurrentIdleTrackPos;
 
 		// DDRace
-
 		NETADDR m_Addr;
 		bool m_GotDDNetVersionPacket;
 		bool m_DDNetVersionSettled;
@@ -428,6 +441,11 @@ public:
 	// FoxNet
 	void QuietBan(bool Quiet) override;
 	static void ConClientInfo(IConsole::IResult *pResult, void *pUser);
+
+	int GetDummy(int ClientID) override;
+	bool IsDummy(int ClientID1, int ClientID2) override;
+	bool DummyControlOrCopyMoves(int ClientId) override;
+	bool IsMain(int ClientID) override { return m_aClients[ClientID].m_Main; }
 
 	static void ConKick(IConsole::IResult *pResult, void *pUser);
 	static void ConStatus(IConsole::IResult *pResult, void *pUser);

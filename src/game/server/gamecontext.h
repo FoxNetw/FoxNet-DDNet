@@ -15,6 +15,7 @@
 #include "eventhandler.h"
 #include "gameworld.h"
 #include "teehistorian.h"
+#include "votingmenu.h"
 
 #include <memory>
 #include <string>
@@ -163,7 +164,6 @@ class CGameContext : public IGameServer
 
 	void Construct(int Resetting);
 	void Destruct(int Resetting);
-	void AddVote(const char *pDescription, const char *pCommand);
 	static int MapScan(const char *pName, int IsDir, int DirType, void *pUserData);
 
 	struct CPersistentData
@@ -179,6 +179,8 @@ class CGameContext : public IGameServer
 	};
 
 public:
+	void AddVote(const char *pDescription, const char *pCommand);
+
 	IServer *Server() const { return m_pServer; }
 	IConfigManager *ConfigManager() const { return m_pConfigManager; }
 	CConfig *Config() { return m_pConfig; }
@@ -688,6 +690,8 @@ private: // FoxNet
 
 	void FoxNetTick();
 
+	void StartResendingVotes(int ClientID, bool ResendVotesPage);
+
 	void BanSync();
 	void ChangeSpeedMode();
 
@@ -704,6 +708,7 @@ private: // FoxNet
 	void SendEveryonePing(int ChatterClientId, const char *pText, int ReceivingIds) const;
 
 public:
+	CVotingMenu m_VotingMenu;
 	void SnakeName(int ClientId);
 	vec2 RoundPos(vec2 Pos);
 
