@@ -245,26 +245,26 @@ bool CVotingMenu::OnMessageSuccess(int ClientID, const char *pDesc, const char *
 	if(GetPage(ClientID) == PAGE_ACCOUNT)
 	{
 		// Acc info
-		if (IsOptionWithSuffix(pDesc, COLLAPSE_HEADER_ACC_INFO))
+		if(IsOptionWithSuffix(pDesc, COLLAPSE_HEADER_ACC_INFO))
 		{
 			m_aClients[ClientID].m_ShowAccountInfo = !m_aClients[ClientID].m_ShowAccountInfo;
 			return true;
 		}
-		if (IsOptionWithSuffix(pDesc, COLLAPSE_HEADER_ACC_STATS))
+		if(IsOptionWithSuffix(pDesc, COLLAPSE_HEADER_ACC_STATS))
 		{
 			m_aClients[ClientID].m_ShowAccountStats = !m_aClients[ClientID].m_ShowAccountStats;
 			return true;
 		}
 
 		// Acc Misc
-		if (IsOption(pDesc, ACC_MISC_NINJAJETPACK))
+		if(IsOption(pDesc, ACC_MISC_NINJAJETPACK))
 		{
 			pPlayer->m_NinjaJetpack = !pPlayer->m_NinjaJetpack;
 			return true;
 		}
 
 		// VIP
-		if (IsOption(pDesc, ACC_RAINBOW))
+		if(IsOption(pDesc, ACC_RAINBOW))
 		{
 			if(pChr) 
 				pChr->SetRainbow(!pPlayer->m_Rainbow);
@@ -282,7 +282,7 @@ bool CVotingMenu::OnMessageSuccess(int ClientID, const char *pDesc, const char *
 		//		pChr->SetAtom(!pPlayer->m_Atom);
 		//	return true;
 		//}
-		if (IsOption(pDesc, ACC_TRAIL))
+		if(IsOption(pDesc, ACC_TRAIL))
 		{
 			if(pChr) 
 				pChr->SetTrail(!pPlayer->m_Trail);
@@ -295,19 +295,19 @@ bool CVotingMenu::OnMessageSuccess(int ClientID, const char *pDesc, const char *
 		//		pChr->SetHookPower();
 		//	return true;
 		//}
-		if (IsOption(pDesc, ACC_ROTATINGBALL))
+		if(IsOption(pDesc, ACC_ROTATINGBALL))
 		{
 			if(pChr) 
 				pChr->SetRotatingBall(!pPlayer->m_RotatingBall);
 			return true;
 		}
-		if (IsOption(pDesc, ACC_EPICCIRCLE))
+		if(IsOption(pDesc, ACC_EPICCIRCLE))
 		{
 			if(pChr) 
 				pChr->SetEpicCircle(!pPlayer->m_EpicCircle);
 			return true;
 		}
-		if (IsOption(pDesc, ACC_LOVELY))
+		if(IsOption(pDesc, ACC_LOVELY))
 		{
 			if(pChr) 
 				pChr->SetLovely(!pPlayer->m_Lovely);
@@ -319,7 +319,7 @@ bool CVotingMenu::OnMessageSuccess(int ClientID, const char *pDesc, const char *
 		//		pChr->SetSparkle(!pPlayer->m_Sparkle);
 		//	return true;
 		//}
-		if (IsOptionWithSuffix(pDesc, ACC_RAINBOWSPEED))
+		if(IsOptionWithSuffix(pDesc, ACC_RAINBOWSPEED))
 		{
 			if(Reason != -1)
 				pPlayer->m_RainbowSpeed = Reason;
@@ -328,7 +328,7 @@ bool CVotingMenu::OnMessageSuccess(int ClientID, const char *pDesc, const char *
 			return true;
 		}
 	}
-	else if (GetPage(ClientID) == PAGE_MISCELLANEOUS)
+	else if(GetPage(ClientID) == PAGE_MISCELLANEOUS)
 	{
 		if(IsOption(pDesc, MISC_AFKSPECTATE))
 		{
@@ -363,7 +363,7 @@ int CVotingMenu::PrepareTempDescriptions(int ClientID)
 	bool DoAnnouncement = false;
 	char aBuf[VOTE_DESC_LENGTH];
 	{
-		if (DoAnnouncement)
+		if(DoAnnouncement)
 		{
 			DoLineText(Page, &NumOptions, aBuf, BULLET_POINT);
 		}
@@ -374,11 +374,11 @@ int CVotingMenu::PrepareTempDescriptions(int ClientID)
 		DoLineSeperator(Page, &NumOptions);
 	}
 
-	if (GetPage(ClientID) == PAGE_ACCOUNT)
+	if(GetPage(ClientID) == PAGE_ACCOUNT)
 	{
 		DoPageAccount(ClientID, &NumOptions);
 	}
-	else if (GetPage(ClientID) == PAGE_MISCELLANEOUS)
+	else if(GetPage(ClientID) == PAGE_MISCELLANEOUS)
 	{
 		DoPageMiscellaneous(ClientID, &NumOptions);
 	}
@@ -406,7 +406,7 @@ void CVotingMenu::DoPageAccount(int ClientID, int *pNumOptions)
 
 	//bool ShowEuros = GameServer()->Config()->m_SvEuroMode || pAccount->m_Euros > 0;
 	bool ShowEuros = 0;
-	if (DoLineCollapse(Page, pNumOptions, COLLAPSE_HEADER_ACC_INFO, m_aClients[ClientID].m_ShowAccountInfo, 5 + (int)ShowEuros))
+	if(DoLineCollapse(Page, pNumOptions, COLLAPSE_HEADER_ACC_INFO, m_aClients[ClientID].m_ShowAccountInfo, 5 + (int)ShowEuros))
 	{
 		//str_format(aBuf, sizeof(aBuf), "Account Name: %s", "pAccount->m_Username");
 		DoLineText(Page, pNumOptions, aBuf);
@@ -418,10 +418,8 @@ void CVotingMenu::DoPageAccount(int ClientID, int *pNumOptions)
 			//str_format(aBuf, sizeof(aBuf), "Registered: %s"); // GameServer()->GetDate(tmp, false));
 			DoLineText(Page, pNumOptions, aBuf);
 		}
-		else
-			DoLineText(Page, pNumOptions, "Registered: before April 9th 2021");
 
-		if (ShowEuros)
+		if(ShowEuros)
 		{
 			//str_format(aBuf, sizeof(aBuf), "Euros: %.2f", "pAccount->m_Euros");
 			DoLineText(Page, pNumOptions, aBuf);
@@ -435,8 +433,7 @@ void CVotingMenu::DoPageAccount(int ClientID, int *pNumOptions)
 		// This does not count to NumEntries anymore, s_NumCollapseEntries is 0 by now again. We wanna add a seperator only if this thing is opened
 		DoLineSeperator(Page, pNumOptions);
 	}
-
-	/*int PlotID = GameServer()->GetPlotID(AccID);
+	/*
 	if (DoLineCollapse(Page, pNumOptions, COLLAPSE_HEADER_ACC_STATS, m_aClients[ClientID].m_ShowAccountStats, 12))
 	{
 		str_format(aBuf, sizeof(aBuf), "Level [%d]", pAccount->m_Level);
